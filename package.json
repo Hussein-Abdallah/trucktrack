@@ -9,7 +9,12 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "format:check": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
+    "db:start": "npx supabase start",
+    "db:stop": "npx supabase stop",
+    "db:reset": "npx supabase db reset",
+    "db:migrate": "npx supabase db push",
+    "db:migration:new": "npx supabase migration new"
   },
   "dependencies": {
     "@expo/html-elements": "^0.10.1",

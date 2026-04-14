@@ -6,5 +6,6 @@
       "@/*": ["./*"],
       "tailwind.config": ["./tailwind.config.js"]
     }
-  }
+  },
+  "exclude": ["supabase/functions/**"]
 }

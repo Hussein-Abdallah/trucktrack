@@ -99,3 +99,30 @@ npx supabase link --project-ref your-project-ref
 - `EXPO_TOKEN` added to GitHub repo secrets
 - `develop` branch created with branch protection
 - At least one buildable screen in the app
+
+---
+
+## 4. Deno Type Checking for Edge Functions
+
+**Priority:** Defer — set up when first Edge Function is deployed (TT-14)
+**Why:** Edge Functions are excluded from root `tsconfig.json` (Deno syntax breaks Node tsc). They need their own type-check step so errors aren't silently ignored.
+
+### CI Step
+
+```yaml
+- name: Check Edge Functions
+  run: deno check supabase/functions/**/*.ts
+```
+
+### Package.json Script
+
+```json
+"scripts": {
+  "check:edge": "deno check supabase/functions/**/*.ts"
+}
+```
+
+### Prerequisites
+
+- `deno` CLI installed in CI (use `denoland/setup-deno` action)
+- At least one real Edge Function deployed
