@@ -1,0 +1,92 @@
+# .coderabbit.yaml
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+
+  path_instructions:
+    - path: "app/**"
+      instructions: |
+        React Native Expo app using Gluestack UI v3 and Expo Router v4.
+        Check for:
+        - borderRadius must be 0 on all Button and Input components
+        - Pill shape (borderRadius: 9999) only on Badge/status components
+        - No hardcoded hex colours — use Street Fire theme tokens only
+        - DM Mono font on all label and badge text, uppercase with letter-spacing
+        - Every screen must handle loading, error, and empty states explicitly
+        - No TypeScript 'any' — use 'unknown' and narrow it
+        - French string compatibility — flag fixed-width containers or text truncation
+        - One primary (orange) button per screen maximum
+        - Props must be defined as 'interface', never 'type' alias
+        - Functional components only — no class components
+        - No drop shadows, gradients, blur, or glow effects
+        - Green and red are status colours only — never use as CTA colours
+
+    - path: "components/**"
+      instructions: |
+        Shared UI components used across the app.
+        Check for:
+        - PascalCase file naming (TruckCard.tsx not truck-card.tsx)
+        - Props defined as interface, not type alias
+        - No inline one-off interfaces for DB entities — use shared types from lib/types.ts
+        - borderRadius: 0 on Button and Input, 9999 on Badge only, 4 on modals/sheets
+        - Skeleton loaders required for any component that fetches data
+        - Empty states must be designed for every list/feed component
+
+    - path: "hooks/**"
+      instructions: |
+        Custom React hooks — logic only, no JSX.
+        Check for:
+        - File must be camelCase starting with 'use' (useTrucks.ts)
+        - No JSX returned — hooks are logic only
+        - Must handle loading, error states in return value
+
+    - path: "stores/**"
+      instructions: |
+        Zustand state stores.
+        Check for:
+        - File naming: camelCase with Store suffix (authStore.ts)
+        - No server state — use TanStack Query for that
+        - No 'any' types
+
+    - path: "services/**"
+      instructions: |
+        External API clients (Supabase, Stripe, notifications).
+        Check for:
+        - SUPABASE_SERVICE_ROLE_KEY must never be imported or used here
+        - All DB queries must go through typed Supabase client helpers
+        - No hardcoded API URLs or secrets — use environment variables
+
+    - path: "supabase/functions/**"
+      instructions: |
+        Supabase Edge Functions on Deno.
+        Check for:
+        - SUPABASE_SERVICE_ROLE_KEY must never appear in app/ code — only here
+        - All DB operations must respect Row Level Security
+        - Always validate webhook signatures (Stripe etc.)
+        - Edge Function directories must use kebab-case naming
+        - Shared utils go in _shared/ directory
+
+    - path: "supabase/migrations/**"
+      instructions: |
+        Postgres SQL migrations.
+        Check for:
+        - Every new table must have RLS enabled
+        - Foreign keys must have ON DELETE behaviour defined
+        - Indexes on columns used in WHERE clauses
+        - Never write migrations by hand — must use 'npx supabase migration new'
+        - Timestamp prefix required in filename
+
+    - path: "theme/**"
+      instructions: |
+        Gluestack Street Fire theme configuration.
+        Check for:
+        - Tokens must match the Street Fire palette exactly
+        - Button borderRadius must be $none (0), Badge must be $full (9999)
+        - Extend base theme, never override — additive keys only
+
+chat:
+  auto_reply: true
