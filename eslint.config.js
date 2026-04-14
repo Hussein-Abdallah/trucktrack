@@ -2,6 +2,7 @@
 const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 const reactNative = require('eslint-plugin-react-native');
+const prettier = require('eslint-config-prettier');
 
 module.exports = defineConfig([
   // ── Base: Expo config (includes TypeScript, React, React Hooks, import) ──
@@ -52,11 +53,7 @@ module.exports = defineConfig([
       'import/order': [
         'error',
         {
-          groups: [
-            ['builtin', 'external'],
-            'internal',
-            ['parent', 'sibling', 'index'],
-          ],
+          groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
           'newlines-between': 'always',
         },
       ],
@@ -87,4 +84,7 @@ module.exports = defineConfig([
       '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
+
+  // ── Prettier — must be last to disable conflicting formatting rules ──
+  prettier,
 ]);

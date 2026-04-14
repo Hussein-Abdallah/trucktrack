@@ -1,14 +1,14 @@
 # .coderabbit.yaml
-language: "en-US"
+language: 'en-US'
 
 reviews:
-  profile: "assertive"
+  profile: 'assertive'
   request_changes_workflow: true
   high_level_summary: true
   poem: false
 
   path_instructions:
-    - path: "app/**"
+    - path: 'app/**'
       instructions: |
         React Native Expo app using Gluestack UI v3 and Expo Router v4.
         Check for:
@@ -25,7 +25,7 @@ reviews:
         - No drop shadows, gradients, blur, or glow effects
         - Green and red are status colours only — never use as CTA colours
 
-    - path: "components/**"
+    - path: 'components/**'
       instructions: |
         Shared UI components used across the app.
         Check for:
@@ -36,7 +36,7 @@ reviews:
         - Skeleton loaders required for any component that fetches data
         - Empty states must be designed for every list/feed component
 
-    - path: "hooks/**"
+    - path: 'hooks/**'
       instructions: |
         Custom React hooks — logic only, no JSX.
         Check for:
@@ -44,7 +44,7 @@ reviews:
         - No JSX returned — hooks are logic only
         - Must handle loading, error states in return value
 
-    - path: "stores/**"
+    - path: 'stores/**'
       instructions: |
         Zustand state stores.
         Check for:
@@ -52,7 +52,7 @@ reviews:
         - No server state — use TanStack Query for that
         - No 'any' types
 
-    - path: "services/**"
+    - path: 'services/**'
       instructions: |
         External API clients (Supabase, Stripe, notifications).
         Check for:
@@ -60,7 +60,7 @@ reviews:
         - All DB queries must go through typed Supabase client helpers
         - No hardcoded API URLs or secrets — use environment variables
 
-    - path: "supabase/functions/**"
+    - path: 'supabase/functions/**'
       instructions: |
         Supabase Edge Functions on Deno.
         Check for:
@@ -70,7 +70,7 @@ reviews:
         - Edge Function directories must use kebab-case naming
         - Shared utils go in _shared/ directory
 
-    - path: "supabase/migrations/**"
+    - path: 'supabase/migrations/**'
       instructions: |
         Postgres SQL migrations.
         Check for:
@@ -80,7 +80,7 @@ reviews:
         - Never write migrations by hand — must use 'npx supabase migration new'
         - Timestamp prefix required in filename
 
-    - path: "theme/**"
+    - path: 'theme/**'
       instructions: |
         Gluestack Street Fire theme configuration.
         Check for:

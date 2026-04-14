@@ -6,7 +6,8 @@
 
 TruckTrack · Design System · v1.0
 
-# DESIGN  
+# DESIGN
+
 SYSTEM
 
 Gluestack UI + Street Fire palette. The single source of truth for every screen, component, and interaction in the TruckTrack app.
@@ -253,31 +254,30 @@ Small Default Large
 
 ### Usage Rules
 
-Variant| When to use| Example  
----|---|---  
-`primary`| The single main action on a screen| Follow, Book Catering, Get Directions  
-`secondary`| Supporting action alongside a primary| View Menu, See Schedule  
-`ghost`| Tertiary / destructive-neutral| Cancel, Dismiss, Share  
-`danger`| Irreversible destructive actions| Delete Listing, Cancel Booking  
-`success`| Confirmation states only — not interactive| Booking Confirmed, Payment Complete  
-  
+| Variant     | When to use                                | Example                               |
+| ----------- | ------------------------------------------ | ------------------------------------- |
+| `primary`   | The single main action on a screen         | Follow, Book Catering, Get Directions |
+| `secondary` | Supporting action alongside a primary      | View Menu, See Schedule               |
+| `ghost`     | Tertiary / destructive-neutral             | Cancel, Dismiss, Share                |
+| `danger`    | Irreversible destructive actions           | Delete Listing, Cancel Booking        |
+| `success`   | Confirmation states only — not interactive | Booking Confirmed, Payment Complete   |
+
 ### Gluestack Implementation
 
 components/TruckTrackButton.tsx
-    
-    
+
     import { Button, ButtonText } from '@gluestack-ui/themed'
-    
+
     // Primary
     <Button action="primary" size="md">
       <ButtonText>Follow Truck</ButtonText>
     </Button>
-    
+
     // Secondary
     <Button action="secondary" variant="outline">
       <ButtonText>View Menu</ButtonText>
     </Button>
-    
+
     // Danger
     <Button action="negative">
       <ButtonText>Unfollow</ButtonText>
@@ -299,14 +299,14 @@ Active Pro Plan Starter Plan Paused — Winter Catering Request
 
 ### Badge Token Map
 
-Badge| Background| Text| Context  
----|---|---|---  
-Open Now| rgba(46,204,113, 0.15)| #2ECC71| Truck is currently serving  
-Closed| rgba(136,136,136, 0.15)| #888888| Truck is not serving today  
-Nearby| rgba(255,92,0, 0.15)| #FF5C00| Within user's radius  
-Featured| rgba(255,210,63, 0.15)| #FFD23F| Pro plan promoted listing  
-Catering| rgba(231,76,60, 0.15)| #E74C3C| Catering request or event  
-  
+| Badge    | Background              | Text    | Context                    |
+| -------- | ----------------------- | ------- | -------------------------- |
+| Open Now | rgba(46,204,113, 0.15)  | #2ECC71 | Truck is currently serving |
+| Closed   | rgba(136,136,136, 0.15) | #888888 | Truck is not serving today |
+| Nearby   | rgba(255,92,0, 0.15)    | #FF5C00 | Within user's radius       |
+| Featured | rgba(255,210,63, 0.15)  | #FFD23F | Pro plan promoted listing  |
+| Catering | rgba(231,76,60, 0.15)   | #E74C3C | Catering request or event  |
+
 07 — Form Inputs
 
 ## INPUT FIELDS
@@ -324,11 +324,10 @@ Phone Number (error) Please enter a valid phone number
 ### Gluestack Implementation
 
 components/TruckTrackInput.tsx
-    
-    
+
     import { Input, InputField, FormControl,
              FormControlLabel, FormControlError } from '@gluestack-ui/themed'
-    
+
     <FormControl isInvalid={hasError}>
       <FormControlLabel>Truck Name</FormControlLabel>
       <Input>
@@ -374,10 +373,9 @@ Follow Menu
 Drop this config into your Gluestack provider to wire the Street Fire tokens into every component automatically. Extend, never override the base theme — add keys, don't replace them.
 
 theme/trucktrack.ts
-    
-    
+
     import { createConfig } from '@gluestack-ui/themed'
-    
+
     export const config = createConfig({
       tokens: {
         colors: {
@@ -388,17 +386,17 @@ theme/trucktrack.ts
           primary400:  '#FF5C00',  // ← Fire Orange (primary CTA)
           primary600:  '#CC4900',  // pressed
           primary800:  '#992B00',
-    
+
           // Accent
           yellow400:   '#FFD23F',  // Signal Yellow
           yellow600:   '#E0A800',
-    
+
           // Status
           success400:  '#2ECC71',  // Active Green
           success600:  '#25A25A',
           error400:    '#E74C3C',  // Alert Red
           error600:    '#C0392B',
-    
+
           // Surfaces
           backgroundDark:    '#0F0F0F',
           backgroundCard:    '#1A1A1A',
@@ -407,13 +405,13 @@ theme/trucktrack.ts
           textMuted:         '#888888',
           textBody:          '#F5F0E8',
         },
-    
+
         space: {
           '1':  '4px',   '2': '8px',   '3': '12px',
           '4':  '16px',  '5': '20px',  '6': '24px',
           '8':  '32px',  '12':'48px',  '16':'64px',
         },
-    
+
         radii: {
           none: '0px',   // buttons, cards, inputs
           xs:   '2px',   // tags
@@ -421,14 +419,14 @@ theme/trucktrack.ts
           md:   '8px',   // sheets, map overlays
           full: '9999px', // status badges only
         },
-    
+
         fonts: {
           heading: 'BebasNeue',
           body:    'DMSans',
           mono:    'DMMono',
         },
       },
-    
+
       components: {
         Button: {
           theme: {
@@ -453,11 +451,10 @@ theme/trucktrack.ts
 ### Provider Setup
 
 App.tsx
-    
-    
+
     import { GluestackUIProvider } from '@gluestack-ui/themed'
     import { config } from './theme/trucktrack'
-    
+
     export default function App() {
       return (
         <GluestackUIProvider config={config} colorMode="dark">

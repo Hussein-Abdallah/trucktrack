@@ -6,7 +6,8 @@
 
 TruckTrack · Technical Architecture · v1.0
 
-# TECH  
+# TECH
+
 STACK
 
 The definitive reference for every tool, service, and architectural decision in the TruckTrack platform. If you're setting up the project for the first time or returning after a break — start here.
@@ -25,28 +26,28 @@ Version1.0 — Draft
 
 Every tool in the TruckTrack platform, its cost tier, and its role. Ordered by layer — from the device down to infrastructure.
 
-Category| Tool| Cost| Role  
----|---|---|---  
-**Source Control**| `GitHub`| Free| Code repository, issues, pull requests, Actions CI  
-**Project Tracking**| `Plane`| Free| Kanban board, sprints (cycles), epics (modules), MCP integration  
-**Framework**| `Expo SDK 54 + React Native`| Free| iOS & Android from one codebase  
-**Language**| `TypeScript (strict)`| Free| Type safety across the entire codebase  
-**UI Library**| `Gluestack UI v3`| Free| Accessible component system, Street Fire themed  
-**Navigation**| `Expo Router v4`| Free| File-system routing (like Next.js, for mobile)  
-**State Management**| `Zustand`| Free| Lightweight global state (auth, user preferences)  
-**Data Fetching**| `TanStack Query v5`| Free| Server state, caching, background refetch  
-**Backend / DB**| `Supabase`| Free tier| Postgres DB, Auth, real-time subscriptions, storage  
-**Maps**| `Mapbox`| Free tier| Dark-mode map, custom truck pins, location search  
-**Push Notifications**| `Expo Notifications`| Free| iOS & Android push from one API  
-**Payments**| `Stripe`| % of revenue| Operator subscriptions, catering deposits  
-**Error Tracking**| `Sentry`| Free tier| Crash reports, error traces in production  
-**Analytics**| `PostHog`| Free tier| Product analytics, funnel tracking, feature flags  
-**Builds**| `EAS Build`| Free tier| Cloud builds for iOS & Android — no Mac needed  
-**OTA Updates**| `EAS Update`| Free tier| Push JS fixes without App Store review  
-**iOS Distribution**| `Apple Developer`| $99/year| Required for App Store submission  
-**Android Distribution**| `Google Play`| $25 one-time| Required for Play Store submission  
-**Design**| `Figma`| Free tier| UI design, component specs, handoff  
-  
+| Category                 | Tool                         | Cost         | Role                                                             |
+| ------------------------ | ---------------------------- | ------------ | ---------------------------------------------------------------- |
+| **Source Control**       | `GitHub`                     | Free         | Code repository, issues, pull requests, Actions CI               |
+| **Project Tracking**     | `Plane`                      | Free         | Kanban board, sprints (cycles), epics (modules), MCP integration |
+| **Framework**            | `Expo SDK 54 + React Native` | Free         | iOS & Android from one codebase                                  |
+| **Language**             | `TypeScript (strict)`        | Free         | Type safety across the entire codebase                           |
+| **UI Library**           | `Gluestack UI v3`            | Free         | Accessible component system, Street Fire themed                  |
+| **Navigation**           | `Expo Router v4`             | Free         | File-system routing (like Next.js, for mobile)                   |
+| **State Management**     | `Zustand`                    | Free         | Lightweight global state (auth, user preferences)                |
+| **Data Fetching**        | `TanStack Query v5`          | Free         | Server state, caching, background refetch                        |
+| **Backend / DB**         | `Supabase`                   | Free tier    | Postgres DB, Auth, real-time subscriptions, storage              |
+| **Maps**                 | `Mapbox`                     | Free tier    | Dark-mode map, custom truck pins, location search                |
+| **Push Notifications**   | `Expo Notifications`         | Free         | iOS & Android push from one API                                  |
+| **Payments**             | `Stripe`                     | % of revenue | Operator subscriptions, catering deposits                        |
+| **Error Tracking**       | `Sentry`                     | Free tier    | Crash reports, error traces in production                        |
+| **Analytics**            | `PostHog`                    | Free tier    | Product analytics, funnel tracking, feature flags                |
+| **Builds**               | `EAS Build`                  | Free tier    | Cloud builds for iOS & Android — no Mac needed                   |
+| **OTA Updates**          | `EAS Update`                 | Free tier    | Push JS fixes without App Store review                           |
+| **iOS Distribution**     | `Apple Developer`            | $99/year     | Required for App Store submission                                |
+| **Android Distribution** | `Google Play`                | $25 one-time | Required for Play Store submission                               |
+| **Design**               | `Figma`                      | Free tier    | UI design, component specs, handoff                              |
+
 **Total upfront cost to ship MVP:** $124 USD — $99 Apple Developer + $25 Google Play. Everything else runs free until revenue is flowing.
 
 02 — Tool Details
@@ -229,15 +230,15 @@ EAS Build EAS Update (OTA) GitHub Actions (CI) Apple App Store Google Play Store
 
 ### Real-Time Data Flow — Operator Publishes Location
 
-Step| What Happens| Technology  
----|---|---  
-1| Operator taps "Publish Now" in the Today screen| React Native UI  
-2| Location + hours written to `truck_schedules` table| Supabase Client → Postgres  
-3| Supabase Realtime broadcasts the change to all connected consumers| Supabase Realtime (WebSocket)  
-4| Consumer map pins update live without a manual refresh| TanStack Query invalidation  
-5| Supabase Edge Function triggers push notification job| Supabase Edge Functions (Deno)  
-6| Push sent to all followers who have notifications enabled for this truck| Expo Push API → APNs / FCM  
-  
+| Step | What Happens                                                             | Technology                     |
+| ---- | ------------------------------------------------------------------------ | ------------------------------ |
+| 1    | Operator taps "Publish Now" in the Today screen                          | React Native UI                |
+| 2    | Location + hours written to `truck_schedules` table                      | Supabase Client → Postgres     |
+| 3    | Supabase Realtime broadcasts the change to all connected consumers       | Supabase Realtime (WebSocket)  |
+| 4    | Consumer map pins update live without a manual refresh                   | TanStack Query invalidation    |
+| 5    | Supabase Edge Function triggers push notification job                    | Supabase Edge Functions (Deno) |
+| 6    | Push sent to all followers who have notifications enabled for this truck | Expo Push API → APNs / FCM     |
+
 04 — Folder Structure
 
 ## MONOREPO STRUCTURE
@@ -247,8 +248,7 @@ One GitHub repository containing both the React Native app and the Supabase back
 **Why a monorepo?** As a solo developer, one repo means one place for issues, one CI pipeline, and shared TypeScript types between the app and Edge Functions. You never have to keep two repos in sync.
 
 ### Top-Level Overview
-    
-    
+
     trucktrack/                       ← Single GitHub repository
     │
     ├── app/                            ← 📱 React Native app (Expo Router)
@@ -276,8 +276,7 @@ One GitHub repository containing both the React Native app and the Supabase back
     └── CLAUDE.md                       ← Claude Code context
 
 ### 📱 App — React Native (Expo)
-    
-    
+
     app/                              ← Expo Router: file = screen route
     ├── (consumer)/                   ← Consumer tab group
     │   ├── _layout.tsx                ← Tab bar definition
@@ -307,7 +306,7 @@ One GitHub repository containing both the React Native app and the Supabase back
     │   └── signup.tsx
     │
     └── _layout.tsx                    ← Root layout: auth gate, providers
-    
+
     components/
     ├── ui/                          ← Base Gluestack-extended components
     │   ├── Button.tsx
@@ -329,32 +328,31 @@ One GitHub repository containing both the React Native app and the Supabase back
         ├── EmptyState.tsx
         ├── SkeletonCard.tsx
         └── LanguageToggle.tsx         ← EN / FR switcher
-    
+
     hooks/
     ├── useTrucks.ts                   ← Fetch + realtime truck list
     ├── useFollowing.ts                ← Followed trucks + follow/unfollow
     ├── useOperatorSchedule.ts         ← Read/write operator schedule
     ├── usePushNotifications.ts        ← Token registration + permissions
     └── useAuth.ts                     ← Session, login, logout
-    
+
     stores/
     ├── authStore.ts                   ← User session + role (consumer|operator)
     ├── locationStore.ts               ← Device GPS location
     └── notificationStore.ts           ← Unread count + inbox items
-    
+
     services/
     ├── supabase.ts                    ← Supabase client init + typed helpers
     ├── stripe.ts                      ← Stripe client init
     └── notifications.ts               ← Expo push token helpers
-    
+
     lib/
     ├── types.ts                       ← ALL shared TypeScript interfaces
     ├── constants.ts                   ← App-wide constants (plan prices, etc.)
     └── utils.ts                       ← Date formatting, distance calc, etc.
 
 ### 🖥️ Backend — Supabase
-    
-    
+
     supabase/                         ← Generated + managed by Supabase CLI
     │
     ├── functions/                      ← Edge Functions = your server code (Deno/TypeScript)
@@ -395,8 +393,7 @@ One GitHub repository containing both the React Native app and the Supabase back
 TypeScript types defined in `lib/types.ts` are shared between the app and Edge Functions. Import from a relative path in Edge Functions to keep a single source of truth.
 
 lib/types.ts — shared across app + edge functions
-    
-    
+
     export interface Truck {
       id: string
       operator_id: string
@@ -406,7 +403,7 @@ lib/types.ts — shared across app + edge functions
       is_active: boolean
       catering_enabled: boolean
     }
-    
+
     export interface TruckSchedule {
       id: string
       truck_id: string
@@ -418,7 +415,7 @@ lib/types.ts — shared across app + edge functions
       close_time: string
       status: 'scheduled' | 'live' | 'cancelled'
     }
-    
+
     export interface Follow {
       consumer_id: string
       truck_id: string
@@ -428,29 +425,28 @@ lib/types.ts — shared across app + edge functions
     }
 
 ### 🚀 Supabase CLI Workflow
-    
-    
+
     # Initialise Supabase in your project root (run once)
     npx supabase init
-    
+
     # Link to your remote Supabase project
     npx supabase link --project-ref your-project-ref
-    
+
     # Start local Supabase stack (Postgres + Auth + Storage)
     npx supabase start
-    
+
     # Create a new migration after changing schema
     npx supabase migration new add_catering_requests
-    
+
     # Push migrations to remote (production)
     npx supabase db push
-    
+
     # Deploy a single Edge Function
     npx supabase functions deploy stripe-webhook
-    
+
     # Deploy all Edge Functions
     npx supabase functions deploy
-    
+
     # Tail Edge Function logs in real-time
     npx supabase functions logs stripe-webhook --tail
 
@@ -464,16 +460,16 @@ Core Postgres tables in Supabase. Row Level Security (RLS) is enabled on all tab
 
 ### Core Tables
 
-Table| Key Columns| Notes  
----|---|---  
-`profiles` | `id`, `role` (consumer|operator), `display_name`, `avatar_url`, `language` (en|fr) | Extends Supabase Auth `users` table. Created via trigger on signup.  
-`trucks` | `id`, `operator_id`, `name`, `cuisine_tags`, `description`, `cover_url`, `plan` (free|starter|pro|festival), `is_active`, `catering_enabled` | One truck per operator for MVP. `is_active` false during winter pause.  
-`truck_schedules` | `id`, `truck_id`, `date`, `location_lat`, `location_lng`, `location_label`, `open_time`, `close_time`, `is_recurring`, `status` (scheduled|live|cancelled) | Realtime subscribed by consumers. Daily reminder checks this table for missing entries.  
-`follows` | `consumer_id`, `truck_id`, `notify_open`, `notify_location_change`, `notify_special` | Composite PK on (consumer_id, truck_id). Per-notification-type granular controls.  
-`loyalty_cards` | `id`, `consumer_id`, `truck_id`, `stamp_count`, `stamp_goal`, `reward_label` | One row per consumer+truck pair. Created when operator has loyalty enabled (Pro plan).  
-`catering_requests` | `id`, `truck_id`, `requester_name`, `requester_email`, `event_date`, `event_type`, `guest_count`, `location`, `budget`, `status` (new|accepted|declined|expired) | Visible to truck operator only. Status change triggers email notification.  
-`notifications_log` | `id`, `consumer_id`, `truck_id`, `type`, `message`, `read_at`, `created_at` | Persistent in-app inbox. Push delivery is separate (Expo Push API). Both point to same event.  
-  
+| Table               | Key Columns                                                                                                                                                            | Notes                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `profiles`          | `id`, `role` (consumer / operator), `display_name`, `avatar_url`, `language` (en / fr)                                                                                 | Extends Supabase Auth `users` table. Created via trigger on signup.                           |
+| `trucks`            | `id`, `operator_id`, `name`, `cuisine_tags`, `description`, `cover_url`, `plan` (free / starter / pro / festival), `is_active`, `catering_enabled`                     | One truck per operator for MVP. `is_active` false during winter pause.                        |
+| `truck_schedules`   | `id`, `truck_id`, `date`, `location_lat`, `location_lng`, `location_label`, `open_time`, `close_time`, `is_recurring`, `status` (scheduled / live / cancelled)         | Realtime subscribed by consumers. Daily reminder checks this table for missing entries.       |
+| `follows`           | `consumer_id`, `truck_id`, `notify_open`, `notify_location_change`, `notify_special`                                                                                   | Composite PK on (consumer_id, truck_id). Per-notification-type granular controls.             |
+| `loyalty_cards`     | `id`, `consumer_id`, `truck_id`, `stamp_count`, `stamp_goal`, `reward_label`                                                                                           | One row per consumer+truck pair. Created when operator has loyalty enabled (Pro plan).        |
+| `catering_requests` | `id`, `truck_id`, `requester_name`, `requester_email`, `event_date`, `event_type`, `guest_count`, `location`, `budget`, `status` (new / accepted / declined / expired) | Visible to truck operator only. Status change triggers email notification.                    |
+| `notifications_log` | `id`, `consumer_id`, `truck_id`, `type`, `message`, `read_at`, `created_at`                                                                                            | Persistent in-app inbox. Push delivery is separate (Expo Push API). Both point to same event. |
+
 **To be completed:** Full SQL schema with RLS policies, indexes, and foreign key constraints. Add here once the Supabase project is initialised and migrations are written.
 
 🗃️
@@ -529,21 +525,20 @@ EXPO_PUBLIC_POSTHOG_KEY
 PostHog project API key → posthog.com project settings
 
 .env.example
-    
-    
+
     # Supabase
     EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
     EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
     SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-    
+
     # Mapbox
     EXPO_PUBLIC_MAPBOX_TOKEN=pk.your-mapbox-token
-    
+
     # Stripe
     STRIPE_PUBLISHABLE_KEY=pk_test_your-key
     STRIPE_SECRET_KEY=sk_test_your-key
     STRIPE_WEBHOOK_SECRET=whsec_your-secret
-    
+
     # Monitoring
     EXPO_PUBLIC_SENTRY_DSN=https://[email protected]/project-id
     EXPO_PUBLIC_POSTHOG_KEY=phc_your-key
@@ -556,36 +551,35 @@ A simple trunk-based workflow suited to a solo developer. Two long-lived branche
 
 ### Branch Structure
 
-Branch| Purpose| Deploys to  
----|---|---  
-`main`| Production-ready code only. Never push directly.| App Store / Play Store (EAS production profile)  
-`develop`| Integration branch. All features merge here first.| TestFlight / Internal Testing (EAS preview profile)  
-`feature/[ticket-id]-short-name`| One branch per Plane ticket. e.g. `feature/TT-42-map-screen`| Local / Expo Go  
-`fix/[ticket-id]-short-name`| Bug fixes. Same pattern as feature branches.| Local → develop → main via hotfix if urgent  
-  
+| Branch                           | Purpose                                                      | Deploys to                                          |
+| -------------------------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| `main`                           | Production-ready code only. Never push directly.             | App Store / Play Store (EAS production profile)     |
+| `develop`                        | Integration branch. All features merge here first.           | TestFlight / Internal Testing (EAS preview profile) |
+| `feature/[ticket-id]-short-name` | One branch per Plane ticket. e.g. `feature/TT-42-map-screen` | Local / Expo Go                                     |
+| `fix/[ticket-id]-short-name`     | Bug fixes. Same pattern as feature branches.                 | Local → develop → main via hotfix if urgent         |
+
 ### PR Rules
 
 Feature → develop
 
-  - All new work goes into `develop` first
-  - GitHub Actions runs TypeScript check + lint
-  - Link PR to the Plane ticket in the PR description
+- All new work goes into `develop` first
+- GitHub Actions runs TypeScript check + lint
+- Link PR to the Plane ticket in the PR description
 
 develop → main
 
-  - Only on planned release — not ad-hoc
-  - EAS Build triggers automatically via GitHub Action
-  - Tag the commit with semantic version e.g. `v1.0.0`
+- Only on planned release — not ad-hoc
+- EAS Build triggers automatically via GitHub Action
+- Tag the commit with semantic version e.g. `v1.0.0`
 
 ### Commit Message Format
-    
-    
+
     type(scope): short description  [TT-42]
-    
+
     # Types: feat | fix | chore | refactor | docs | style | test
     # Scope: consumer | operator | map | auth | db | notifications | payments
     # [TT-42] links to the Plane ticket
-    
+
     # Examples:
     feat(map): add truck pin clustering for dense areas [TT-12]
     fix(operator): prevent duplicate location publish on double-tap [TT-38]
@@ -599,18 +593,17 @@ GitHub Actions handles automated checks on every PR. EAS handles all builds and 
 
 ### Pipeline Overview
 
-Trigger| Pipeline| What Runs  
----|---|---  
-PR opened → `develop` | CI Check | TypeScript compile check (`tsc --noEmit`), ESLint, Expo Doctor  
-Push to `develop` | Preview Build | EAS Build (preview profile) → distributes to TestFlight internal + Google Play internal testing  
-Push to `main` | Production Build | EAS Build (production profile) → submits to App Store + Play Store via EAS Submit  
-Hotfix on `main` | OTA Update | EAS Update pushes JS bundle fix directly to users — no store review needed  
-  
+| Trigger               | Pipeline         | What Runs                                                                                       |
+| --------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
+| PR opened → `develop` | CI Check         | TypeScript compile check (`tsc --noEmit`), ESLint, Expo Doctor                                  |
+| Push to `develop`     | Preview Build    | EAS Build (preview profile) → distributes to TestFlight internal + Google Play internal testing |
+| Push to `main`        | Production Build | EAS Build (production profile) → submits to App Store + Play Store via EAS Submit               |
+| Hotfix on `main`      | OTA Update       | EAS Update pushes JS bundle fix directly to users — no store review needed                      |
+
 ### EAS Profiles
 
 eas.json
-    
-    
+
     {
       "build": {
         "development": {
@@ -648,32 +641,31 @@ Everything needed to get the project running on a new machine from scratch. Run 
 
 ### Prerequisites
 
-Tool| Version| Install  
----|---|---  
-Node.js| 20 LTS| `nvm install 20`  
-EAS CLI| Latest| `npm install -g eas-cli`  
-Expo Go| Latest| App Store / Play Store on your test device  
-Expo Orbit| Latest| expo.dev/orbit — manages simulator builds on Mac  
-  
+| Tool       | Version | Install                                          |
+| ---------- | ------- | ------------------------------------------------ |
+| Node.js    | 20 LTS  | `nvm install 20`                                 |
+| EAS CLI    | Latest  | `npm install -g eas-cli`                         |
+| Expo Go    | Latest  | App Store / Play Store on your test device       |
+| Expo Orbit | Latest  | expo.dev/orbit — manages simulator builds on Mac |
+
 ### First-Time Setup
-    
-    
+
     # 1. Clone the repo
     git clone https://github.com/your-username/trucktrack.git
     cd trucktrack
-    
+
     # 2. Install dependencies
     npm install
-    
+
     # 3. Copy env file and fill in your values
     cp .env.example .env.local
-    
+
     # 4. Log in to Expo
     eas login
-    
+
     # 5. Start the dev server
     npx expo start
-    
+
     # 6. Scan the QR code with Expo Go on your phone
     #    OR press 'i' for iOS simulator / 'a' for Android emulator
 
@@ -682,10 +674,9 @@ Expo Orbit| Latest| expo.dev/orbit — manages simulator builds on Mac
 Create a `CLAUDE.md` file in the project root. Claude Code reads this at the start of every session — it's the highest-leverage setup step for AI-assisted development.
 
 CLAUDE.md (template)
-    
-    
+
     # TruckTrack — Claude Code Context
-    
+
     ## Stack
     - Framework: Expo SDK 54 (React Native 0.76)
     - Navigation: Expo Router v4 (file-system routing)
@@ -693,7 +684,7 @@ CLAUDE.md (template)
     - State: Zustand (global) + TanStack Query v5 (server)
     - Backend: Supabase (Postgres, Auth, Realtime)
     - Language: TypeScript strict mode
-    
+
     ## Coding Conventions
     - Functional components only — no class components
     - Props defined as interfaces, not type aliases
@@ -701,7 +692,7 @@ CLAUDE.md (template)
     - Custom hooks start with 'use' (useTrucks.ts)
     - Always handle loading, error, and empty states explicitly
     - Street Fire palette: primary #FF5C00, accent #FFD23F, success #2ECC71, error #E74C3C
-    
+
     ## Folder Structure
     - app/ → Expo Router routes
     - components/ → Reusable UI (ui/, truck/, map/, operator/)
@@ -710,7 +701,7 @@ CLAUDE.md (template)
     - services/ → External API clients
     - lib/ → Types, constants, utilities
     - theme/ → Gluestack Street Fire config
-    
+
     ## Key Rules
     - Sharp corners (borderRadius: 0) on all buttons and inputs
     - Pill shape only for status badges
@@ -722,15 +713,15 @@ CLAUDE.md (template)
 
 ### Accounts to Set Up
 
-Service| URL| Notes| Status  
----|---|---|---  
-GitHub| github.com| Create repo, set branch protection on `main`| □ To do  
-Plane| plane.so| Create workspace, connect MCP to Claude| □ To do  
-Expo / EAS| expo.dev| Create account, run `eas login`| □ To do  
-Supabase| supabase.com| Create project, copy URL + anon key to .env| □ To do  
-Mapbox| mapbox.com| Create account, generate access token| □ To do  
-Stripe| stripe.com| Create account, set up 3 subscription products| □ To do  
-Sentry| sentry.io| Create React Native project, copy DSN| □ To do  
-PostHog| posthog.com| Create project, copy API key| □ To do  
-Apple Developer| developer.apple.com| $99/year — required for App Store| □ To do  
-Google Play| play.google.com/console| $25 one-time — required for Play Store| □ To do
+| Service         | URL                     | Notes                                          | Status  |
+| --------------- | ----------------------- | ---------------------------------------------- | ------- |
+| GitHub          | github.com              | Create repo, set branch protection on `main`   | □ To do |
+| Plane           | plane.so                | Create workspace, connect MCP to Claude        | □ To do |
+| Expo / EAS      | expo.dev                | Create account, run `eas login`                | □ To do |
+| Supabase        | supabase.com            | Create project, copy URL + anon key to .env    | □ To do |
+| Mapbox          | mapbox.com              | Create account, generate access token          | □ To do |
+| Stripe          | stripe.com              | Create account, set up 3 subscription products | □ To do |
+| Sentry          | sentry.io               | Create React Native project, copy DSN          | □ To do |
+| PostHog         | posthog.com             | Create project, copy API key                   | □ To do |
+| Apple Developer | developer.apple.com     | $99/year — required for App Store              | □ To do |
+| Google Play     | play.google.com/console | $25 one-time — required for Play Store         | □ To do |

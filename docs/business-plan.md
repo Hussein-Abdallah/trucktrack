@@ -100,19 +100,19 @@ PAID — $19–$39/MO
 
 ### Key Features
 
-Feature| For Who| Why It Matters| Tier  
----|---|---|---  
-**Live Map + Schedule**|  Consumer| Real-time truck locations with today/tomorrow view| Free  
-**Follow & Notifications**| Consumer| Push alert when favourite truck opens or changes location| Free  
-**Storm Alerts**|  Both| Instant push when a truck cancels due to Ottawa weather| Free  
-**Digital Stamp Card**|  Consumer| QR scan at truck → collect stamps → redeem rewards| Starter+  
-**Schedule Manager**|  Operator| 30-second location + hours update from phone| Starter+  
-**Follower Analytics**|  Operator| See follower count, top locations, peak hours| Pro  
-**Catering Inquiry Form (L1)**|  Operator| Receive event/corporate booking requests. Negotiate offline. You take 5–10% referral fee.| Pro  
-**Catering Marketplace (L2)**|  Both| Organizer posts event → trucks bid → TruckTrack manages contract + deposit → 10–15% commission| Phase 2  
-**Daily Specials Push**|  Both| Operator posts special → followers get notified instantly| Pro  
-**Instagram Photo Sync**|  Operator| Connect Instagram Business account → auto-sync latest posts to TruckTrack profile gallery| Pro  
-  
+| Feature                        | For Who  | Why It Matters                                                                                 | Tier     |
+| ------------------------------ | -------- | ---------------------------------------------------------------------------------------------- | -------- |
+| **Live Map + Schedule**        | Consumer | Real-time truck locations with today/tomorrow view                                             | Free     |
+| **Follow & Notifications**     | Consumer | Push alert when favourite truck opens or changes location                                      | Free     |
+| **Storm Alerts**               | Both     | Instant push when a truck cancels due to Ottawa weather                                        | Free     |
+| **Digital Stamp Card**         | Consumer | QR scan at truck → collect stamps → redeem rewards                                             | Starter+ |
+| **Schedule Manager**           | Operator | 30-second location + hours update from phone                                                   | Starter+ |
+| **Follower Analytics**         | Operator | See follower count, top locations, peak hours                                                  | Pro      |
+| **Catering Inquiry Form (L1)** | Operator | Receive event/corporate booking requests. Negotiate offline. You take 5–10% referral fee.      | Pro      |
+| **Catering Marketplace (L2)**  | Both     | Organizer posts event → trucks bid → TruckTrack manages contract + deposit → 10–15% commission | Phase 2  |
+| **Daily Specials Push**        | Both     | Operator posts special → followers get notified instantly                                      | Pro      |
+| **Instagram Photo Sync**       | Operator | Connect Instagram Business account → auto-sync latest posts to TruckTrack profile gallery      | Pro      |
+
 **Instagram Sync note:** Works only with Instagram Business accounts (which all active food trucks already use). Requires Meta App Review approval before going live with real users. Treat as optional enhancement — if Meta restricts access again, trucks can still upload photos manually. Never build your core product around a Meta API.
 
 03 — Market
@@ -139,28 +139,28 @@ Ottawa population
 
 ### Canadian Expansion TAM
 
-City| Est. Trucks| Target MRR (30% penetration)  
----|---|---  
-**Ottawa** (Year 1)| 78| $444  
-**Kingston** (Year 1)| 30| $171  
-**Hamilton** (Year 2)| 120| $684  
-**Halifax** (Year 2)| 90| $513  
-**Edmonton** (Year 3)| 200| $1,140  
-**Calgary** (Year 3)| 250| $1,425  
-**Total Canadian Potential MRR**| **$4,377+**  
-  
+| City                             | Est. Trucks | Target MRR (30% penetration) |
+| -------------------------------- | ----------- | ---------------------------- |
+| **Ottawa** (Year 1)              | 78          | $444                         |
+| **Kingston** (Year 1)            | 30          | $171                         |
+| **Hamilton** (Year 2)            | 120         | $684                         |
+| **Halifax** (Year 2)             | 90          | $513                         |
+| **Edmonton** (Year 3)            | 200         | $1,140                       |
+| **Calgary** (Year 3)             | 250         | $1,425                       |
+| **Total Canadian Potential MRR** | **$4,377+** | —                            |
+
 **Seasonality note:** Ottawa is 6-month active (May–Oct). Target cities like Hamilton, Calgary, and Halifax to offset Ottawa's winter quiet. Year-round product from Day 1 by building multi-city from the start.
 
 ### Competitive Landscape
 
-Competitor| Coverage| Ottawa?| Loyalty?| Weakness  
----|---|---|---|---  
-**Street Food App**|  Many cities| Yes (dead)| No| Abandoned, 3 trucks listed  
-**Roaming Hunger**|  US + Canada| Yes| No| Catering-focused, not real-time  
-**Stamp Me**|  Global| No| Yes| Generic, not food-truck-native  
-**StreetFoodFinder**|  US-focused| Limited| No| No Canadian presence  
-**TruckTrack**|  Ottawa-first| ✅ Yes| ✅ Yes| —  
-  
+| Competitor           | Coverage     | Ottawa?    | Loyalty? | Weakness                        |
+| -------------------- | ------------ | ---------- | -------- | ------------------------------- |
+| **Street Food App**  | Many cities  | Yes (dead) | No       | Abandoned, 3 trucks listed      |
+| **Roaming Hunger**   | US + Canada  | Yes        | No       | Catering-focused, not real-time |
+| **Stamp Me**         | Global       | No         | Yes      | Generic, not food-truck-native  |
+| **StreetFoodFinder** | US-focused   | Limited    | No       | No Canadian presence            |
+| **TruckTrack**       | Ottawa-first | ✅ Yes     | ✅ Yes   | —                               |
+
 04 — Product
 
 ## PRODUCT DESIGN
@@ -261,14 +261,14 @@ Approval emails, billing receipts, and platform communications sent in the opera
 
 MVP+
 
-Implementation Approach| Detail  
----|---  
-**i18n library**|  Use `react-i18next` for both React Native and Next.js. Define translation keys once, maintain two JSON files (en.json, fr.json).  
-**Language detection**|  Auto-detect from device locale on first launch. Store preference in user profile. Override available in settings.  
-**Truck content**|  Each text field in the truck profile has an EN and FR variant. If FR not filled in, falls back to EN gracefully.  
-**Translation cost**|  Initial UI translation: use DeepL Pro + one human review pass. ~$50–$100 one-time. Ongoing: operator enters their own French content.  
-**App Store**|  Submit app with both English and French App Store descriptions. Apple and Google surface bilingual apps more prominently in Quebec and Ottawa searches.  
-  
+| Implementation Approach | Detail                                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **i18n library**        | Use `react-i18next` for both React Native and Next.js. Define translation keys once, maintain two JSON files (en.json, fr.json).                        |
+| **Language detection**  | Auto-detect from device locale on first launch. Store preference in user profile. Override available in settings.                                       |
+| **Truck content**       | Each text field in the truck profile has an EN and FR variant. If FR not filled in, falls back to EN gracefully.                                        |
+| **Translation cost**    | Initial UI translation: use DeepL Pro + one human review pass. ~$50–$100 one-time. Ongoing: operator enters their own French content.                   |
+| **App Store**           | Submit app with both English and French App Store descriptions. Apple and Google surface bilingual apps more prominently in Quebec and Ottawa searches. |
+
 ### ⭐ 2. Truck Ratings & Reviews
 
 Without a reputation layer, consumers can't distinguish a beloved local institution from a low-quality newcomer. Ratings give good operators a competitive advantage and create a natural incentive to stay active on the platform.
@@ -305,14 +305,14 @@ Operators can flag a review as inappropriate. You review flagged content in the 
 
 ADMIN MODERATED
 
-Rule| Detail| Why  
----|---|---  
-**Who can review**|  Only consumers with at least 1 loyalty stamp scan at that truck| Prevents fake reviews from competitors or bots  
-**Review frequency**|  One review per consumer per truck, updatable| Prevents rating manipulation by loyal fans  
-**Minimum ratings to display**|  Require 5+ ratings before showing average publicly| Prevents distortion from single early review  
-**Operator response**|  Pro tier operators can reply to reviews publicly| Adds engagement value and upsell incentive  
-**Review visibility during hibernate**|  Reviews still visible on hibernated profiles| Helps consumers decide whether to follow for spring  
-  
+| Rule                                   | Detail                                                          | Why                                                 |
+| -------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------- |
+| **Who can review**                     | Only consumers with at least 1 loyalty stamp scan at that truck | Prevents fake reviews from competitors or bots      |
+| **Review frequency**                   | One review per consumer per truck, updatable                    | Prevents rating manipulation by loyal fans          |
+| **Minimum ratings to display**         | Require 5+ ratings before showing average publicly              | Prevents distortion from single early review        |
+| **Operator response**                  | Pro tier operators can reply to reviews publicly                | Adds engagement value and upsell incentive          |
+| **Review visibility during hibernate** | Reviews still visible on hibernated profiles                    | Helps consumers decide whether to follow for spring |
+
 ### 🔔 3. Notification Settings & Controls
 
 Notifications are TruckTrack's primary engagement engine — but uncontrolled notifications are the #1 reason users uninstall apps. Every consumer needs granular control over what they receive and when.
@@ -421,14 +421,14 @@ STORM INTEGRATION
 
 Ontario's Accessibility for Ontarians with Disabilities Act (AODA) requires digital products to meet WCAG 2.0 Level AA standards. As a small startup you're not legally required to comply immediately, but building accessible from the start is easier than retrofitting later — and opens the door to government and enterprise catering clients who require it.
 
-Requirement| What It Means in Practice| Priority  
----|---|---  
-**Colour contrast**|  Text must have 4.5:1 contrast ratio against background. TruckTrack's orange-on-dark palette already meets this — verify with a contrast checker tool.| 🔴 Launch  
-**Tap target size**|  All buttons and interactive elements minimum 44×44px. Critical for mobile — prevents mis-taps and screen reader issues.| 🔴 Launch  
-**Screen reader labels**|  All images, icons, and buttons have descriptive `accessibilityLabel` props in React Native. "Open map for Smoke's Poutine" not just "button".| 🟡 MVP+  
-**Font scaling**|  UI respects device font size settings. Users with large text accessibility setting should not break the layout.| 🟡 MVP+  
-**VoiceOver / TalkBack**|  Test the app with iOS VoiceOver and Android TalkBack before App Store submission. Fix navigation order and focus issues.| 🟢 Phase 2  
-  
+| Requirement              | What It Means in Practice                                                                                                                             | Priority   |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| **Colour contrast**      | Text must have 4.5:1 contrast ratio against background. TruckTrack's orange-on-dark palette already meets this — verify with a contrast checker tool. | 🔴 Launch  |
+| **Tap target size**      | All buttons and interactive elements minimum 44×44px. Critical for mobile — prevents mis-taps and screen reader issues.                               | 🔴 Launch  |
+| **Screen reader labels** | All images, icons, and buttons have descriptive `accessibilityLabel` props in React Native. "Open map for Smoke's Poutine" not just "button".         | 🟡 MVP+    |
+| **Font scaling**         | UI respects device font size settings. Users with large text accessibility setting should not break the layout.                                       | 🟡 MVP+    |
+| **VoiceOver / TalkBack** | Test the app with iOS VoiceOver and Android TalkBack before App Store submission. Fix navigation order and focus issues.                              | 🟢 Phase 2 |
+
 04d — Catering
 
 ## CATERING MARKETPLACE
@@ -475,16 +475,16 @@ ADMIN VISIBILITY
 
 ### Level 1 — Catering Inquiry Flow
 
-Step| Actor| Action| System Response  
----|---|---|---  
-1| Organizer| Taps "Request Catering" on any truck profile| Modal form opens — date, location, guests, budget, event type  
-2| Organizer| Submits inquiry form| Inquiry logged in DB. Truck notified via push + email. Organizer gets confirmation email.  
-3| Truck operator| Reviews inquiry in Catering Inbox| Sees full inquiry details. Options: Reply with quote, Accept, Decline with note.  
-4| Truck operator| Replies with pricing / availability| Reply sent to organizer's email. Thread logged in dashboard.  
-5| Both| Negotiate offline (phone / email)| TruckTrack not involved in negotiation or payment at Level 1.  
-6| Truck operator| Marks booking as "Confirmed" in dashboard| TruckTrack auto-sends referral invoice to truck for 5–10% of entered booking value.  
-7| Truck operator| Pays referral invoice via Stripe| Revenue logged. Admin notified. Booking marked complete.  
-  
+| Step | Actor          | Action                                       | System Response                                                                           |
+| ---- | -------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1    | Organizer      | Taps "Request Catering" on any truck profile | Modal form opens — date, location, guests, budget, event type                             |
+| 2    | Organizer      | Submits inquiry form                         | Inquiry logged in DB. Truck notified via push + email. Organizer gets confirmation email. |
+| 3    | Truck operator | Reviews inquiry in Catering Inbox            | Sees full inquiry details. Options: Reply with quote, Accept, Decline with note.          |
+| 4    | Truck operator | Replies with pricing / availability          | Reply sent to organizer's email. Thread logged in dashboard.                              |
+| 5    | Both           | Negotiate offline (phone / email)            | TruckTrack not involved in negotiation or payment at Level 1.                             |
+| 6    | Truck operator | Marks booking as "Confirmed" in dashboard    | TruckTrack auto-sends referral invoice to truck for 5–10% of entered booking value.       |
+| 7    | Truck operator | Pays referral invoice via Stripe             | Revenue logged. Admin notified. Booking marked complete.                                  |
+
 ### Level 2 — Catering Marketplace (Phase 2 · Month 12+)
 
 The full marketplace model. TruckTrack owns the entire transaction end-to-end — organizer posts, trucks bid, TruckTrack holds the deposit, manages the contract, and guarantees the booking. This is how Roaming Hunger built a $10M+ business.
@@ -531,14 +531,14 @@ All organizer-truck communication happens inside TruckTrack after selection. No 
 
 ### Catering Revenue Comparison
 
-Scenario| Booking Value| Level 1 (5–10%)| Level 2 (10–15%)  
----|---|---|---  
-Small office lunch (15 people)| $400| $20–$40| $40–$60  
-Corporate lunch program (50 people)| $1,200| $60–$120| $120–$180  
-Company event (100 people)| $2,500| $125–$250| $250–$375  
-Wedding / large event (150 people)| $4,000| $200–$400| $400–$600  
-**10 bookings/mo at avg $1,500**|  $15,000| **$750–$1,500**| **$1,500–$2,250**  
-  
+| Scenario                            | Booking Value | Level 1 (5–10%) | Level 2 (10–15%)  |
+| ----------------------------------- | ------------- | --------------- | ----------------- |
+| Small office lunch (15 people)      | $400          | $20–$40         | $40–$60           |
+| Corporate lunch program (50 people) | $1,200        | $60–$120        | $120–$180         |
+| Company event (100 people)          | $2,500        | $125–$250       | $250–$375         |
+| Wedding / large event (150 people)  | $4,000        | $200–$400       | $400–$600         |
+| **10 bookings/mo at avg $1,500**    | $15,000       | **$750–$1,500** | **$1,500–$2,250** |
+
 **10 catering bookings per month at Level 2 adds $1,500–$2,250 to MRR** — roughly doubling your subscription revenue at Month 12 projections, from a single revenue stream that doesn't require a single new truck signup. Ottawa's large federal government workforce, corporate headquarters, and active event scene make this highly realistic.
 
 ### Target Catering Clients in Ottawa
@@ -577,14 +577,14 @@ HIGH VALUE / SEASONAL
 
 ### Level 1 vs Level 2 — When to Switch
 
-Signal| Threshold| Action  
----|---|---  
-Active trucks on platform| 50+ trucks approved| Begin planning Level 2 build  
-Level 1 bookings confirmed| 10+ confirmed bookings tracked| You have proof of demand — build Level 2  
-Average booking value| $800+ average| Commission model justifies the operational overhead  
-Referral fee payment friction| 3+ trucks resist paying referral invoice| Automate payment inside the platform — move to Level 2 model  
-Organizer repeat usage| Same organizer books twice| Strong signal — build the better experience for repeat clients  
-  
+| Signal                        | Threshold                                | Action                                                         |
+| ----------------------------- | ---------------------------------------- | -------------------------------------------------------------- |
+| Active trucks on platform     | 50+ trucks approved                      | Begin planning Level 2 build                                   |
+| Level 1 bookings confirmed    | 10+ confirmed bookings tracked           | You have proof of demand — build Level 2                       |
+| Average booking value         | $800+ average                            | Commission model justifies the operational overhead            |
+| Referral fee payment friction | 3+ trucks resist paying referral invoice | Automate payment inside the platform — move to Level 2 model   |
+| Organizer repeat usage        | Same organizer books twice               | Strong signal — build the better experience for repeat clients |
+
 04b — Operator Registration
 
 ## JOINING THE PLATFORM
@@ -597,81 +597,81 @@ State 1
 
 #### 📝 Registered
 
-  - Operator signs up with email + password (or Google login)
-  - Enters truck name, owner name, phone number, city
-  - Receives welcome email with onboarding checklist
-  - Account created — dashboard unlocked in draft mode
-  - Not visible to consumers yet
+- Operator signs up with email + password (or Google login)
+- Enters truck name, owner name, phone number, city
+- Receives welcome email with onboarding checklist
+- Account created — dashboard unlocked in draft mode
+- Not visible to consumers yet
 
 State 2
 
 #### 🛠️ Profile Setup (Draft)
 
-  - Operator builds full profile at their own pace — no deadline
-  - Add truck description, cuisine type, price range
-  - Upload cover photo + gallery photos (min. 1 required to submit)
-  - Build menu: categories, items, prices, dietary tags
-  - Add social links (Instagram, Facebook, website)
-  - Set typical operating areas and hours
-  - Progress bar shows profile completeness (e.g. 60% complete)
-  - Can save and return anytime — no pressure
+- Operator builds full profile at their own pace — no deadline
+- Add truck description, cuisine type, price range
+- Upload cover photo + gallery photos (min. 1 required to submit)
+- Build menu: categories, items, prices, dietary tags
+- Add social links (Instagram, Facebook, website)
+- Set typical operating areas and hours
+- Progress bar shows profile completeness (e.g. 60% complete)
+- Can save and return anytime — no pressure
 
 State 3
 
 #### 📬 Submitted for Review
 
-  - Operator clicks "Submit for Review" when ready
-  - System auto-checks minimum requirements before allowing submission
-  - Auto-check: at least 1 photo, truck name, cuisine type, city, 1 menu item
-  - If checks pass → status moves to "Pending Review"
-  - If checks fail → inline errors shown, operator fixes and resubmits
-  - You (admin) receive email notification of new submission
-  - Operator sees "Your profile is under review — we'll respond within 24 hours"
+- Operator clicks "Submit for Review" when ready
+- System auto-checks minimum requirements before allowing submission
+- Auto-check: at least 1 photo, truck name, cuisine type, city, 1 menu item
+- If checks pass → status moves to "Pending Review"
+- If checks fail → inline errors shown, operator fixes and resubmits
+- You (admin) receive email notification of new submission
+- Operator sees "Your profile is under review — we'll respond within 24 hours"
 
 State 4a
 
 #### ✅ Approved → Active
 
-  - You review profile in admin panel — takes ~2 minutes per truck
-  - One-click approve → truck goes live on the map immediately
-  - Operator receives email: "You're live on TruckTrack! 🎉"
-  - Email includes link to their public profile + tips to get first followers
-  - Free tier activated — can upgrade to Starter or Pro anytime
+- You review profile in admin panel — takes ~2 minutes per truck
+- One-click approve → truck goes live on the map immediately
+- Operator receives email: "You're live on TruckTrack! 🎉"
+- Email includes link to their public profile + tips to get first followers
+- Free tier activated — can upgrade to Starter or Pro anytime
 
 State 4b
 
 #### ❌ Declined
 
-  - You decline with a required reason selected from a dropdown
-  - Reasons: duplicate listing, not a food truck, incomplete profile, location not supported yet
-  - Operator receives email with the specific reason and next steps
-  - If fixable → operator updates profile and resubmits (goes back to State 3)
-  - If location not yet supported → added to waitlist for that city's launch
+- You decline with a required reason selected from a dropdown
+- Reasons: duplicate listing, not a food truck, incomplete profile, location not supported yet
+- Operator receives email with the specific reason and next steps
+- If fixable → operator updates profile and resubmits (goes back to State 3)
+- If location not yet supported → added to waitlist for that city's launch
 
 State 5
 
 #### ❄️ Hibernated (Winter Pause)
 
-  - Operator clicks "Hibernate for Winter" from dashboard — available Oct 1 onward
-  - Sets an optional return date (e.g. "Back May 1st") shown publicly on their profile
-  - Subscription billing paused immediately — zero charge during hibernation
-  - Maximum pause duration: 6 months
-  - Truck removed from map, search results, and "Open Now" filters
-  - Profile page stays fully visible — followers can still browse menu and photos
-  - Status badge shown on profile: _"❄️ Hibernating — Back [Month]!"_
-  - Followers see truck grayed out in their Following feed with hibernation badge
-  - All follower data, loyalty history, and analytics preserved — nothing lost
-  - Reactivation: one-tap "Wake up 🌸" button — billing resumes, truck goes live instantly
-  - When truck reactivates → all followers get a push notification automatically
+- Operator clicks "Hibernate for Winter" from dashboard — available Oct 1 onward
+- Sets an optional return date (e.g. "Back May 1st") shown publicly on their profile
+- Subscription billing paused immediately — zero charge during hibernation
+- Maximum pause duration: 6 months
+- Truck removed from map, search results, and "Open Now" filters
+- Profile page stays fully visible — followers can still browse menu and photos
+- Status badge shown on profile: _"❄️ Hibernating — Back [Month]!"_
+- Followers see truck grayed out in their Following feed with hibernation badge
+- All follower data, loyalty history, and analytics preserved — nothing lost
+- Reactivation: one-tap "Wake up 🌸" button — billing resumes, truck goes live instantly
+- When truck reactivates → all followers get a push notification automatically
 
 State 6
 
 #### 🔄 Active → Suspended (Edge Case)
 
-  - Admin can suspend a live truck if consumer complaints arise
-  - Truck hidden from map but profile data preserved
-  - Operator notified with reason and resolution path
-  - Can be reinstated after issue resolved
+- Admin can suspend a live truck if consumer complaints arise
+- Truck hidden from map but profile data preserved
+- Operator notified with reason and resolution path
+- Can be reinstated after issue resolved
 
 ### ❄️ Winter Pause — Full Design
 
@@ -727,33 +727,33 @@ ONE TAP RETURN
 
 ### Pause Rules & Guardrails
 
-Rule| Detail| Why  
----|---|---  
-**Max pause duration**|  6 months| Prevents permanent free-riding on the platform  
-**Pause availability window**|  Oct 1 – Nov 30 to initiate| Prevents mid-season abuse; aligns with Ottawa's natural off-season  
-**Minimum active time before pause**|  Must have been active for at least 1 month| Prevents signing up → immediately pausing → never paying  
-**Pauses per year**|  1 pause allowed per calendar year| Prevents repeated pausing in shoulder seasons  
-**Auto-resume**|  After 6 months, billing auto-resumes and truck goes active| Safety net — no truck stays invisible forever  
-**Data preserved**|  Followers, loyalty history, analytics, photos, menu| Ensures seamless spring return — nothing to rebuild  
-**Cancellation during pause**|  Allowed — but triggers a "Are you sure?" + spring offer| Last-chance retention before full churn  
-  
+| Rule                                 | Detail                                                     | Why                                                                |
+| ------------------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Max pause duration**               | 6 months                                                   | Prevents permanent free-riding on the platform                     |
+| **Pause availability window**        | Oct 1 – Nov 30 to initiate                                 | Prevents mid-season abuse; aligns with Ottawa's natural off-season |
+| **Minimum active time before pause** | Must have been active for at least 1 month                 | Prevents signing up → immediately pausing → never paying           |
+| **Pauses per year**                  | 1 pause allowed per calendar year                          | Prevents repeated pausing in shoulder seasons                      |
+| **Auto-resume**                      | After 6 months, billing auto-resumes and truck goes active | Safety net — no truck stays invisible forever                      |
+| **Data preserved**                   | Followers, loyalty history, analytics, photos, menu        | Ensures seamless spring return — nothing to rebuild                |
+| **Cancellation during pause**        | Allowed — but triggers a "Are you sure?" + spring offer    | Last-chance retention before full churn                            |
+
 **The spring re-engagement push is gold:** When 30 hibernated trucks reactivate in May, 30 × their average follower count gets push notifications simultaneously. That's potentially thousands of consumers re-engaged with the app in a single day — at zero marketing cost to you.
 
 ### Minimum Profile Requirements to Submit
 
-Field| Required?| Why  
----|---|---  
-**Truck name**|  ✅ Yes| Core identity  
-**Cover photo**|  ✅ Yes| Consumers won't trust a blank profile  
-**Cuisine type**|  ✅ Yes| Used for map filtering  
-**City / operating area**|  ✅ Yes| Determines which map they appear on  
-**At least 1 menu item**|  ✅ Yes| Bare minimum for consumers to know what you sell  
-**Owner phone number**|  ✅ Yes| For admin verification only — not shown publicly  
-Gallery photos (2+)| ⭐ Recommended| Shown in completeness bar as strong encouragement  
-Full menu with prices| ⭐ Recommended| Drives higher consumer engagement  
-Social media links| Optional| Enables Instagram sync for Pro users  
-Typical hours| Optional| Helps consumers but not blocking  
-  
+| Field                     | Required?      | Why                                               |
+| ------------------------- | -------------- | ------------------------------------------------- |
+| **Truck name**            | ✅ Yes         | Core identity                                     |
+| **Cover photo**           | ✅ Yes         | Consumers won't trust a blank profile             |
+| **Cuisine type**          | ✅ Yes         | Used for map filtering                            |
+| **City / operating area** | ✅ Yes         | Determines which map they appear on               |
+| **At least 1 menu item**  | ✅ Yes         | Bare minimum for consumers to know what you sell  |
+| **Owner phone number**    | ✅ Yes         | For admin verification only — not shown publicly  |
+| Gallery photos (2+)       | ⭐ Recommended | Shown in completeness bar as strong encouragement |
+| Full menu with prices     | ⭐ Recommended | Drives higher consumer engagement                 |
+| Social media links        | Optional       | Enables Instagram sync for Pro users              |
+| Typical hours             | Optional       | Helps consumers but not blocking                  |
+
 ### Admin Review Panel
 
 A minimal internal dashboard — just for you — to manage the approval queue. Doesn't need to be beautiful, just functional.
@@ -806,10 +806,10 @@ $0
 
 / month forever
 
-  - Basic listing on map
-  - Manual schedule updates
-  - Menu page
-  - Up to 3 photos
+- Basic listing on map
+- Manual schedule updates
+- Menu page
+- Up to 3 photos
 
 ⭐ Starter — Most Popular
 
@@ -817,12 +817,12 @@ $19
 
 / month
 
-  - Everything in Free
-  - Push notify followers on update
-  - Daily specials posting
-  - Storm / cancellation alerts
-  - Basic follower count
-  - Unlimited photos
+- Everything in Free
+- Push notify followers on update
+- Daily specials posting
+- Storm / cancellation alerts
+- Basic follower count
+- Unlimited photos
 
 Pro
 
@@ -830,23 +830,23 @@ $39
 
 / month
 
-  - Everything in Starter
-  - Digital loyalty stamp card
-  - Full follower analytics
-  - Catering inquiry inbox
-  - Customer export (CSV)
-  - Priority listing placement
-  - 📸 Instagram photo auto-sync
+- Everything in Starter
+- Digital loyalty stamp card
+- Full follower analytics
+- Catering inquiry inbox
+- Customer export (CSV)
+- Priority listing placement
+- 📸 Instagram photo auto-sync
 
 ### Additional Revenue Streams
 
-Stream| Model| Est. Value| Timeline  
----|---|---|---  
-**Catering Referral Fee**|  5–10% of catering booking value| $50–$200 per booking| Year 1  
-**Festival Packages**|  One-time feature listing per festival event| $49–$99 per truck| Year 1  
-**Consumer Pro**|  $2.99/mo for ad-free + exclusive early access alerts| Low until scale| Year 2  
-**White Label**|  Sell platform to food truck associations in other cities| $200–$500/mo per city| Year 3  
-  
+| Stream                    | Model                                                    | Est. Value            | Timeline |
+| ------------------------- | -------------------------------------------------------- | --------------------- | -------- |
+| **Catering Referral Fee** | 5–10% of catering booking value                          | $50–$200 per booking  | Year 1   |
+| **Festival Packages**     | One-time feature listing per festival event              | $49–$99 per truck     | Year 1   |
+| **Consumer Pro**          | $2.99/mo for ad-free + exclusive early access alerts     | Low until scale       | Year 2   |
+| **White Label**           | Sell platform to food truck associations in other cities | $200–$500/mo per city | Year 3   |
+
 **Winter pause billing note:** Subscriptions pause at zero charge during hibernation (max 6 months). This reduces Oct–Apr MRR by ~40% for Ottawa-only trucks. Offset this by expanding to year-round cities (Halifax, Vancouver, Hamilton) — their active season covers Ottawa's dead months. By Year 2, no single city's seasonality should impact overall MRR by more than 20%.
 
 05b — Billing & Payments
@@ -889,16 +889,16 @@ NOT SUPPORTED
 
 ### How Subscription Billing Works
 
-Step| What Happens| Who Does It  
----|---|---  
-**1\. Signup**|  Operator selects a plan (Free, Starter, Pro) and enters card details via Stripe's hosted checkout form. Card is saved securely — PCI compliant, you never touch raw card data.| Operator  
-**2\. First charge**|  Stripe charges the card immediately on plan selection. Billing cycle starts from that date (e.g. the 14th of the month).| Stripe (auto)  
-**3\. Monthly renewal**|  On the same date each month, Stripe auto-charges the saved card. No action needed from you or the operator.| Stripe (auto)  
-**4\. Invoice sent**|  Stripe automatically emails a PDF invoice to the operator immediately after each successful charge. Includes your business name, HST number (once registered), billing period, and tax breakdown.| Stripe (auto)  
-**5\. Upgrade / Downgrade**|  Operator can change plans anytime from dashboard. Stripe handles proration automatically — charges or credits the difference for the remaining days in the billing cycle.| Operator self-serve  
-**6\. Winter pause**|  Operator clicks "Hibernate" → Stripe subscription paused. Billing resumes automatically on reactivation date or when operator clicks "Wake up".| Operator self-serve  
-**7\. Cancellation**|  Operator cancels from dashboard. Access continues until end of current billing period. No refund for partial months.| Operator self-serve  
-  
+| Step                        | What Happens                                                                                                                                                                                      | Who Does It         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **1\. Signup**              | Operator selects a plan (Free, Starter, Pro) and enters card details via Stripe's hosted checkout form. Card is saved securely — PCI compliant, you never touch raw card data.                    | Operator            |
+| **2\. First charge**        | Stripe charges the card immediately on plan selection. Billing cycle starts from that date (e.g. the 14th of the month).                                                                          | Stripe (auto)       |
+| **3\. Monthly renewal**     | On the same date each month, Stripe auto-charges the saved card. No action needed from you or the operator.                                                                                       | Stripe (auto)       |
+| **4\. Invoice sent**        | Stripe automatically emails a PDF invoice to the operator immediately after each successful charge. Includes your business name, HST number (once registered), billing period, and tax breakdown. | Stripe (auto)       |
+| **5\. Upgrade / Downgrade** | Operator can change plans anytime from dashboard. Stripe handles proration automatically — charges or credits the difference for the remaining days in the billing cycle.                         | Operator self-serve |
+| **6\. Winter pause**        | Operator clicks "Hibernate" → Stripe subscription paused. Billing resumes automatically on reactivation date or when operator clicks "Wake up".                                                   | Operator self-serve |
+| **7\. Cancellation**        | Operator cancels from dashboard. Access continues until end of current billing period. No refund for partial months.                                                                              | Operator self-serve |
+
 ### Invoice Format
 
 Every operator receives a professional, CRA-compliant PDF invoice automatically after each charge. Here's what it includes:
@@ -935,46 +935,46 @@ TruckTrack is a SaaS product. **SaaS subscriptions are fully taxable in Canada.*
 
 ### Tax Rates by Province
 
-Province| Tax Type| Rate| Notes  
----|---|---|---  
-**Ontario** 🏠 Your base| HST| 13%| Combined federal (5%) + provincial (8%)  
-**Nova Scotia**|  HST| 15%| Halifax expansion — higher rate  
-**New Brunswick**|  HST| 15%| HST province  
-**British Columbia**|  GST + PST| 5% + 7% = 12%| Separate PST registration required for BC  
-**Alberta**|  GST only| 5%| No provincial sales tax — Calgary/Edmonton are cheaper to serve  
-**Manitoba**|  GST + RST| 5% + 7% = 12%| Separate registration needed  
-**Quebec**|  GST + QST| 5% + 9.975% = ~15%| Separate QST registration required  
-  
+| Province                 | Tax Type  | Rate               | Notes                                                           |
+| ------------------------ | --------- | ------------------ | --------------------------------------------------------------- |
+| **Ontario** 🏠 Your base | HST       | 13%                | Combined federal (5%) + provincial (8%)                         |
+| **Nova Scotia**          | HST       | 15%                | Halifax expansion — higher rate                                 |
+| **New Brunswick**        | HST       | 15%                | HST province                                                    |
+| **British Columbia**     | GST + PST | 5% + 7% = 12%      | Separate PST registration required for BC                       |
+| **Alberta**              | GST only  | 5%                 | No provincial sales tax — Calgary/Edmonton are cheaper to serve |
+| **Manitoba**             | GST + RST | 5% + 7% = 12%      | Separate registration needed                                    |
+| **Quebec**               | GST + QST | 5% + 9.975% = ~15% | Separate QST registration required                              |
+
 **Use Stripe Tax.** Stripe automatically determines whether federal GST/HST, provincial PST, QST, or RST applies to each transaction based on the customer's location — not your location. Enable Stripe Tax in your dashboard, add your registrations as you expand to each province, and Stripe calculates, collects, and reports the correct amount per operator automatically. Costs ~0.5% per transaction but saves hours of manual tax calculation.
 
 ### When to Register for GST/HST
 
-Phase| Revenue| Action Required  
----|---|---  
-**Early stage**|  Under $30,000/yr| No registration needed. Don't charge HST. Keep it simple.  
-**Approaching threshold**|  $25,000–$30,000/yr| Register proactively with CRA — takes 2–4 weeks to process. Don't get caught mid-month.  
-**Over threshold**|  $30,000+/yr| Must register, collect HST on all invoices, and remit to CRA quarterly. Enable Stripe Tax immediately.  
-**Expanding provinces**|  Any revenue in BC, QC, MB| Separate provincial registrations required for PST/QST/RST even if under federal threshold.  
-  
+| Phase                     | Revenue                   | Action Required                                                                                        |
+| ------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Early stage**           | Under $30,000/yr          | No registration needed. Don't charge HST. Keep it simple.                                              |
+| **Approaching threshold** | $25,000–$30,000/yr        | Register proactively with CRA — takes 2–4 weeks to process. Don't get caught mid-month.                |
+| **Over threshold**        | $30,000+/yr               | Must register, collect HST on all invoices, and remit to CRA quarterly. Enable Stripe Tax immediately. |
+| **Expanding provinces**   | Any revenue in BC, QC, MB | Separate provincial registrations required for PST/QST/RST even if under federal threshold.            |
+
 ### What Operators Actually Pay (After Tax)
 
-Plan| Base Price| \+ Ontario HST (13%)| Total Charged| Net to You (after Stripe fee)  
----|---|---|---|---  
-**Starter**|  $19.00| $2.47| $21.47| ~$18.15  
-**Pro**|  $39.00| $5.07| $44.07| ~$37.57  
-  
+| Plan        | Base Price | \+ Ontario HST (13%) | Total Charged | Net to You (after Stripe fee) |
+| ----------- | ---------- | -------------------- | ------------- | ----------------------------- |
+| **Starter** | $19.00     | $2.47                | $21.47        | ~$18.15                       |
+| **Pro**     | $39.00     | $5.07                | $44.07        | ~$37.57                       |
+
 Stripe fee: 2.9% + C$0.30 per transaction. HST collected goes to CRA — not your revenue. Net figures reflect this.
 
 ### Failed Payment Handling
 
-Day| What Happens  
----|---  
-**Day 0**|  Payment fails. Stripe sends automatic "payment failed" email to operator with a link to update their card.  
-**Day 3**|  Stripe Smart Retry — automatically attempts charge again on a different time/day.  
-**Day 7**|  Second retry attempt. Operator receives second reminder email.  
-**Day 14**|  Final retry. If still failing, subscription downgrades to Free tier automatically. Operator notified — map listing stays but push notifications disabled.  
-**Day 30**|  If no action taken after 30 days on Free tier, send a personal email from you. One human touch at this point recovers a significant portion of churned accounts.  
-  
+| Day        | What Happens                                                                                                                                                     |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Day 0**  | Payment fails. Stripe sends automatic "payment failed" email to operator with a link to update their card.                                                       |
+| **Day 3**  | Stripe Smart Retry — automatically attempts charge again on a different time/day.                                                                                |
+| **Day 7**  | Second retry attempt. Operator receives second reminder email.                                                                                                   |
+| **Day 14** | Final retry. If still failing, subscription downgrades to Free tier automatically. Operator notified — map listing stays but push notifications disabled.        |
+| **Day 30** | If no action taken after 30 days on Free tier, send a personal email from you. One human touch at this point recovers a significant portion of churned accounts. |
+
 ### Refund Policy
 
 ✅
@@ -1017,16 +1017,16 @@ Three legal documents you must have before your first user signs up. Not optiona
 
 Required by: Apple App Store, Google Play Store, PIPEDA (Canadian federal law), and any province you operate in. Must be live at a public URL before app submission.
 
-Section| What It Must Cover for TruckTrack  
----|---  
-**Data collected**|  Email addresses, names, phone numbers (operators), device location (consumers), payment info (via Stripe — note Stripe handles this, not you directly), usage analytics via PostHog.  
-**Why collected**|  Location: to show trucks on map and send relevant notifications. Email: account management and billing. Phone: operator verification only, not shared or marketed to.  
-**Who it's shared with**|  Stripe (payment processing), Firebase (push notifications), Supabase (database hosting), PostHog (analytics). List each third party by name — PIPEDA requires this.  
-**Data retention**|  Active accounts: indefinite. Deleted accounts: personal data purged within 30 days. Billing records: 7 years (CRA requirement).  
-**User rights**|  PIPEDA gives users the right to: access their data, correct inaccuracies, withdraw consent, and request deletion. Provide a support email for these requests.  
-**Location data**|  Consumer location used only when app is open to show nearby trucks. Never stored long-term. Never sold. Never shared with operators.  
-**Children**|  App not directed at users under 13. No knowingly collected data from minors.  
-  
+| Section                  | What It Must Cover for TruckTrack                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Data collected**       | Email addresses, names, phone numbers (operators), device location (consumers), payment info (via Stripe — note Stripe handles this, not you directly), usage analytics via PostHog. |
+| **Why collected**        | Location: to show trucks on map and send relevant notifications. Email: account management and billing. Phone: operator verification only, not shared or marketed to.                |
+| **Who it's shared with** | Stripe (payment processing), Firebase (push notifications), Supabase (database hosting), PostHog (analytics). List each third party by name — PIPEDA requires this.                  |
+| **Data retention**       | Active accounts: indefinite. Deleted accounts: personal data purged within 30 days. Billing records: 7 years (CRA requirement).                                                      |
+| **User rights**          | PIPEDA gives users the right to: access their data, correct inaccuracies, withdraw consent, and request deletion. Provide a support email for these requests.                        |
+| **Location data**        | Consumer location used only when app is open to show nearby trucks. Never stored long-term. Never sold. Never shared with operators.                                                 |
+| **Children**             | App not directed at users under 13. No knowingly collected data from minors.                                                                                                         |
+
 ### Document 2 — Terms of Service
 
 Protects you legally when operators dispute charges, post bad content, or misuse the platform. Must be agreed to at signup — use a checkbox "I agree to the Terms of Service" with a link.
@@ -1071,19 +1071,19 @@ All disputes governed by the laws of Ontario, Canada. Venue for any legal procee
 
 PIPEDA — Canada's Personal Information Protection and Electronic Documents Act — governs how private-sector businesses collect and handle personal data. It applies to TruckTrack from Day 1 since you're collecting names, emails, and location data.
 
-Principle| What TruckTrack Must Do| Status  
----|---|---  
-**Accountability**|  Designate a privacy officer (you, at this stage). Have a documented privacy policy.| 🟢 Simple  
-**Identifying purposes**|  State clearly why you collect each piece of data before or at the time of collection.| 🟢 In Privacy Policy  
-**Consent**|  Obtain meaningful consent at signup. Checkbox agreeing to Privacy Policy is sufficient.| 🟢 At signup  
-**Limiting collection**|  Only collect data you actually need. Don't collect date of birth, SIN, or other unnecessary fields.| 🟢 Already lean  
-**Limiting use**|  Don't use operator data for marketing without consent. Don't sell consumer location data.| 🟢 Policy commitment  
-**Accuracy**|  Allow users to update their information. Profile edit screen covers this.| 🟢 Dashboard feature  
-**Safeguards**|  Encrypt data in transit (HTTPS always). Supabase encrypts at rest. Never log raw passwords.| 🟡 Verify at launch  
-**Openness**|  Privacy Policy must be publicly accessible without requiring login.| 🟢 Public URL  
-**Individual access**|  Respond to data access requests within 30 days. Provide a support email for requests.| 🟡 Process needed  
-**Challenging compliance**|  Provide a mechanism for complaints. Support email is sufficient at this stage.| 🟢 Support email  
-  
+| Principle                  | What TruckTrack Must Do                                                                             | Status               |
+| -------------------------- | --------------------------------------------------------------------------------------------------- | -------------------- |
+| **Accountability**         | Designate a privacy officer (you, at this stage). Have a documented privacy policy.                 | 🟢 Simple            |
+| **Identifying purposes**   | State clearly why you collect each piece of data before or at the time of collection.               | 🟢 In Privacy Policy |
+| **Consent**                | Obtain meaningful consent at signup. Checkbox agreeing to Privacy Policy is sufficient.             | 🟢 At signup         |
+| **Limiting collection**    | Only collect data you actually need. Don't collect date of birth, SIN, or other unnecessary fields. | 🟢 Already lean      |
+| **Limiting use**           | Don't use operator data for marketing without consent. Don't sell consumer location data.           | 🟢 Policy commitment |
+| **Accuracy**               | Allow users to update their information. Profile edit screen covers this.                           | 🟢 Dashboard feature |
+| **Safeguards**             | Encrypt data in transit (HTTPS always). Supabase encrypts at rest. Never log raw passwords.         | 🟡 Verify at launch  |
+| **Openness**               | Privacy Policy must be publicly accessible without requiring login.                                 | 🟢 Public URL        |
+| **Individual access**      | Respond to data access requests within 30 days. Provide a support email for requests.               | 🟡 Process needed    |
+| **Challenging compliance** | Provide a mechanism for complaints. Support email is sufficient at this stage.                      | 🟢 Support email     |
+
 ### App Store Legal Requirements
 
 🍎
@@ -1144,27 +1144,27 @@ PHASE 2
 
 ### Support Response SLA
 
-Issue Type| Target Response| Example  
----|---|---  
-**🔴 Critical**|  Under 2 hours| Operator can't update location before lunch rush, billing double-charged, account locked out  
-**🟡 Standard**|  Same business day| Push notifications not sending, photo upload failing, menu not displaying correctly  
-**🟢 General**|  Within 48 hours| How-to questions, billing inquiries, feature requests, profile help  
-  
+| Issue Type      | Target Response   | Example                                                                                      |
+| --------------- | ----------------- | -------------------------------------------------------------------------------------------- |
+| **🔴 Critical** | Under 2 hours     | Operator can't update location before lunch rush, billing double-charged, account locked out |
+| **🟡 Standard** | Same business day | Push notifications not sending, photo upload failing, menu not displaying correctly          |
+| **🟢 General**  | Within 48 hours   | How-to questions, billing inquiries, feature requests, profile help                          |
+
 ### Top 10 FAQ — Build These First
 
-#| Question| Answer Summary  
----|---|---  
-1| How do I update my location?| Dashboard → Today's Location → Drop pin or search address → Set hours → Publish  
-2| Why aren't my followers getting notified?| Push notifications only sent on Starter+ plans. Free tier updates the map but doesn't notify followers.  
-3| How do I pause my subscription for winter?| Dashboard → Billing → Hibernate for Winter → Set return date → Confirm  
-4| Can I change my plan anytime?| Yes. Upgrade or downgrade from the Billing section. Changes take effect immediately with prorated charge or credit.  
-5| How do I set up my loyalty stamp card?| Pro plan required. Dashboard → Loyalty → Set reward (e.g. "10 stamps = free item") → Your QR code is auto-generated.  
-6| Why is my profile not showing on the map?| Profile must be approved and you must have published a location for today. Check your approval status in the dashboard.  
-7| How do I connect my Instagram?| Pro plan required. Dashboard → Profile → Connect Instagram → Authorize via Meta login.  
-8| Can I have the app in French?| Yes. The app follows your device language automatically. You can also switch manually in Settings → Language.  
-9| How do I cancel my subscription?| Dashboard → Billing → Cancel Plan. Access continues until end of current billing period. No partial refunds.  
-10| I was charged incorrectly — what do I do?| Email [email protected] with your invoice number. We resolve billing issues within 24 hours.  
-  
+| #   | Question                                   | Answer Summary                                                                                                          |
+| --- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| 1   | How do I update my location?               | Dashboard → Today's Location → Drop pin or search address → Set hours → Publish                                         |
+| 2   | Why aren't my followers getting notified?  | Push notifications only sent on Starter+ plans. Free tier updates the map but doesn't notify followers.                 |
+| 3   | How do I pause my subscription for winter? | Dashboard → Billing → Hibernate for Winter → Set return date → Confirm                                                  |
+| 4   | Can I change my plan anytime?              | Yes. Upgrade or downgrade from the Billing section. Changes take effect immediately with prorated charge or credit.     |
+| 5   | How do I set up my loyalty stamp card?     | Pro plan required. Dashboard → Loyalty → Set reward (e.g. "10 stamps = free item") → Your QR code is auto-generated.    |
+| 6   | Why is my profile not showing on the map?  | Profile must be approved and you must have published a location for today. Check your approval status in the dashboard. |
+| 7   | How do I connect my Instagram?             | Pro plan required. Dashboard → Profile → Connect Instagram → Authorize via Meta login.                                  |
+| 8   | Can I have the app in French?              | Yes. The app follows your device language automatically. You can also switch manually in Settings → Language.           |
+| 9   | How do I cancel my subscription?           | Dashboard → Billing → Cancel Plan. Access continues until end of current billing period. No partial refunds.            |
+| 10  | I was charged incorrectly — what do I do?  | Email [email protected] with your invoice number. We resolve billing issues within 24 hours.                            |
+
 **Pro tip:** For your first 20 operators, do proactive check-ins. Email each one after their first week: "How's TruckTrack working for you so far?" These conversations generate your best feature ideas, surface issues before they become churn, and build the personal relationships that make Ottawa operators recommend you to other trucks.
 
 06 — Tech Stack
@@ -1253,16 +1253,16 @@ Fetch latest posts from truck's Business account via OAuth. Cache photos in R2. 
 
 ### Infrastructure Cost at MVP Stage
 
-Service| Plan| Monthly Cost  
----|---|---  
-Supabase (DB + Auth)| Free tier → $25/mo Pro| $0–$25  
-Railway (API hosting)| Starter| $5  
-Cloudflare R2 (storage)| Free tier (10GB)| $0  
-Firebase FCM (push)| Free| $0  
-Mapbox| Free (50k loads/mo)| $0  
-Resend (email)| Free (3k emails/mo)| $0  
-**Total MVP Infrastructure**| **~$5–$30/mo**  
-  
+| Service                      | Plan                   | Monthly Cost |
+| ---------------------------- | ---------------------- | ------------ |
+| Supabase (DB + Auth)         | Free tier → $25/mo Pro | $0–$25       |
+| Railway (API hosting)        | Starter                | $5           |
+| Cloudflare R2 (storage)      | Free tier (10GB)       | $0           |
+| Firebase FCM (push)          | Free                   | $0           |
+| Mapbox                       | Free (50k loads/mo)    | $0           |
+| Resend (email)               | Free (3k emails/mo)    | $0           |
+| **Total MVP Infrastructure** | **~$5–$30/mo**         | —            |
+
 07 — MVP Scope
 
 ## WHAT TO BUILD FIRST
@@ -1273,27 +1273,27 @@ The MVP is intentionally minimal. Prove the core loop first: trucks update their
 
 ### MVP Feature Checklist (6–8 Weeks)
 
-Feature| Platform| Week| Priority  
----|---|---|---  
-Truck onboarding (name, cuisine, photos)| Web dashboard| 1| 🔴 Must  
-Draft profile builder with completeness bar| Web dashboard| 1| 🔴 Must  
-Submit for review flow + auto validation checks| Web dashboard| 1–2| 🔴 Must  
-Admin approval panel (approve / decline + reason)| Web — admin only| 2| 🔴 Must  
-Approval / decline email notifications to operator| Email (Resend)| 2| 🔴 Must  
-Location update (pin + hours)| Web + Mobile| 1–2| 🔴 Must  
-Consumer map with truck pins| Mobile app| 2–3| 🔴 Must  
-Follow a truck| Mobile app| 3| 🔴 Must  
-Push notification on location update| Mobile app + FCM| 3–4| 🔴 Must  
-Truck profile page (menu, photos, schedule)| Mobile + Web| 4| 🔴 Must  
-Stripe subscription (Starter plan)| Web dashboard| 4–5| 🔴 Must  
-Daily specials post| Web dashboard| 5| 🟡 Should  
-Storm / cancellation alert| Web + Mobile| 5–6| 🟡 Should  
-Basic follower count analytics| Web dashboard| 6| 🟡 Should  
-QR loyalty stamp card| Mobile + Dashboard| 7–8| 🟢 Nice  
-Catering inquiry form (Level 1) — request form, operator inbox, confirm + referral invoice| Web dashboard + consumer app| 8| 🟢 Nice  
-Instagram photo sync (Pro) — Meta OAuth + Graph API fetch + R2 cache| Web dashboard| Post-MVP| ⚪ Phase 2  
-Catering marketplace (Level 2) — bidding, contracts, Stripe deposit, guarantee protocol| Web dashboard + consumer app| Month 10–12| ⚪ Phase 2  
-  
+| Feature                                                                                    | Platform                     | Week        | Priority   |
+| ------------------------------------------------------------------------------------------ | ---------------------------- | ----------- | ---------- |
+| Truck onboarding (name, cuisine, photos)                                                   | Web dashboard                | 1           | 🔴 Must    |
+| Draft profile builder with completeness bar                                                | Web dashboard                | 1           | 🔴 Must    |
+| Submit for review flow + auto validation checks                                            | Web dashboard                | 1–2         | 🔴 Must    |
+| Admin approval panel (approve / decline + reason)                                          | Web — admin only             | 2           | 🔴 Must    |
+| Approval / decline email notifications to operator                                         | Email (Resend)               | 2           | 🔴 Must    |
+| Location update (pin + hours)                                                              | Web + Mobile                 | 1–2         | 🔴 Must    |
+| Consumer map with truck pins                                                               | Mobile app                   | 2–3         | 🔴 Must    |
+| Follow a truck                                                                             | Mobile app                   | 3           | 🔴 Must    |
+| Push notification on location update                                                       | Mobile app + FCM             | 3–4         | 🔴 Must    |
+| Truck profile page (menu, photos, schedule)                                                | Mobile + Web                 | 4           | 🔴 Must    |
+| Stripe subscription (Starter plan)                                                         | Web dashboard                | 4–5         | 🔴 Must    |
+| Daily specials post                                                                        | Web dashboard                | 5           | 🟡 Should  |
+| Storm / cancellation alert                                                                 | Web + Mobile                 | 5–6         | 🟡 Should  |
+| Basic follower count analytics                                                             | Web dashboard                | 6           | 🟡 Should  |
+| QR loyalty stamp card                                                                      | Mobile + Dashboard           | 7–8         | 🟢 Nice    |
+| Catering inquiry form (Level 1) — request form, operator inbox, confirm + referral invoice | Web dashboard + consumer app | 8           | 🟢 Nice    |
+| Instagram photo sync (Pro) — Meta OAuth + Graph API fetch + R2 cache                       | Web dashboard                | Post-MVP    | ⚪ Phase 2 |
+| Catering marketplace (Level 2) — bidding, contracts, Stripe deposit, guarantee protocol    | Web dashboard + consumer app | Month 10–12 | ⚪ Phase 2 |
+
 08 — Go-to-Market
 
 ## HOW WE LAUNCH
@@ -1394,25 +1394,25 @@ FREE — ACQUISITION
 
 ### Festival Mode — What It Shows
 
-Feature| Set By| Consumer Sees  
----|---|---  
-**Festival grounds map**|  Admin (you) uploads layout once| Overhead map with labelled stalls  
-**Truck stall assignment**|  Operator sets their stall number| Pin on map at correct stall  
-**Wait time estimate**|  Operator updates manually| "~10 min wait" badge on truck pin  
-**Today's festival special**|  Operator posts via dashboard| Highlighted on truck card  
-**Follow prompt**|  Automatic| "Follow this truck to get notified when they're near you"  
-**Priority placement**|  Pro subscribers| Featured at top of festival truck list  
-  
+| Feature                      | Set By                           | Consumer Sees                                             |
+| ---------------------------- | -------------------------------- | --------------------------------------------------------- |
+| **Festival grounds map**     | Admin (you) uploads layout once  | Overhead map with labelled stalls                         |
+| **Truck stall assignment**   | Operator sets their stall number | Pin on map at correct stall                               |
+| **Wait time estimate**       | Operator updates manually        | "~10 min wait" badge on truck pin                         |
+| **Today's festival special** | Operator posts via dashboard     | Highlighted on truck card                                 |
+| **Follow prompt**            | Automatic                        | "Follow this truck to get notified when they're near you" |
+| **Priority placement**       | Pro subscribers                  | Featured at top of festival truck list                    |
+
 ### Revenue Per Festival Event
 
-Source| Calculation| Est. Revenue  
----|---|---  
-**Non-subscriber festival listings**|  30 non-subscriber trucks × $49| $1,470  
-**Organizer partnership fee**|  Flat deal with festival org| $500–$2,000  
-**Post-festival conversions**|  10 trucks → Starter $19/mo ongoing| $190 MRR tail  
-**Consumer downloads (indirect)**|  500–1,000 new users → future Pro upgrades| Long-term value  
-**Total per festival event**| **$2,000–$4,000**  
-  
+| Source                               | Calculation                               | Est. Revenue    |
+| ------------------------------------ | ----------------------------------------- | --------------- |
+| **Non-subscriber festival listings** | 30 non-subscriber trucks × $49            | $1,470          |
+| **Organizer partnership fee**        | Flat deal with festival org               | $500–$2,000     |
+| **Post-festival conversions**        | 10 trucks → Starter $19/mo ongoing        | $190 MRR tail   |
+| **Consumer downloads (indirect)**    | 500–1,000 new users → future Pro upgrades | Long-term value |
+| **Total per festival event**         | **$2,000–$4,000**                         | —               |
+
 **Ottawa season math:** 2–3 festival events per year (Food Truck Festival at Lansdowne, Ottawa Food Truck Rally in September, plus 1 spring event) = **$4,000–$12,000 in festival-driven revenue annually** , on top of regular MRR. This is your single biggest revenue spike of the year — plan around it.
 
 ### Festival Outreach Playbook
@@ -1457,66 +1457,66 @@ Month 1–2
 
 #### 🔨 Build MVP
 
-  - Core map + schedule + follow + push notifications
-  - Operator dashboard + Stripe subscriptions
-  - Onboard first 5 Ottawa trucks (free)
-  - Internal beta — friends and family testing
+- Core map + schedule + follow + push notifications
+- Operator dashboard + Stripe subscriptions
+- Onboard first 5 Ottawa trucks (free)
+- Internal beta — friends and family testing
 
 Month 3
 
 #### 🚀 Ottawa Soft Launch
 
-  - Submit to App Store + Google Play
-  - Onboard 15–20 trucks via direct outreach
-  - Post on r/ottawa and local Facebook groups
-  - Target: 200 consumer downloads, 15 trucks active
+- Submit to App Store + Google Play
+- Onboard 15–20 trucks via direct outreach
+- Post on r/ottawa and local Facebook groups
+- Target: 200 consumer downloads, 15 trucks active
 
 Month 4–5
 
 #### 💰 First Revenue
 
-  - Convert free trucks to paid Starter ($19/mo)
-  - Launch loyalty stamp card (Pro tier)
-  - First catering inquiry referrals
-  - Target: $300–$500 MRR, 500 consumers
+- Convert free trucks to paid Starter ($19/mo)
+- Launch loyalty stamp card (Pro tier)
+- First catering inquiry referrals
+- Target: $300–$500 MRR, 500 consumers
 
 Month 6
 
 #### 🎪 Ottawa Food Truck Rally Launch Event
 
-  - Attend rally in person, onboard 25+ trucks in one day
-  - Massive consumer acquisition event
-  - Press outreach to Ottawa Citizen, CBC Ottawa
-  - Target: $800–$1,200 MRR, 2,000 consumers
+- Attend rally in person, onboard 25+ trucks in one day
+- Massive consumer acquisition event
+- Press outreach to Ottawa Citizen, CBC Ottawa
+- Target: $800–$1,200 MRR, 2,000 consumers
 
 Month 7–9
 
 #### ❄️ Winter Prep + Analytics
 
-  - Build advanced operator analytics dashboard
-  - Add indoor market vendors (ByWard Market) to survive winter
-  - Expand to Kingston (same playbook, smaller city)
-  - Target: $1,500 MRR stable
+- Build advanced operator analytics dashboard
+- Add indoor market vendors (ByWard Market) to survive winter
+- Expand to Kingston (same playbook, smaller city)
+- Target: $1,500 MRR stable
 
 Month 10–12
 
 #### 🌎 Second City + Catering Marketplace
 
-  - Port the playbook to a second Canadian city (Hamilton or Halifax)
-  - Remote outreach via Instagram DMs to truck operators
-  - Launch Catering Level 2 — full marketplace with bidding, contracts, deposit via Stripe
-  - Target first 10 Level 2 bookings — validate the commission model
-  - Activate TruckTrack Guarantee protocol for cancellation protection
-  - Target: $2,500 MRR subscriptions + $500–$1,000 catering commissions
+- Port the playbook to a second Canadian city (Hamilton or Halifax)
+- Remote outreach via Instagram DMs to truck operators
+- Launch Catering Level 2 — full marketplace with bidding, contracts, deposit via Stripe
+- Target first 10 Level 2 bookings — validate the commission model
+- Activate TruckTrack Guarantee protocol for cancellation protection
+- Target: $2,500 MRR subscriptions + $500–$1,000 catering commissions
 
 Month 13–18
 
 #### 📈 Scale + White Label
 
-  - Add Calgary + Edmonton (massive food truck scenes)
-  - Explore white-label licensing to food truck associations
-  - Consumer Pro tier ($2.99/mo) with premium features
-  - Target: $5,000–$8,000 MRR
+- Add Calgary + Edmonton (massive food truck scenes)
+- Explore white-label licensing to food truck associations
+- Consumer Pro tier ($2.99/mo) with premium features
+- Target: $5,000–$8,000 MRR
 
 10 — Financials
 
@@ -1524,15 +1524,15 @@ Month 13–18
 
 ### MRR Projections — Conservative
 
-Month| Paid Trucks| Avg Plan| MRR| Infra Cost| Net  
----|---|---|---|---|---  
-Month 3| 8| $19| $152| $30| $122  
-Month 4| 15| $22| $330| $30| $300  
-Month 6| 30| $25| $750| $50| $700  
-Month 9| 50| $26| $1,300| $75| $1,225  
-Month 12| 80| $28| $2,240| $100| $2,140  
-Month 18| 180| $30| $5,400| $200| $5,200  
-  
+| Month    | Paid Trucks | Avg Plan | MRR    | Infra Cost | Net    |
+| -------- | ----------- | -------- | ------ | ---------- | ------ |
+| Month 3  | 8           | $19      | $152   | $30        | $122   |
+| Month 4  | 15          | $22      | $330   | $30        | $300   |
+| Month 6  | 30          | $25      | $750   | $50        | $700   |
+| Month 9  | 50          | $26      | $1,300 | $75        | $1,225 |
+| Month 12 | 80          | $28      | $2,240 | $100       | $2,140 |
+| Month 18 | 180         | $30      | $5,400 | $200       | $5,200 |
+
 **Catering bonus:** If 10 catering bookings/month at average $800 value with 8% referral = **+$640/mo** additional revenue by Month 12, not included above.
 
 ### Break-Even Analysis
@@ -1557,21 +1557,15 @@ Month 18 net MRR target
 
 ## WHAT COULD GO WRONG
 
-Risk| Severity| Probability| Mitigation  
----|---|---|---  
-**Trucks don't update their schedule**  
-App becomes inaccurate, consumers stop using it | High | High | Make updates 30-second frictionless. Send daily 8am "update your location" SMS reminder. Tie notifications to paid plan.  
-**Ottawa seasonality**  
-6-month dead season kills MRR | High | Certain | Expand to year-round indoor vendors. Launch second southern city (Vancouver, Halifax) in winter months.  
-**Trucks won't pay**  
-Operators are cash-strapped and resistant to subscriptions | Med | Med | Start with free tier to build habit. Prove value (follower growth) before asking for money. $19 is low enough to be "rounding error" budget.  
-**Street Food App revives**  
-Existing competitor fixes their product | Med | Low | Move fast to lock in Ottawa trucks with relationships. Being local is an advantage a remote team can't replicate.  
-**Consumer app adoption is slow**  
-Not enough users for trucks to see value | High | Med | Seed with 5 trucks with large Instagram followings. Their followers download the app. Leverage existing audiences, don't build from zero.  
-**Solo developer bottleneck**  
-Feature velocity too slow to retain early customers | Med | Med | MVP is intentionally small. Don't over-promise. Set clear expectations. Use AI (Claude) for accelerated development.  
-  
+| Risk                                                                                 | Severity | Probability | Mitigation                                                                                                                                   |
+| ------------------------------------------------------------------------------------ | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trucks don't update their schedule — app becomes inaccurate, consumers stop using it | High     | High        | Make updates 30-second frictionless. Send daily 8am "update your location" SMS reminder. Tie notifications to paid plan.                     |
+| Ottawa seasonality — 6-month dead season kills MRR                                   | High     | Certain     | Expand to year-round indoor vendors. Launch second southern city (Vancouver, Halifax) in winter months.                                      |
+| Trucks won't pay — operators are cash-strapped and resistant to subscriptions        | Med      | Med         | Start with free tier to build habit. Prove value (follower growth) before asking for money. $19 is low enough to be "rounding error" budget. |
+| Street Food App revives — existing competitor fixes their product                    | Med      | Low         | Move fast to lock in Ottawa trucks with relationships. Being local is an advantage a remote team can't replicate.                            |
+| Consumer app adoption is slow — not enough users for trucks to see value             | High     | Med         | Seed with 5 trucks with large Instagram followings. Their followers download the app. Leverage existing audiences, don't build from zero.    |
+| Solo developer bottleneck — feature velocity too slow to retain early customers      | Med      | Med         | MVP is intentionally small. Don't over-promise. Set clear expectations. Use AI (Claude) for accelerated development.                         |
+
 ### Key Success Factors
 
 🔑

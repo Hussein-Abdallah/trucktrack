@@ -1,12 +1,15 @@
 # TruckTrack — Claude Code Context
 
 ## What This App Is
+
 TruckTrack is a two-sided React Native marketplace for food trucks in Ottawa, Canada.
+
 - **Consumer app** — find nearby food trucks on a map, follow favourites, get push notifications when they open, collect digital loyalty stamps
 - **Operator app** — publish today's location in under 30 seconds, manage weekly schedule, view follower analytics, receive catering booking requests
 - **Market** — Ottawa-first, bilingual (English + French), expanding to other Canadian cities after MVP
 
 ## Tech Stack
+
 - **Framework**: Expo SDK 54 (React Native 0.76, New Architecture enabled)
 - **Language**: TypeScript — strict mode always on
 - **Navigation**: Expo Router v4 (file-system routing — file = screen)
@@ -23,6 +26,7 @@ TruckTrack is a two-sided React Native marketplace for food trucks in Ottawa, Ca
 - **Build / Deploy**: EAS Build + EAS Update (OTA)
 
 ## Monorepo Structure
+
 ```
 trucktrack/
 ├── app/                    # Expo Router screens
@@ -68,6 +72,7 @@ trucktrack/
 ```
 
 ## Design System — Street Fire Palette
+
 ```
 Primary brand:    #FF5C00  (Fire Orange)   — CTAs, buttons, brand elements
 Hover/pressed:    #FF8A40  (Orange Light)  — interactive states only
@@ -83,6 +88,7 @@ Body text:        #F5F0E8  (Warm Cream)
 ```
 
 ## Typography
+
 ```
 Display/headings: Bebas Neue (32–48px, letter-spacing: 2)
 Body large:       DM Sans 16px weight 300–400
@@ -92,6 +98,7 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 ```
 
 ## Coding Conventions
+
 - **Components**: functional only — no class components ever
 - **Props**: always defined as `interface`, never `type` alias
 - **File naming**: PascalCase for components (`TruckCard.tsx`), camelCase for everything else
@@ -104,12 +111,14 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - **Never** use `any` — if you don't know the type, use `unknown` and narrow it
 
 ## Shape Rules (Critical for Brand Consistency)
+
 - `borderRadius: 0` on ALL buttons and inputs — sharp corners are the brand
 - `borderRadius: 9999` (pill) ONLY for status badges (Open Now, Closed, etc.)
 - `borderRadius: 4` for modals, dropdowns, bottom sheets
 - No drop shadows, gradients, blur, or glow effects anywhere
 
 ## UI Patterns
+
 - **One primary (orange) button per screen maximum**
 - **Bottom sheet** for map overlays — not full-screen navigation
 - **DM Mono uppercase** for all button text, badge text, section labels
@@ -118,6 +127,7 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - **Pull to refresh** on all feed screens (My Trucks, Notifications)
 
 ## Supabase Conventions
+
 - **Row Level Security is always on** — operators can only read/write their own data
 - **Never** use the service role key in the client app — Edge Functions only
 - **Realtime** subscription on `truck_schedules` for live map updates
@@ -125,6 +135,7 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - All DB queries go through typed Supabase client helpers in `services/supabase.ts`
 
 ## Key Business Rules (Encode in Code)
+
 - Operator location publish must be completable in ≤ 3 taps from the Today screen
 - Saved locations (frequent addresses) must appear as one-tap chips — no typing required for regulars
 - Free tier operators: basic listing only, no analytics, no loyalty
@@ -137,12 +148,14 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - Push notifications only sent to followers where the relevant `notify_*` flag is true
 
 ## Bilingual Requirements
+
 - All user-facing strings must support English and French
 - French strings are ~25% longer — never hard-clip text in layouts
 - Language preference stored in `profiles.language` ('en' | 'fr')
 - Language toggle available on onboarding screen 1 and in profile settings
 
 ## Environment Variables
+
 ```
 EXPO_PUBLIC_SUPABASE_URL          # Supabase project URL
 EXPO_PUBLIC_SUPABASE_ANON_KEY     # Supabase anon key (safe in client)
@@ -156,14 +169,15 @@ EXPO_PUBLIC_POSTHOG_KEY           # PostHog API key
 ```
 
 ## Git Conventions
-```
+
+```text
 Branch naming:
   feature/TT-[ticket-id]-short-name   e.g. feature/TT-42-map-screen
   fix/TT-[ticket-id]-short-name       e.g. fix/TT-38-duplicate-publish
 
 Commit format:
   type(scope): description [TT-id]
-  
+
   Types:  feat | fix | chore | refactor | docs | style | test
   Scopes: consumer | operator | map | auth | db | notifications | payments
 
@@ -174,6 +188,7 @@ Examples:
 ```
 
 ## What NOT to Do
+
 - Never use `borderRadius > 0` on buttons or inputs
 - Never use green or red as CTA colours — status only
 - Never use orange for success/error states — brand only
