@@ -170,7 +170,7 @@ EXPO_PUBLIC_POSTHOG_KEY           # PostHog API key
 
 ## Git Conventions
 
-```
+```text
 Branch naming:
   feature/TT-[ticket-id]-short-name   e.g. feature/TT-42-map-screen
   fix/TT-[ticket-id]-short-name       e.g. fix/TT-38-duplicate-publish

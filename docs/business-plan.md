@@ -1557,21 +1557,14 @@ Month 18 net MRR target
 
 ## WHAT COULD GO WRONG
 
-| Risk | Severity | Probability | Mitigation |
-| ---- | -------- | ----------- | ---------- |
-
-**Trucks don't update their schedule**  
-App becomes inaccurate, consumers stop using it | High | High | Make updates 30-second frictionless. Send daily 8am "update your location" SMS reminder. Tie notifications to paid plan.  
-**Ottawa seasonality**  
-6-month dead season kills MRR | High | Certain | Expand to year-round indoor vendors. Launch second southern city (Vancouver, Halifax) in winter months.  
-**Trucks won't pay**  
-Operators are cash-strapped and resistant to subscriptions | Med | Med | Start with free tier to build habit. Prove value (follower growth) before asking for money. $19 is low enough to be "rounding error" budget.  
-**Street Food App revives**  
-Existing competitor fixes their product | Med | Low | Move fast to lock in Ottawa trucks with relationships. Being local is an advantage a remote team can't replicate.  
-**Consumer app adoption is slow**  
-Not enough users for trucks to see value | High | Med | Seed with 5 trucks with large Instagram followings. Their followers download the app. Leverage existing audiences, don't build from zero.  
-**Solo developer bottleneck**  
-Feature velocity too slow to retain early customers | Med | Med | MVP is intentionally small. Don't over-promise. Set clear expectations. Use AI (Claude) for accelerated development.
+| Risk                                                                                 | Severity | Probability | Mitigation                                                                                                                                   |
+| ------------------------------------------------------------------------------------ | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trucks don't update their schedule — app becomes inaccurate, consumers stop using it | High     | High        | Make updates 30-second frictionless. Send daily 8am "update your location" SMS reminder. Tie notifications to paid plan.                     |
+| Ottawa seasonality — 6-month dead season kills MRR                                   | High     | Certain     | Expand to year-round indoor vendors. Launch second southern city (Vancouver, Halifax) in winter months.                                      |
+| Trucks won't pay — operators are cash-strapped and resistant to subscriptions        | Med      | Med         | Start with free tier to build habit. Prove value (follower growth) before asking for money. $19 is low enough to be "rounding error" budget. |
+| Street Food App revives — existing competitor fixes their product                    | Med      | Low         | Move fast to lock in Ottawa trucks with relationships. Being local is an advantage a remote team can't replicate.                            |
+| Consumer app adoption is slow — not enough users for trucks to see value             | High     | Med         | Seed with 5 trucks with large Instagram followings. Their followers download the app. Leverage existing audiences, don't build from zero.    |
+| Solo developer bottleneck — feature velocity too slow to retain early customers      | Med      | Med         | MVP is intentionally small. Don't over-promise. Set clear expectations. Use AI (Claude) for accelerated development.                         |
 
 ### Key Success Factors
 
