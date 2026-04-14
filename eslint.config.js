@@ -73,6 +73,7 @@ module.exports = defineConfig([
     files: ['supabase/functions/**/*.ts'],
     rules: {
       'no-console': 'off',
+      'import/no-unresolved': 'off',
     },
   },
 
