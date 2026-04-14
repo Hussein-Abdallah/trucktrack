@@ -55,7 +55,7 @@ jobs:
         run: npm ci
 
       - name: Prettier check
-        run: npx prettier --check .
+        run: npm run format:check
 
   expo-doctor:
     name: Expo Doctor

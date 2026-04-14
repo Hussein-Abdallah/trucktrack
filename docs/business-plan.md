@@ -147,7 +147,7 @@ Ottawa population
 | **Halifax** (Year 2)             | 90          | $513                         |
 | **Edmonton** (Year 3)            | 200         | $1,140                       |
 | **Calgary** (Year 3)             | 250         | $1,425                       |
-| **Total Canadian Potential MRR** | **$4,377+** |
+| **Total Canadian Potential MRR** | **$4,377+** | —                            |
 
 **Seasonality note:** Ottawa is 6-month active (May–Oct). Target cities like Hamilton, Calgary, and Halifax to offset Ottawa's winter quiet. Year-round product from Day 1 by building multi-city from the start.
 
@@ -1261,7 +1261,7 @@ Fetch latest posts from truck's Business account via OAuth. Cache photos in R2. 
 | Firebase FCM (push)          | Free                   | $0           |
 | Mapbox                       | Free (50k loads/mo)    | $0           |
 | Resend (email)               | Free (3k emails/mo)    | $0           |
-| **Total MVP Infrastructure** | **~$5–$30/mo**         |
+| **Total MVP Infrastructure** | **~$5–$30/mo**         | —            |
 
 07 — MVP Scope
 
@@ -1411,7 +1411,7 @@ FREE — ACQUISITION
 | **Organizer partnership fee**        | Flat deal with festival org               | $500–$2,000     |
 | **Post-festival conversions**        | 10 trucks → Starter $19/mo ongoing        | $190 MRR tail   |
 | **Consumer downloads (indirect)**    | 500–1,000 new users → future Pro upgrades | Long-term value |
-| **Total per festival event**         | **$2,000–$4,000**                         |
+| **Total per festival event**         | **$2,000–$4,000**                         | —               |
 
 **Ottawa season math:** 2–3 festival events per year (Food Truck Festival at Lansdowne, Ottawa Food Truck Rally in September, plus 1 spring event) = **$4,000–$12,000 in festival-driven revenue annually** , on top of regular MRR. This is your single biggest revenue spike of the year — plan around it.
 

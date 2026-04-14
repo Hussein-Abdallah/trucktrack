@@ -30,7 +30,7 @@ Sentry.init({
 
 ### Environment Variable
 
-```
+```dotenv
 EXPO_PUBLIC_SENTRY_DSN=https://your-key@sentry.io/project-id
 ```
 
