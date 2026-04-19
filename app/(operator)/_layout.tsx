@@ -23,8 +23,13 @@ function SettingsHeaderButton() {
 
 type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
 
+interface TabBarIconProps {
+  color: string;
+  size: number;
+}
+
 function tabIcon(name: FeatherIconName) {
-  return function TabBarIcon({ color, size }: { color: string; size: number }) {
+  return function TabBarIcon({ color, size }: TabBarIconProps) {
     return <Feather name={name} size={size} color={color} />;
   };
 }
@@ -57,9 +62,11 @@ export default function OperatorLayout() {
           borderTopWidth: 1,
         },
         tabBarLabelStyle: {
-          fontFamily: 'DMSans',
+          fontFamily: 'DMMono',
           fontSize: 11,
           marginTop: 2,
+          textTransform: 'uppercase',
+          letterSpacing: 1.5,
         },
       }}
     >
