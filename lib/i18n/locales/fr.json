@@ -6,5 +6,49 @@
   },
   "fonts": {
     "loadError": "Impossible de charger les polices. Veuillez redémarrer l'application."
+  },
+  "routes": {
+    "consumer": {
+      "map": "Carte",
+      "following": "Abonnements",
+      "stamps": "Fidélité",
+      "alerts": "Alertes",
+      "profile": "Profil"
+    },
+    "operator": {
+      "today": "Aujourd'hui",
+      "schedule": "Horaire",
+      "analytics": "Statistiques",
+      "catering": "Traiteur",
+      "settings": "Réglages"
+    },
+    "auth": {
+      "login": "Connexion",
+      "signup": "Inscription",
+      "devHeader": "Raccourcis dev",
+      "devSignInConsumer": "Connexion en tant que client",
+      "devSignInOperator": "Connexion en tant qu'opérateur",
+      "signOut": "Déconnexion",
+      "wrongApp": {
+        "title": "Mauvaise application",
+        "message": "Ceci est l'application {{variant}}, mais votre compte est enregistré en tant que {{role}}. Installez la bonne application ou déconnectez-vous pour changer de compte.",
+        "variant": {
+          "consumer": "client",
+          "operator": "opérateur"
+        },
+        "role": {
+          "consumer": "client",
+          "operator": "opérateur"
+        }
+      }
+    },
+    "onboarding": {
+      "consumer": "Intégration client",
+      "operator": "Intégration opérateur"
+    },
+    "truck": {
+      "profile": "Profil du camion",
+      "idLabel": "ID : {{id}}"
+    }
   }
 }

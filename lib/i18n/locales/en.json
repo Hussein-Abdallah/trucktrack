@@ -6,5 +6,49 @@
   },
   "fonts": {
     "loadError": "Could not load fonts. Please restart the app."
+  },
+  "routes": {
+    "consumer": {
+      "map": "Map",
+      "following": "Following",
+      "stamps": "Stamps",
+      "alerts": "Alerts",
+      "profile": "Profile"
+    },
+    "operator": {
+      "today": "Today",
+      "schedule": "Schedule",
+      "analytics": "Analytics",
+      "catering": "Catering",
+      "settings": "Settings"
+    },
+    "auth": {
+      "login": "Log In",
+      "signup": "Sign Up",
+      "devHeader": "Dev shortcuts",
+      "devSignInConsumer": "Sign in as Consumer",
+      "devSignInOperator": "Sign in as Operator",
+      "signOut": "Sign Out",
+      "wrongApp": {
+        "title": "Wrong App",
+        "message": "This is the {{variant}} app, but your account is registered as {{role}}. Install the correct app or sign out to switch accounts.",
+        "variant": {
+          "consumer": "consumer",
+          "operator": "operator"
+        },
+        "role": {
+          "consumer": "a consumer",
+          "operator": "an operator"
+        }
+      }
+    },
+    "onboarding": {
+      "consumer": "Consumer Onboarding",
+      "operator": "Operator Onboarding"
+    },
+    "truck": {
+      "profile": "Truck Profile",
+      "idLabel": "ID: {{id}}"
+    }
   }
 }

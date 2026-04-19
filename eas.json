@@ -4,18 +4,51 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
+    "development-consumer": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "consumer"
+      }
     },
-    "preview": {
-      "distribution": "internal"
+    "development-operator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "operator"
+      }
     },
-    "production": {
-      "autoIncrement": true
+    "preview-consumer": {
+      "distribution": "internal",
+      "channel": "preview-consumer",
+      "env": {
+        "APP_VARIANT": "consumer"
+      }
+    },
+    "preview-operator": {
+      "distribution": "internal",
+      "channel": "preview-operator",
+      "env": {
+        "APP_VARIANT": "operator"
+      }
+    },
+    "production-consumer": {
+      "autoIncrement": true,
+      "channel": "production-consumer",
+      "env": {
+        "APP_VARIANT": "consumer"
+      }
+    },
+    "production-operator": {
+      "autoIncrement": true,
+      "channel": "production-operator",
+      "env": {
+        "APP_VARIANT": "operator"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production-consumer": {},
+    "production-operator": {}
   }
 }
