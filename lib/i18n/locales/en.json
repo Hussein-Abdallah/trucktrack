@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "TruckTrack",
+    "subtitle": "Find your next food truck",
+    "followTruck": "Follow Truck"
+  },
+  "fonts": {
+    "loadError": "Could not load fonts. Please restart the app."
+  }
+}

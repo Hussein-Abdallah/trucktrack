@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "TruckTrack",
+    "subtitle": "Trouvez votre prochain camion-restaurant",
+    "followTruck": "Suivre ce camion"
+  },
+  "fonts": {
+    "loadError": "Impossible de charger les polices. Veuillez redémarrer l'application."
+  }
+}

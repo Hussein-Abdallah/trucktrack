@@ -36,8 +36,6 @@
       }
     },
     "owner": "sainabdallah",
-    "plugins": [
-      "expo-font"
-    ]
+    "plugins": ["expo-font", "expo-localization"]
   }
 }
