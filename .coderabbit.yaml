@@ -56,7 +56,7 @@ reviews:
       instructions: |
         External API clients (Supabase, Stripe, notifications).
         Check for:
-        - SUPABASE_SERVICE_ROLE_KEY must never be imported or used here
+        - Admin Supabase keys (SUPABASE_SECRET_KEY / legacy SUPABASE_SERVICE_ROLE_KEY) must never be imported or used here
         - All DB queries must go through typed Supabase client helpers
         - No hardcoded API URLs or secrets — use environment variables
 
@@ -64,7 +64,7 @@ reviews:
       instructions: |
         Supabase Edge Functions on Deno.
         Check for:
-        - SUPABASE_SERVICE_ROLE_KEY must never appear in app/ code — only here
+        - Admin Supabase keys (SUPABASE_SECRET_KEY / legacy SUPABASE_SERVICE_ROLE_KEY) must never appear in app/ code — only here
         - All DB operations must respect Row Level Security
         - Always validate webhook signatures (Stripe etc.)
         - Edge Function directories must use kebab-case naming

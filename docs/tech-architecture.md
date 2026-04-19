@@ -494,13 +494,21 @@ EXPO_PUBLIC_SUPABASE_URL
 
 Your Supabase project URL → Settings → API
 
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
+Supabase publishable key (sb*publishable*\*) — safe to expose. Security depends on RLS being enabled with policies.
+
+SUPABASE_SECRET_KEY
+
+⚠️ Server-side only — sb*secret*\* — Edge Functions / CI. Bypasses RLS. Never in client bundle.
+
 EXPO_PUBLIC_SUPABASE_ANON_KEY
 
-Supabase anon/public key (safe to expose)
+Legacy anon JWT. Carried alongside the new publishable key so we can flip the app client between formats at integration time.
 
 SUPABASE_SERVICE_ROLE_KEY
 
-⚠️ Server-side only — Edge Functions. Never in client bundle.
+⚠️ Server-side only — legacy service*role* JWT. Auto-injected into Edge Functions by the Supabase runtime — saves per-function `secrets set` configuration until we decide to move Edge Functions to the new format.
 
 EXPO_PUBLIC_MAPBOX_TOKEN
 
@@ -530,8 +538,12 @@ PostHog project API key → posthog.com project settings
 
     # Supabase
     EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-    EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+    # New key format (preferred for the app client)
+    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key_here
+    SUPABASE_SECRET_KEY=sb_secret_your_key_here
+    # Legacy key format (kept for Edge Function auto-injection)
+    EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-jwt-here
+    SUPABASE_SERVICE_ROLE_KEY=your-service-role-jwt-here
 
     # Mapbox
     EXPO_PUBLIC_MAPBOX_TOKEN=pk.your-mapbox-token
