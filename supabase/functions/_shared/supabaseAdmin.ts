@@ -1,12 +1,17 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// Accept either key format so the Edge Function works whether the
+// project is wired with the new sb_secret_* key (via
+// `supabase secrets set SUPABASE_SECRET_KEY=...`) or relying on the
+// Supabase runtime's auto-injected legacy SUPABASE_SERVICE_ROLE_KEY.
+// Prefer the new format when both are set.
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const secretKey = Deno.env.get('SUPABASE_SECRET_KEY') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-if (!supabaseUrl || !serviceRoleKey) {
+if (!supabaseUrl || !secretKey) {
   throw new Error(
-    'Missing required environment variables: SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY',
+    'Missing required environment variables: SUPABASE_URL and either SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY',
   );
 }
 
-export const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+export const supabaseAdmin = createClient(supabaseUrl, secretKey);
