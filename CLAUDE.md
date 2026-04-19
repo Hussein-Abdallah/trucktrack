@@ -187,9 +187,9 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 ## Environment Variables
 
 ```
-EXPO_PUBLIC_SUPABASE_URL          # Supabase project URL
-EXPO_PUBLIC_SUPABASE_ANON_KEY     # Supabase anon key (safe in client)
-SUPABASE_SERVICE_ROLE_KEY         # Server-side only (Edge Functions)
+EXPO_PUBLIC_SUPABASE_URL              # Supabase project URL
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY  # sb_publishable_* — safe in client; RLS is load-bearing
+SUPABASE_SECRET_KEY                   # sb_secret_* — server-side only (Edge Functions / CI)
 EXPO_PUBLIC_MAPBOX_TOKEN          # Mapbox public access token
 STRIPE_PUBLISHABLE_KEY            # Stripe publishable key
 STRIPE_SECRET_KEY                 # Server-side only (Edge Functions)

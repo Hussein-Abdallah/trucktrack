@@ -494,13 +494,13 @@ EXPO_PUBLIC_SUPABASE_URL
 
 Your Supabase project URL → Settings → API
 
-EXPO_PUBLIC_SUPABASE_ANON_KEY
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
-Supabase anon/public key (safe to expose)
+Supabase publishable key (sb*publishable*\*) — safe to expose. Security depends on RLS being enabled with policies.
 
-SUPABASE_SERVICE_ROLE_KEY
+SUPABASE_SECRET_KEY
 
-⚠️ Server-side only — Edge Functions. Never in client bundle.
+⚠️ Server-side only — sb*secret*\* — Edge Functions / CI. Bypasses RLS. Never in client bundle.
 
 EXPO_PUBLIC_MAPBOX_TOKEN
 
@@ -530,8 +530,8 @@ PostHog project API key → posthog.com project settings
 
     # Supabase
     EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-    EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key_here
+    SUPABASE_SECRET_KEY=sb_secret_your_key_here
 
     # Mapbox
     EXPO_PUBLIC_MAPBOX_TOKEN=pk.your-mapbox-token
