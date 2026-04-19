@@ -8,6 +8,9 @@ export default function TruckProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <RoutePlaceholder title={t('routes.truck.profile')} subtitle={t('routes.truck.idLabel', { id })} />
+    <RoutePlaceholder
+      title={t('routes.truck.profile')}
+      subtitle={t('routes.truck.idLabel', { id })}
+    />
   );
 }
