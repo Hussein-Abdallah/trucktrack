@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
 
 import { useAuthStore } from '@/stores/authStore';
-import { MID, WARM_CREAM } from '@/theme/colors';
+import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
 
 function AvatarHeaderButton() {
   const { t } = useTranslation();
@@ -19,6 +19,19 @@ function AvatarHeaderButton() {
       <Feather name="user" size={18} color={WARM_CREAM} />
     </Pressable>
   );
+}
+
+type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
+
+interface TabBarIconProps {
+  color: string;
+  size: number;
+}
+
+function tabIcon(name: FeatherIconName) {
+  return function TabBarIcon({ color, size }: TabBarIconProps) {
+    return <Feather name={name} size={size} color={color} />;
+  };
 }
 
 export default function ConsumerLayout() {
@@ -37,13 +50,58 @@ export default function ConsumerLayout() {
     <Tabs
       screenOptions={{
         headerTitle: '',
+        headerStyle: { backgroundColor: APP_BLACK },
+        headerTintColor: WARM_CREAM,
+        headerShadowVisible: false,
         headerRight: () => <AvatarHeaderButton />,
+        tabBarActiveTintColor: FIRE_ORANGE,
+        tabBarInactiveTintColor: MUTED,
+        tabBarStyle: {
+          backgroundColor: CHARCOAL,
+          borderTopColor: MID,
+          borderTopWidth: 1,
+        },
+        tabBarLabelStyle: {
+          fontFamily: 'DMMono',
+          fontSize: 11,
+          marginTop: 2,
+          textTransform: 'uppercase',
+          letterSpacing: 1.5,
+        },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: t('routes.consumer.map') }} />
-      <Tabs.Screen name="following" options={{ title: t('routes.consumer.following') }} />
-      <Tabs.Screen name="stamps" options={{ title: t('routes.consumer.stamps') }} />
-      <Tabs.Screen name="alerts" options={{ title: t('routes.consumer.alerts') }} />
+      <Tabs.Screen
+        name="index"
+        options={{
+          tabBarLabel: t('routes.consumer.map'),
+          tabBarAccessibilityLabel: t('routes.consumer.map'),
+          tabBarIcon: tabIcon('map'),
+        }}
+      />
+      <Tabs.Screen
+        name="following"
+        options={{
+          tabBarLabel: t('routes.consumer.following'),
+          tabBarAccessibilityLabel: t('routes.consumer.following'),
+          tabBarIcon: tabIcon('heart'),
+        }}
+      />
+      <Tabs.Screen
+        name="stamps"
+        options={{
+          tabBarLabel: t('routes.consumer.stamps'),
+          tabBarAccessibilityLabel: t('routes.consumer.stamps'),
+          tabBarIcon: tabIcon('award'),
+        }}
+      />
+      <Tabs.Screen
+        name="alerts"
+        options={{
+          tabBarLabel: t('routes.consumer.alerts'),
+          tabBarAccessibilityLabel: t('routes.consumer.alerts'),
+          tabBarIcon: tabIcon('bell'),
+        }}
+      />
     </Tabs>
   );
 }
