@@ -59,6 +59,10 @@ export default (): ExpoConfig => {
   const variant = resolveVariant();
   const v = VARIANTS[variant];
 
+  // Street Fire palette literals — kept local so this config can be evaluated
+  // by Node at build time without relying on the app's module resolver.
+  const APP_BLACK = '#0F0F0F';
+
   return {
     name: v.name,
     slug: v.slug,
@@ -66,12 +70,12 @@ export default (): ExpoConfig => {
     version: '1.0.0',
     orientation: 'portrait',
     icon: v.icon,
-    userInterfaceStyle: 'light',
+    userInterfaceStyle: 'dark',
     newArchEnabled: true,
     splash: {
       image: v.splash,
       resizeMode: 'contain',
-      backgroundColor: '#ffffff',
+      backgroundColor: APP_BLACK,
     },
     ios: {
       supportsTablet: true,
@@ -84,10 +88,14 @@ export default (): ExpoConfig => {
       package: v.androidPackage,
       adaptiveIcon: {
         foregroundImage: v.adaptiveIcon,
-        backgroundColor: '#ffffff',
+        backgroundColor: APP_BLACK,
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
+    },
+    androidNavigationBar: {
+      backgroundColor: APP_BLACK,
+      barStyle: 'light-content',
     },
     web: {
       favicon: './assets/favicon.png',

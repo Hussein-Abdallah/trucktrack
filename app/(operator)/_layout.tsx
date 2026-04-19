@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
 
 import { useAuthStore } from '@/stores/authStore';
-import { MID, WARM_CREAM } from '@/theme/colors';
+import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
 
 function SettingsHeaderButton() {
   const { t } = useTranslation();
@@ -19,6 +19,14 @@ function SettingsHeaderButton() {
       <Feather name="settings" size={18} color={WARM_CREAM} />
     </Pressable>
   );
+}
+
+type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
+
+function tabIcon(name: FeatherIconName) {
+  return function TabBarIcon({ color, size }: { color: string; size: number }) {
+    return <Feather name={name} size={size} color={color} />;
+  };
 }
 
 export default function OperatorLayout() {
@@ -37,13 +45,56 @@ export default function OperatorLayout() {
     <Tabs
       screenOptions={{
         headerTitle: '',
+        headerStyle: { backgroundColor: APP_BLACK },
+        headerTintColor: WARM_CREAM,
+        headerShadowVisible: false,
         headerRight: () => <SettingsHeaderButton />,
+        tabBarActiveTintColor: FIRE_ORANGE,
+        tabBarInactiveTintColor: MUTED,
+        tabBarStyle: {
+          backgroundColor: CHARCOAL,
+          borderTopColor: MID,
+          borderTopWidth: 1,
+        },
+        tabBarLabelStyle: {
+          fontFamily: 'DMSans',
+          fontSize: 11,
+          marginTop: 2,
+        },
       }}
     >
-      <Tabs.Screen name="today" options={{ title: t('routes.operator.today') }} />
-      <Tabs.Screen name="schedule" options={{ title: t('routes.operator.schedule') }} />
-      <Tabs.Screen name="analytics" options={{ title: t('routes.operator.analytics') }} />
-      <Tabs.Screen name="catering" options={{ title: t('routes.operator.catering') }} />
+      <Tabs.Screen
+        name="today"
+        options={{
+          tabBarLabel: t('routes.operator.today'),
+          tabBarAccessibilityLabel: t('routes.operator.today'),
+          tabBarIcon: tabIcon('map-pin'),
+        }}
+      />
+      <Tabs.Screen
+        name="schedule"
+        options={{
+          tabBarLabel: t('routes.operator.schedule'),
+          tabBarAccessibilityLabel: t('routes.operator.schedule'),
+          tabBarIcon: tabIcon('calendar'),
+        }}
+      />
+      <Tabs.Screen
+        name="analytics"
+        options={{
+          tabBarLabel: t('routes.operator.analytics'),
+          tabBarAccessibilityLabel: t('routes.operator.analytics'),
+          tabBarIcon: tabIcon('bar-chart-2'),
+        }}
+      />
+      <Tabs.Screen
+        name="catering"
+        options={{
+          tabBarLabel: t('routes.operator.catering'),
+          tabBarAccessibilityLabel: t('routes.operator.catering'),
+          tabBarIcon: tabIcon('briefcase'),
+        }}
+      />
     </Tabs>
   );
 }
