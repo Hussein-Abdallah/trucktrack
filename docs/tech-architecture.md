@@ -553,12 +553,12 @@ A simple trunk-based workflow suited to a solo developer. Two long-lived branche
 
 ### Branch Structure
 
-| Branch                           | Purpose                                                      | Deploys to                                                                                            |
-| -------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `main`                           | Production-ready code only. Never push directly.             | App Store + Play Store via `production-consumer` AND `production-operator` EAS profiles (both run)    |
-| `develop`                        | Integration branch. All features merge here first.           | TestFlight + Play Internal via `preview-consumer` AND `preview-operator` EAS profiles (both run)       |
-| `feature/[ticket-id]-short-name` | One branch per Plane ticket. e.g. `feature/TT-42-map-screen` | Local / Expo Go / local dev clients (`npm run start:consumer` or `start:operator`)                    |
-| `fix/[ticket-id]-short-name`     | Bug fixes. Same pattern as feature branches.                 | Local → develop → main via hotfix if urgent                                                            |
+| Branch                           | Purpose                                                      | Deploys to                                                                                         |
+| -------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `main`                           | Production-ready code only. Never push directly.             | App Store + Play Store via `production-consumer` AND `production-operator` EAS profiles (both run) |
+| `develop`                        | Integration branch. All features merge here first.           | TestFlight + Play Internal via `preview-consumer` AND `preview-operator` EAS profiles (both run)   |
+| `feature/[ticket-id]-short-name` | One branch per Plane ticket. e.g. `feature/TT-42-map-screen` | Local / Expo Go / local dev clients (`npm run start:consumer` or `start:operator`)                 |
+| `fix/[ticket-id]-short-name`     | Bug fixes. Same pattern as feature branches.                 | Local → develop → main via hotfix if urgent                                                        |
 
 Every `develop` and `main` deploy runs **both** variant pipelines in parallel — a change in shared code (`components/`, `stores/`, `services/`) ships to both apps at once; a change in `app/(consumer)/` or `app/(operator)/` only changes its respective binary (but still builds both because the two share the same codebase and bundle together).
 
@@ -597,8 +597,8 @@ GitHub Actions handles automated checks on every PR. EAS handles all builds and 
 
 ### Pipeline Overview
 
-| Trigger               | Pipeline         | What Runs                                                                                       |
-| --------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
+| Trigger               | Pipeline         | What Runs                                                                                                                             |
+| --------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | PR opened → `develop` | CI Check         | TypeScript compile check (`tsc --noEmit`), ESLint, Expo Doctor                                                                        |
 | Push to `develop`     | Preview Build    | EAS Build runs `preview-consumer` + `preview-operator` in parallel → TestFlight Internal + Play Internal Testing (two separate lanes) |
 | Push to `main`        | Production Build | EAS Build runs `production-consumer` + `production-operator` in parallel → App Store + Play Store via EAS Submit (two separate lanes) |

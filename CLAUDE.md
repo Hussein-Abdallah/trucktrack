@@ -77,7 +77,7 @@ The same `app/`, `components/`, `stores/`, `services/`, and Supabase code compil
 
 **Dev scripts** (in `package.json`):
 
-```
+```bash
 npm run start:consumer   # APP_VARIANT=consumer → TruckTrack, routes into (consumer)
 npm run start:operator   # APP_VARIANT=operator → TruckTrack Ops, routes into (operator)/today
 npm run ios:consumer | ios:operator | android:consumer | android:operator
