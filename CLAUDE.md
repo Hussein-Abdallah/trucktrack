@@ -163,6 +163,7 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - **Realtime** subscription on `truck_schedules` for live map updates
 - **Triggers** handle: auto-create profile on signup, push notification fan-out
 - All DB queries go through typed Supabase client helpers in `services/supabase.ts`
+- **All Postgres functions must pin `search_path`** — add `set search_path = ''` (or `set search_path = public, pg_temp` if the function body references unqualified objects) to every `create function` / `create or replace function`. Supabase's security advisor flags any function with a mutable `search_path` as a real risk (schema-hijack via user-created objects). Fully-qualify every table / function reference inside the body (`public.trucks`, not `trucks`).
 
 ## Key Business Rules (Encode in Code)
 
@@ -190,6 +191,8 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 EXPO_PUBLIC_SUPABASE_URL              # Supabase project URL
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY  # sb_publishable_* — safe in client; RLS is load-bearing
 SUPABASE_SECRET_KEY                   # sb_secret_* — server-side only (Edge Functions / CI)
+EXPO_PUBLIC_SUPABASE_ANON_KEY         # Legacy anon JWT — kept for flexibility; not currently used in app code
+SUPABASE_SERVICE_ROLE_KEY             # Legacy service_role JWT — auto-injected into Edge Functions by the Supabase runtime
 EXPO_PUBLIC_MAPBOX_TOKEN          # Mapbox public access token
 STRIPE_PUBLISHABLE_KEY            # Stripe publishable key
 STRIPE_SECRET_KEY                 # Server-side only (Edge Functions)

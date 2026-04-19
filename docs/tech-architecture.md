@@ -502,6 +502,14 @@ SUPABASE_SECRET_KEY
 
 ⚠️ Server-side only — sb*secret*\* — Edge Functions / CI. Bypasses RLS. Never in client bundle.
 
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+
+Legacy anon JWT. Carried alongside the new publishable key so we can flip the app client between formats at integration time.
+
+SUPABASE_SERVICE_ROLE_KEY
+
+⚠️ Server-side only — legacy service*role* JWT. Auto-injected into Edge Functions by the Supabase runtime — saves per-function `secrets set` configuration until we decide to move Edge Functions to the new format.
+
 EXPO_PUBLIC_MAPBOX_TOKEN
 
 Mapbox public access token → mapbox.com/account/tokens
