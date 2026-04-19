@@ -538,8 +538,12 @@ PostHog project API key → posthog.com project settings
 
     # Supabase
     EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+    # New key format (preferred for the app client)
     EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key_here
     SUPABASE_SECRET_KEY=sb_secret_your_key_here
+    # Legacy key format (kept for Edge Function auto-injection)
+    EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-jwt-here
+    SUPABASE_SERVICE_ROLE_KEY=your-service-role-jwt-here
 
     # Mapbox
     EXPO_PUBLIC_MAPBOX_TOKEN=pk.your-mapbox-token
