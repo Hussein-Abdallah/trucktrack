@@ -10,7 +10,7 @@ module.exports = defineConfig([
 
   // ── Ignores ──
   {
-    ignores: ['dist/*', 'node_modules/*', '.expo/*', 'ios/*', 'android/*'],
+    ignores: ['dist/*', 'node_modules/*', '.expo/*', 'ios/*', 'android/*', 'trucktrack_design/**'],
   },
 
   // ── Global rules for all TS/TSX files ──

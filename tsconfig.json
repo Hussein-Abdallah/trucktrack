@@ -7,5 +7,5 @@
       "tailwind.config": ["./tailwind.config.js"]
     }
   },
-  "exclude": ["supabase/functions/**"]
+  "exclude": ["supabase/functions/**", "trucktrack_design/**"]
 }
