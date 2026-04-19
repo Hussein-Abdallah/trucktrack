@@ -247,6 +247,8 @@ One GitHub repository containing both the React Native app and the Supabase back
 
 **Why a monorepo?** As a solo developer, one repo means one place for issues, one CI pipeline, and shared TypeScript types between the app and Edge Functions. You never have to keep two repos in sync.
 
+**App variants — one codebase, two binaries.** `app/(consumer)/` and `app/(operator)/` compile into two independently-distributed App Store / Play Store listings (`TruckTrack` and `TruckTrack Ops`) via the `APP_VARIANT` env var read by `app.config.ts`. Same `components/`, `stores/`, `services/`, and Supabase code — different bundle IDs, names, icons, schemes, and Expo project IDs. See the App Variants section in `CLAUDE.md` for the dev-workflow rules; see section 08 below for the six EAS profiles that drive per-variant builds.
+
 ### Top-Level Overview
 
     trucktrack/                       ← Single GitHub repository
@@ -551,12 +553,14 @@ A simple trunk-based workflow suited to a solo developer. Two long-lived branche
 
 ### Branch Structure
 
-| Branch                           | Purpose                                                      | Deploys to                                          |
-| -------------------------------- | ------------------------------------------------------------ | --------------------------------------------------- |
-| `main`                           | Production-ready code only. Never push directly.             | App Store / Play Store (EAS production profile)     |
-| `develop`                        | Integration branch. All features merge here first.           | TestFlight / Internal Testing (EAS preview profile) |
-| `feature/[ticket-id]-short-name` | One branch per Plane ticket. e.g. `feature/TT-42-map-screen` | Local / Expo Go                                     |
-| `fix/[ticket-id]-short-name`     | Bug fixes. Same pattern as feature branches.                 | Local → develop → main via hotfix if urgent         |
+| Branch                           | Purpose                                                      | Deploys to                                                                                            |
+| -------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `main`                           | Production-ready code only. Never push directly.             | App Store + Play Store via `production-consumer` AND `production-operator` EAS profiles (both run)    |
+| `develop`                        | Integration branch. All features merge here first.           | TestFlight + Play Internal via `preview-consumer` AND `preview-operator` EAS profiles (both run)       |
+| `feature/[ticket-id]-short-name` | One branch per Plane ticket. e.g. `feature/TT-42-map-screen` | Local / Expo Go / local dev clients (`npm run start:consumer` or `start:operator`)                    |
+| `fix/[ticket-id]-short-name`     | Bug fixes. Same pattern as feature branches.                 | Local → develop → main via hotfix if urgent                                                            |
+
+Every `develop` and `main` deploy runs **both** variant pipelines in parallel — a change in shared code (`components/`, `stores/`, `services/`) ships to both apps at once; a change in `app/(consumer)/` or `app/(operator)/` only changes its respective binary (but still builds both because the two share the same codebase and bundle together).
 
 ### PR Rules
 
@@ -595,33 +599,57 @@ GitHub Actions handles automated checks on every PR. EAS handles all builds and 
 
 | Trigger               | Pipeline         | What Runs                                                                                       |
 | --------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
-| PR opened → `develop` | CI Check         | TypeScript compile check (`tsc --noEmit`), ESLint, Expo Doctor                                  |
-| Push to `develop`     | Preview Build    | EAS Build (preview profile) → distributes to TestFlight internal + Google Play internal testing |
-| Push to `main`        | Production Build | EAS Build (production profile) → submits to App Store + Play Store via EAS Submit               |
-| Hotfix on `main`      | OTA Update       | EAS Update pushes JS bundle fix directly to users — no store review needed                      |
+| PR opened → `develop` | CI Check         | TypeScript compile check (`tsc --noEmit`), ESLint, Expo Doctor                                                                        |
+| Push to `develop`     | Preview Build    | EAS Build runs `preview-consumer` + `preview-operator` in parallel → TestFlight Internal + Play Internal Testing (two separate lanes) |
+| Push to `main`        | Production Build | EAS Build runs `production-consumer` + `production-operator` in parallel → App Store + Play Store via EAS Submit (two separate lanes) |
+| Hotfix on `main`      | OTA Update       | EAS Update pushes JS bundle fix directly to users of the affected variant — no store review needed (one variant at a time)            |
 
 ### EAS Profiles
+
+Six variant-aware profiles — no bare `development` / `preview` / `production`. Always pick a variant.
 
 eas.json
 
     {
       "build": {
-        "development": {
+        "development-consumer": {
           "developmentClient": true,
-          "distribution": "internal"
+          "distribution": "internal",
+          "env": { "APP_VARIANT": "consumer" }
         },
-        "preview": {
-          "distribution": "internal",   // TestFlight + Play internal
-          "channel": "preview"
+        "development-operator": {
+          "developmentClient": true,
+          "distribution": "internal",
+          "env": { "APP_VARIANT": "operator" }
         },
-        "production": {
+        "preview-consumer": {
+          "distribution": "internal",
+          "channel": "preview-consumer",
+          "env": { "APP_VARIANT": "consumer" }
+        },
+        "preview-operator": {
+          "distribution": "internal",
+          "channel": "preview-operator",
+          "env": { "APP_VARIANT": "operator" }
+        },
+        "production-consumer": {
           "autoIncrement": true,
-          "channel": "production"
+          "channel": "production-consumer",
+          "env": { "APP_VARIANT": "consumer" }
+        },
+        "production-operator": {
+          "autoIncrement": true,
+          "channel": "production-operator",
+          "env": { "APP_VARIANT": "operator" }
         }
       },
       "submit": {
-        "production": {
+        "production-consumer": {
           "ios": { "appleId": "[email protected]" },
+          "android": { "serviceAccountKeyPath": "./google-service-account.json" }
+        },
+        "production-operator": {
+          "ios": { "appleId": "[email protected]" },
           "android": { "serviceAccountKeyPath": "./google-service-account.json" }
         }
       }
@@ -663,11 +691,24 @@ Everything needed to get the project running on a new machine from scratch. Run 
     # 4. Log in to Expo
     eas login
 
-    # 5. Start the dev server
-    npx expo start
+    # 5. Start the dev server for a specific variant
+    npm run start:consumer   # TruckTrack (consumer app)
+    # OR
+    npm run start:operator   # TruckTrack Ops (operator app)
 
     # 6. Scan the QR code with Expo Go on your phone
     #    OR press 'i' for iOS simulator / 'a' for Android emulator
+
+### Running each variant
+
+`APP_VARIANT` drives which binary Metro serves. The two apps have different bundle IDs — iOS and Android install them as separate icons on the home screen. You can have both installed and toggle between them on the simulator.
+
+- `npm run start:consumer` → Metro serves the consumer manifest. Name: "TruckTrack". Bundle: `com.sainabdallah.trucktrack`. Root gate routes into `app/(consumer)/`.
+- `npm run start:operator` → Metro serves the operator manifest. Name: "TruckTrack Ops". Bundle: `com.sainabdallah.trucktrack.operator`. Root gate routes into `app/(operator)/today`.
+- Bare `npx expo start` / `npm run start` defaults to `APP_VARIANT=consumer`.
+- **Always Ctrl-C Metro and restart when switching variants** — a hot-swap with a stale manifest cache will serve the wrong name/icon.
+- First time per variant per simulator: you need a dev client build. `eas build --profile development-consumer --platform ios` (once), `eas build --profile development-operator --platform ios` (once). After install, `npm run start:consumer` / `:operator` connect Metro to whichever client you boot.
+- Expo Go works for JS-only iteration pre-dev-client, but can't test bundle-ID-dependent features (push, deep links, real name/icon).
 
 ### CLAUDE.md — AI Context File
 

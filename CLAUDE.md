@@ -2,10 +2,10 @@
 
 ## What This App Is
 
-TruckTrack is a two-sided React Native marketplace for food trucks in Ottawa, Canada.
+TruckTrack is a two-sided React Native marketplace for food trucks in Ottawa, Canada, shipped as **two separate App Store / Play Store listings built from a single codebase** (Expo "app variants" pattern).
 
-- **Consumer app** — find nearby food trucks on a map, follow favourites, get push notifications when they open, collect digital loyalty stamps
-- **Operator app** — publish today's location in under 30 seconds, manage weekly schedule, view follower analytics, receive catering booking requests
+- **Consumer app** (`TruckTrack`, bundle `com.sainabdallah.trucktrack`) — find nearby food trucks on a map, follow favourites, get push notifications when they open, collect digital loyalty stamps. Free.
+- **Operator app** (`TruckTrack Ops`, bundle `com.sainabdallah.trucktrack.operator`) — publish today's location in under 30 seconds, manage weekly schedule, view follower analytics, receive catering booking requests. Paired with a web admin dashboard on `trucktrack.ca` for subscription billing, reports, and tax exports.
 - **Market** — Ottawa-first, bilingual (English + French), expanding to other Canadian cities after MVP
 
 ## Tech Stack
@@ -70,6 +70,36 @@ trucktrack/
 │   └── tests/
 └── .github/workflows/      # GitHub Actions CI/CD
 ```
+
+## App Variants (Two Binaries, One Codebase)
+
+The same `app/`, `components/`, `stores/`, `services/`, and Supabase code compiles into two distinct binaries via `APP_VARIANT` (`consumer` | `operator`). Bundle IDs, app name, icon, scheme, and Expo project ID are set per variant in `app.config.ts`; the root route gate (`app/index.tsx`) reads the runtime variant and routes into the matching group.
+
+**Dev scripts** (in `package.json`):
+
+```
+npm run start:consumer   # APP_VARIANT=consumer → TruckTrack, routes into (consumer)
+npm run start:operator   # APP_VARIANT=operator → TruckTrack Ops, routes into (operator)/today
+npm run ios:consumer | ios:operator | android:consumer | android:operator
+```
+
+Bare `npm run start` / `ios` / `android` default to `APP_VARIANT=consumer`.
+
+**EAS profiles** (in `eas.json`): six variant-aware profiles — `development-consumer`, `development-operator`, `preview-consumer`, `preview-operator`, `production-consumer`, `production-operator`. Each sets `APP_VARIANT` in its `env` block. There is no bare `development`/`preview`/`production` — always pick a variant.
+
+**Runtime variant source**: always read via `lib/appVariant.ts` (`getAppVariant()`), never `process.env.APP_VARIANT` (undefined on native at runtime).
+
+**Route-tree rule**: both `(consumer)/` and `(operator)/` stay bundled into both binaries — Expo Router's `require.context` can't be scoped per variant. The gate in `app/index.tsx` makes the "wrong" group unreachable. ~2 MB overhead per build; revisit only if app size becomes a review-blocker.
+
+**Dev workflow rule**: always Ctrl-C Metro and restart when switching variants. Stale manifest cache = wrong name / icon / routing.
+
+**Operator billing rule — critical, enforce in code review**:
+
+- Operator subscriptions (Starter $19/mo, Pro $39/mo, Festival $79/mo) are purchased on the web at `trucktrack.ca` via Stripe Checkout. The mobile operator app **never** sells the subscription.
+- The app reads entitlement from Supabase (`trucks.plan`) and feature-gates client-side.
+- App settings show "Manage Subscription" as a button that opens the **neutral account page** (`trucktrack.ca/account`) — not a direct Stripe checkout URL. From the account page, the operator clicks "Upgrade" → Stripe Checkout.
+- **Never** add embedded Stripe checkout, an in-app "Subscribe" button, or a direct-to-checkout link to the operator app without explicitly revisiting Apple Guideline 3.1.3(b) and the External Link Account Entitlement. A pull request doing any of those is blocked on policy review.
+- This keeps the operator app outside Apple's 3.1.1 IAP requirement via Guideline 3.1.3(b) Multiplatform Services — the pattern used by Shopify, Square Dashboard, HubSpot, OpenTable, and Stripe Dashboard.
 
 ## Design System — Street Fire Palette
 

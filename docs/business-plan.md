@@ -82,11 +82,13 @@ TruckTrack is a two-sided platform: a consumer app for finding and following tru
 
 ### Two Products, One Platform
 
+Shipped as **two separate App Store / Play Store listings built from a single codebase** (Expo "app variants" pattern). The consumer app (`TruckTrack`) and the operator app (`TruckTrack Ops`) share one React Native codebase, Supabase backend, and Edge Functions — but are distributed, reviewed, and marketed independently.
+
 🧑‍🤳
 
 #### Consumer App (Free)
 
-Ottawa residents find trucks on a live map, follow favourites, get push alerts for schedule changes, and collect loyalty stamps. iOS + Android.
+Ottawa residents find trucks on a live map, follow favourites, get push alerts for schedule changes, and collect loyalty stamps. iOS + Android. Shipped as `TruckTrack` (bundle `com.sainabdallah.trucktrack`).
 
 FREE — DRIVES SUPPLY
 
@@ -94,9 +96,11 @@ FREE — DRIVES SUPPLY
 
 #### Operator Dashboard (Paid)
 
-Truck owners update their schedule in 30 seconds, manage loyalty rewards, view follower analytics, and receive catering inquiries. Web + mobile.
+Truck owners update their schedule in 30 seconds, manage loyalty rewards, view follower analytics, and receive catering inquiries. Web + mobile. Mobile app shipped as `TruckTrack Ops` (bundle `com.sainabdallah.trucktrack.operator`); paired with a web admin at `trucktrack.ca` for subscription billing, monthly reports, and tax exports.
 
-PAID — $19–$39/MO
+**Billing model.** Subscriptions are purchased on `trucktrack.ca` via Stripe Checkout — the mobile operator app reads entitlement (`trucks.plan`) and feature-gates, but never sells the subscription. This keeps the operator app outside Apple's IAP requirement per Guideline 3.1.3(b) Multiplatform Services — the same pattern used by Shopify, Square Dashboard, HubSpot, OpenTable, and Stripe Dashboard. The in-app "Manage Subscription" button opens the neutral account page (`trucktrack.ca/account`), never a direct Stripe checkout URL.
+
+PAID — $19–$79/MO
 
 ### Key Features
 
