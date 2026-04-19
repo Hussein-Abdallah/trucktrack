@@ -43,8 +43,16 @@ const VARIANTS: Record<AppVariant, VariantOverrides> = {
 
 function resolveVariant(): AppVariant {
   const raw = process.env.APP_VARIANT;
-  if (raw === 'operator') return 'operator';
-  return 'consumer';
+  if (raw === 'consumer' || raw === 'operator') return raw;
+  if (raw === undefined || raw === '') {
+    // Unset: local tool calls like bare `npx expo-doctor`. Default to consumer
+    // so read-only diagnostics work without requiring the flag.
+    return 'consumer';
+  }
+  throw new Error(
+    `Invalid APP_VARIANT: ${String(raw)}. Expected 'consumer' or 'operator'. ` +
+      `Use npm run start:consumer / start:operator or set APP_VARIANT explicitly.`,
+  );
 }
 
 export default (): ExpoConfig => {
