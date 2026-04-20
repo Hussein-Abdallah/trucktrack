@@ -47,6 +47,21 @@ function classNames(...parts: (string | false | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
 }
 
+// Children like `{foo} {bar}` arrive as an array of strings/numbers, not a
+// single string. Wrap any all-text-like children in <Text> so React Native
+// doesn't throw "Text strings must be rendered within a <Text> component".
+function isTextLike(node: ReactNode): boolean {
+  if (typeof node === 'string' || typeof node === 'number') return true;
+  if (Array.isArray(node)) return node.every(isTextLike);
+  return false;
+}
+
+function stringifyTextLike(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(stringifyTextLike).join('');
+  return '';
+}
+
 export function Button({
   action = 'primary',
   size = 'md',
@@ -68,12 +83,12 @@ export function Button({
   );
 
   const labelClass = classNames(baseLabel, sizeLabel[size]);
+  const renderText = isTextLike(children);
 
-  const labelNode =
-    typeof children === 'string' ? <Text className={labelClass}>{children}</Text> : children;
+  const labelNode = renderText ? <Text className={labelClass}>{children}</Text> : children;
 
   const derivedA11yLabel =
-    accessibilityLabel ?? (typeof children === 'string' ? children : undefined);
+    accessibilityLabel ?? (renderText ? stringifyTextLike(children) : undefined);
 
   return (
     <Pressable
