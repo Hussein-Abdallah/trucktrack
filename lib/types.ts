@@ -151,7 +151,12 @@ export type Database = {
     // object type. Using the CLI pattern so `.from('profiles').select(…)`
     // resolves to the row type instead of `never`.
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: {
+      profiles_add_role: {
+        Args: { p_user_id: string; p_role: UserRole };
+        Returns: void;
+      };
+    };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
   };

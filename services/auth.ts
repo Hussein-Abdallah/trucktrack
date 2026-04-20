@@ -5,7 +5,7 @@ import type {
   User,
 } from '@supabase/supabase-js';
 
-import type { AppLanguage, Profile, UserRole } from '@/lib/types';
+import type { AppLanguage, UserRole } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
 // -- Typed errors -----------------------------------------------------
@@ -97,32 +97,17 @@ export async function signOut(): Promise<void> {
   if (error) throw mapSupabaseAuthError(error);
 }
 
-// Idempotent: reads current profile.roles and only writes when the
-// target role isn't already present. Callers invoke this post-sign-in
-// to guarantee the variant's role is recorded when the same email
-// signs into the second app binary.
+// Idempotent: appends the variant's role to profiles.roles, or no-ops
+// if already present. Delegated to the public.profiles_add_role RPC
+// (security definer, atomic UPDATE with array_append + conditional
+// WHERE) so concurrent callers don't lose updates — the read-then-
+// write equivalent in the client is racy under row contention.
 export async function ensureRoleForVariant(userId: string, role: UserRole): Promise<void> {
-  // maybeSingle (vs single) returns data=null for zero rows rather than
-  // erroring — makes the explicit "Profile row missing" branch below
-  // reachable when the trigger somehow didn't materialise a row.
-  const { data, error: selectError } = await supabase
-    .from('profiles')
-    .select('roles')
-    .eq('id', userId)
-    .maybeSingle();
-
-  if (selectError) throw mapSupabasePostgrestError(selectError);
-  if (!data) throw new UnknownAuthError('Profile row missing for authenticated user');
-
-  if (data.roles.includes(role)) return;
-
-  const nextRoles: Profile['roles'] = [...data.roles, role];
-  const { error: updateError } = await supabase
-    .from('profiles')
-    .update({ roles: nextRoles })
-    .eq('id', userId);
-
-  if (updateError) throw mapSupabasePostgrestError(updateError);
+  const { error } = await supabase.rpc('profiles_add_role', {
+    p_user_id: userId,
+    p_role: role,
+  });
+  if (error) throw mapSupabasePostgrestError(error);
 }
 
 // Returns a plain unsubscribe fn — consumers don't need to know the
