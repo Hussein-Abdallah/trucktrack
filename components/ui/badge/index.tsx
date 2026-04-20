@@ -85,16 +85,12 @@ cssInterop(PrimitiveIcon, {
   },
 });
 
-type IBadgeProps = React.ComponentPropsWithoutRef<typeof ContextView> &
-  VariantProps<typeof badgeStyle>;
+export interface BadgeProps
+  extends React.ComponentPropsWithoutRef<typeof ContextView>, VariantProps<typeof badgeStyle> {
+  className?: string;
+}
 
-function Badge({
-  children,
-  action = 'muted',
-  size = 'md',
-  className,
-  ...props
-}: { className?: string } & IBadgeProps) {
+function Badge({ children, action = 'muted', size = 'md', className, ...props }: BadgeProps) {
   const contextValue = useMemo(() => ({ action, size }), [action, size]);
 
   return (
@@ -109,10 +105,10 @@ function Badge({
   );
 }
 
-type IBadgeTextProps = React.ComponentPropsWithoutRef<typeof Text> &
-  VariantProps<typeof badgeTextStyle>;
+export interface BadgeTextProps
+  extends React.ComponentPropsWithoutRef<typeof Text>, VariantProps<typeof badgeTextStyle> {}
 
-const BadgeText = React.forwardRef<React.ComponentRef<typeof Text>, IBadgeTextProps>(
+const BadgeText = React.forwardRef<React.ComponentRef<typeof Text>, BadgeTextProps>(
   function BadgeText({ children, className, size, ...props }, ref) {
     const { size: parentSize, action: parentAction } = useStyleContext(SCOPE);
     return (
@@ -134,29 +130,45 @@ const BadgeText = React.forwardRef<React.ComponentRef<typeof Text>, IBadgeTextPr
   },
 );
 
-type IBadgeIconProps = React.ComponentPropsWithoutRef<typeof PrimitiveIcon> &
-  VariantProps<typeof badgeIconStyle>;
+// PrimitiveIcon and VariantProps both declare `size` with incompatible
+// types — strip it from both parents and redeclare here so the runtime
+// `typeof size === 'number'` branch in BadgeIcon stays reachable.
+export interface BadgeIconProps
+  extends
+    Omit<React.ComponentPropsWithoutRef<typeof PrimitiveIcon>, 'size'>,
+    Omit<VariantProps<typeof badgeIconStyle>, 'size'> {
+  size?: 'sm' | 'md' | 'lg' | number;
+}
 
-const BadgeIcon = React.forwardRef<React.ComponentRef<typeof Svg>, IBadgeIconProps>(
+const BadgeIcon = React.forwardRef<React.ComponentRef<typeof Svg>, BadgeIconProps>(
   function BadgeIcon({ className, size, ...props }, ref) {
     const { size: parentSize, action: parentAction } = useStyleContext(SCOPE);
+    const parentVariants = { size: parentSize, action: parentAction };
 
     if (typeof size === 'number') {
       return (
-        <UIIcon ref={ref} {...props} className={badgeIconStyle({ class: className })} size={size} />
+        <UIIcon
+          ref={ref}
+          {...props}
+          className={badgeIconStyle({ parentVariants, class: className })}
+          size={size}
+        />
       );
     } else if ((props?.height !== undefined || props?.width !== undefined) && size === undefined) {
-      return <UIIcon ref={ref} {...props} className={badgeIconStyle({ class: className })} />;
+      return (
+        <UIIcon
+          ref={ref}
+          {...props}
+          className={badgeIconStyle({ parentVariants, class: className })}
+        />
+      );
     }
     return (
       <UIIcon
         ref={ref}
         {...props}
         className={badgeIconStyle({
-          parentVariants: {
-            size: parentSize,
-            action: parentAction,
-          },
+          parentVariants,
           size,
           class: className,
         })}
