@@ -4,3 +4,6 @@ dist
 ios
 android
 package-lock.json
+
+# Local-only v0.dev design reference — matches .gitignore
+trucktrack_design

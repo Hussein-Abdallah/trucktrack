@@ -150,7 +150,7 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 ## Design References
 
 - The canonical design for every consumer + operator screen lives in **`trucktrack_design/`** — a v0.dev-generated Next.js preview project at the repo root. It is **local-only and gitignored** — not shipped in this repo. Obtain the latest drop from the product owner or regenerate via v0.dev before implementing any UI ticket.
-- It is **reference only**. The main app never imports from it. Metro, tsc, ESLint, and Prettier all ignore it.
+- It is **reference only**. The main app never imports from it (so Metro never pulls it into the bundle); `tsc`, ESLint, and Prettier explicitly ignore it via `tsconfig.json`, `eslint.config.js`, and `.prettierignore`.
 - When implementing a ticket:
   1. Open the matching file (see paths below) side-by-side with the destination file in `app/` or `components/`.
   2. Mirror layout, spacing, hierarchy, and UX flow exactly — **structure and interaction come from the reference**.
