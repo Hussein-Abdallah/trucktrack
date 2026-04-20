@@ -2,11 +2,12 @@ import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Badge } from '@/components/ui/Badge';
-import type { BadgeVariant } from '@/components/ui/Badge';
+import { Badge, BadgeText } from '@/components/ui/badge';
 
-const BADGE_VARIANTS: BadgeVariant[] = ['open', 'closed', 'accent', 'muted', 'moving'];
-const BADGE_SAMPLE_LABELS: Record<BadgeVariant, string> = {
+type BadgeAction = 'open' | 'closed' | 'accent' | 'muted' | 'moving';
+
+const BADGE_ACTIONS: BadgeAction[] = ['open', 'closed', 'accent', 'muted', 'moving'];
+const BADGE_SAMPLE_LABELS: Record<BadgeAction, string> = {
   open: 'Open Now',
   closed: 'Closed',
   accent: 'Pro',
@@ -48,9 +49,9 @@ export default function BadgesDev() {
         <View className="mb-8">
           <SectionHeading>All variants</SectionHeading>
           <Row>
-            {BADGE_VARIANTS.map((variant) => (
-              <Badge key={variant} variant={variant}>
-                {BADGE_SAMPLE_LABELS[variant]}
+            {BADGE_ACTIONS.map((action) => (
+              <Badge key={action} action={action}>
+                <BadgeText>{BADGE_SAMPLE_LABELS[action]}</BadgeText>
               </Badge>
             ))}
           </Row>
@@ -59,9 +60,9 @@ export default function BadgesDev() {
         <View className="mb-8 bg-background-50 p-4">
           <SectionHeading>Charcoal surface</SectionHeading>
           <Row>
-            {BADGE_VARIANTS.map((variant) => (
-              <Badge key={variant} variant={variant}>
-                {BADGE_SAMPLE_LABELS[variant]}
+            {BADGE_ACTIONS.map((action) => (
+              <Badge key={action} action={action}>
+                <BadgeText>{BADGE_SAMPLE_LABELS[action]}</BadgeText>
               </Badge>
             ))}
           </Row>
@@ -70,11 +71,36 @@ export default function BadgesDev() {
         <View className="mb-8">
           <SectionHeading>French labels</SectionHeading>
           <Row>
-            <Badge variant="open">Ouvert</Badge>
-            <Badge variant="closed">Fermé</Badge>
-            <Badge variant="accent">Premium</Badge>
-            <Badge variant="muted">Indisponible</Badge>
-            <Badge variant="moving">En route</Badge>
+            <Badge action="open">
+              <BadgeText>Ouvert</BadgeText>
+            </Badge>
+            <Badge action="closed">
+              <BadgeText>Fermé</BadgeText>
+            </Badge>
+            <Badge action="accent">
+              <BadgeText>Premium</BadgeText>
+            </Badge>
+            <Badge action="muted">
+              <BadgeText>Indisponible</BadgeText>
+            </Badge>
+            <Badge action="moving">
+              <BadgeText>En route</BadgeText>
+            </Badge>
+          </Row>
+        </View>
+
+        <View className="mb-8">
+          <SectionHeading>Size variants (sm / md / lg)</SectionHeading>
+          <Row>
+            <Badge action="accent" size="sm">
+              <BadgeText>Small</BadgeText>
+            </Badge>
+            <Badge action="accent" size="md">
+              <BadgeText>Medium</BadgeText>
+            </Badge>
+            <Badge action="accent" size="lg">
+              <BadgeText>Large</BadgeText>
+            </Badge>
           </Row>
         </View>
 
@@ -82,7 +108,9 @@ export default function BadgesDev() {
           <SectionHeading>Long label wrapping (constrained width)</SectionHeading>
           <Row>
             <View className="w-24">
-              <Badge variant="accent">This is way too long for a badge</Badge>
+              <Badge action="accent">
+                <BadgeText>This is way too long for a badge</BadgeText>
+              </Badge>
             </View>
           </Row>
         </View>
