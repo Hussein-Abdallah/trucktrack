@@ -2,8 +2,11 @@ import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ui/Button';
-import type { ButtonAction, ButtonSize } from '@/components/ui/Button';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { CTA_WHITE } from '@/theme/colors';
+
+type ButtonAction = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 const ACTIONS: ButtonAction[] = ['primary', 'secondary', 'ghost', 'danger', 'success'];
 const SIZES: ButtonSize[] = ['sm', 'md', 'lg'];
@@ -45,21 +48,23 @@ export default function ButtonsDev() {
             <Row>
               {SIZES.map((size) => (
                 <Button key={size} action={action} size={size}>
-                  {action} {size}
+                  <ButtonText>
+                    {action} {size}
+                  </ButtonText>
                 </Button>
               ))}
             </Row>
             <Row>
               {SIZES.map((size) => (
                 <Button key={size} action={action} size={size} isDisabled>
-                  disabled
+                  <ButtonText>disabled</ButtonText>
                 </Button>
               ))}
             </Row>
             <Row>
               {SIZES.map((size) => (
-                <Button key={size} action={action} size={size} isLoading>
-                  loading state
+                <Button key={size} action={action} size={size} isDisabled>
+                  <ButtonSpinner color={CTA_WHITE} />
                 </Button>
               ))}
             </Row>
@@ -71,7 +76,7 @@ export default function ButtonsDev() {
           <Row>
             {ACTIONS.map((action) => (
               <Button key={action} action={action}>
-                {action}
+                <ButtonText>{action}</ButtonText>
               </Button>
             ))}
           </Row>
@@ -80,9 +85,15 @@ export default function ButtonsDev() {
         <View className="mb-8">
           <SectionHeading>French label overflow (md)</SectionHeading>
           <Row>
-            <Button action="primary">Confirmer la commande</Button>
-            <Button action="secondary">Publier maintenant</Button>
-            <Button action="ghost">Annuler</Button>
+            <Button action="primary">
+              <ButtonText>Confirmer la commande</ButtonText>
+            </Button>
+            <Button action="secondary">
+              <ButtonText>Publier maintenant</ButtonText>
+            </Button>
+            <Button action="ghost">
+              <ButtonText>Annuler</ButtonText>
+            </Button>
           </Row>
         </View>
       </ScrollView>
