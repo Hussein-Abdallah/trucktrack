@@ -10,7 +10,7 @@ import {
 import { cssInterop } from 'nativewind';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import { CTA_WHITE } from '@/theme/colors';
+import { CTA_WHITE, FIRE_ORANGE } from '@/theme/colors';
 
 // Street Fire Button — sharp-corner pill alternative. `action` is a domain
 // concept (primary / secondary / ghost / danger / success) rather than
@@ -54,16 +54,23 @@ const buttonStyle = tva({
       success: 'bg-success-400 data-[active=true]:bg-success-300',
     },
     size: {
-      sm: 'h-8 px-3',
-      md: 'h-11 px-4',
-      lg: 'h-[52px] px-6',
+      sm: 'min-h-8 px-3 py-1.5',
+      md: 'min-h-11 px-4 py-2',
+      lg: 'min-h-[52px] px-6 py-2.5',
     },
   },
 });
 
 const buttonTextStyle = tva({
-  base: 'font-mono-medium uppercase tracking-[1px] text-typography-white',
+  base: 'shrink text-center font-mono-medium uppercase tracking-[1px]',
   parentVariants: {
+    action: {
+      primary: 'text-typography-white',
+      secondary: 'text-primary-400',
+      ghost: 'text-primary-400',
+      danger: 'text-typography-white',
+      success: 'text-typography-white',
+    },
     size: {
       sm: 'text-[10px]',
       md: 'text-[11px]',
@@ -73,8 +80,15 @@ const buttonTextStyle = tva({
 });
 
 const buttonIconStyle = tva({
-  base: 'fill-none text-typography-white',
+  base: 'fill-none',
   parentVariants: {
+    action: {
+      primary: 'text-typography-white',
+      secondary: 'text-primary-400',
+      ghost: 'text-primary-400',
+      danger: 'text-typography-white',
+      success: 'text-typography-white',
+    },
     size: {
       sm: 'h-3.5 w-3.5',
       md: 'h-4 w-4',
@@ -131,17 +145,13 @@ export interface ButtonTextProps
 
 const ButtonText = React.forwardRef<React.ElementRef<typeof UIButton.Text>, ButtonTextProps>(
   ({ className, size, ...props }, ref) => {
-    const { size: parentSize } = useStyleContext(SCOPE);
-    // No default numberOfLines — buttons grow to fit content (callers can
-    // still pass the prop when they want truncation). Badge's default
-    // truncation is correct for pill chips; Button is a container that
-    // should expand to fit French labels per CLAUDE.md.
+    const { size: parentSize, action: parentAction } = useStyleContext(SCOPE);
     return (
       <UIButton.Text
         ref={ref}
         {...props}
         className={buttonTextStyle({
-          parentVariants: { size: parentSize },
+          parentVariants: { size: parentSize, action: parentAction },
           size,
           class: className,
         })}
@@ -150,15 +160,30 @@ const ButtonText = React.forwardRef<React.ElementRef<typeof UIButton.Text>, Butt
   },
 );
 
-// Default spinner colour to CTA_WHITE so callers don't have to wire it up
-// every time; they can still override `color` for edge cases (e.g. a
-// spinner on a ghost button over a light surface).
+const SPINNER_FOREGROUND: Record<string, string> = {
+  primary: CTA_WHITE,
+  secondary: FIRE_ORANGE,
+  ghost: FIRE_ORANGE,
+  danger: CTA_WHITE,
+  success: CTA_WHITE,
+};
+
+export interface ButtonSpinnerProps
+  extends React.ComponentPropsWithoutRef<typeof UIButton.Spinner> {}
+
 const ButtonSpinner = React.forwardRef<
   React.ElementRef<typeof UIButton.Spinner>,
-  React.ComponentPropsWithoutRef<typeof UIButton.Spinner>
->(({ color = CTA_WHITE, ...props }, ref) => (
-  <UIButton.Spinner ref={ref} color={color} {...props} />
-));
+  ButtonSpinnerProps
+>(({ color, ...props }, ref) => {
+  const { action } = useStyleContext(SCOPE);
+  return (
+    <UIButton.Spinner
+      ref={ref}
+      color={color ?? SPINNER_FOREGROUND[action] ?? CTA_WHITE}
+      {...props}
+    />
+  );
+});
 
 // ButtonIcon's `size` prop accepts both tva tokens ('sm'|'md'|'lg') AND
 // explicit numeric overrides from PrimitiveIcon — the two types conflict
@@ -177,8 +202,8 @@ export interface ButtonIconProps
 
 const ButtonIcon = React.forwardRef<React.ElementRef<typeof UIButton.Icon>, ButtonIconProps>(
   ({ className, size, ...props }, ref) => {
-    const { size: parentSize } = useStyleContext(SCOPE);
-    const parentVariants = { size: parentSize };
+    const { size: parentSize, action: parentAction } = useStyleContext(SCOPE);
+    const parentVariants = { size: parentSize, action: parentAction };
 
     if (typeof size === 'number') {
       return (
