@@ -13,3 +13,11 @@ export const GRAPHITE = '#252525';
 export const MID = '#3A3A3A';
 export const MUTED = '#888888';
 export const WARM_CREAM = '#F5F0E8';
+
+/**
+ * CTA / button text only — crisp maximum-contrast white for labels on
+ * Fire Orange / Charcoal / Alert Red / Active Green button fills. Do not
+ * use for body copy, headings, or anywhere else in the app; those stay
+ * on WARM_CREAM. Mirrors `typography.white` in `tailwind.config.js`.
+ */
+export const CTA_WHITE = '#FFFFFF';

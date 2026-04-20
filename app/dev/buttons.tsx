@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,7 +8,11 @@ import type { ButtonAction, ButtonSize } from '@/components/ui/Button';
 const ACTIONS: ButtonAction[] = ['primary', 'secondary', 'ghost', 'danger', 'success'];
 const SIZES: ButtonSize[] = ['sm', 'md', 'lg'];
 
-function SectionHeading({ children }: { children: string }) {
+interface SectionHeadingProps {
+  children: string;
+}
+
+function SectionHeading({ children }: SectionHeadingProps) {
   return (
     <Text className="mb-3 font-mono text-[10px] uppercase tracking-[1.5px] text-typography-500">
       {children}
@@ -15,7 +20,11 @@ function SectionHeading({ children }: { children: string }) {
   );
 }
 
-function Row({ children }: { children: React.ReactNode }) {
+interface RowProps {
+  children: ReactNode;
+}
+
+function Row({ children }: RowProps) {
   return <View className="mb-6 flex-row flex-wrap gap-3">{children}</View>;
 }
 
