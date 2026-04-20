@@ -153,11 +153,11 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - It is **reference only**. The main app never imports from it. Metro, tsc, ESLint, and Prettier all ignore it.
 - When implementing a ticket:
   1. Open the matching file (see paths below) side-by-side with the destination file in `app/` or `components/`.
-  2. Mirror layout, spacing, hierarchy, and UX flow exactly.
-  3. Translate web primitives to React Native: `div` → `View`, `span`/`p`/`h1`–`h6` → `Text`, `button` → Gluestack `<Button>`, `input` → Gluestack `<Input>`, `img`/`next/image` → `<Image>` from `react-native` (reconsider `expo-image` via `npx expo install expo-image` when the first image-heavy screen needs caching / blurhash), `a`/`next/link` → Expo Router `<Link>`, `onClick` → `onPress`, `lucide-react` → Feather icons from `@expo/vector-icons`.
+  2. Mirror layout, spacing, hierarchy, and UX flow exactly — **structure and interaction come from the reference**.
+  3. Translate web primitives to React Native: `div` → `View`, `span`/`p`/`h1`–`h6` → `Text`, `button` → Gluestack `<Button>`, `input` → Gluestack `<Input>`, `img`/`next/image` → `<Image>` from `react-native`, `a`/`next/link` → Expo Router `<Link>`, `onClick` → `onPress`, `lucide-react` → Feather icons from `@expo/vector-icons`. For image-heavy screens needing caching or blurhash, reconsider `expo-image` (`npx expo install expo-image`).
   4. Tailwind classes map 1:1 to NativeWind; drop `hover:*` (use `active:*` for press feedback) and `md:` / `lg:` breakpoints.
   5. Remap v0's greys (`bg-zinc-*`, `text-slate-*`) to Street Fire tokens. Never hardcode hex.
-  6. The shape rules, palette, typography, and UI patterns sections above override the reference if they contradict it. No shadows / gradients / blur / glow — ever, regardless of the design.
+  6. **Styling comes from this doc, not the reference.** Shape rules, palette, typography, and UI patterns sections above win on any styling conflict. No shadows / gradients / blur / glow — ever, regardless of the design.
   7. Do **not** edit files inside `trucktrack_design/`. If the design is wrong, the user iterates in v0 and re-drops.
 - Consumer screens: `trucktrack_design/components/truck-track/consumer/*.tsx` (`map-view`, `following-view`, `stamps-view`, `alerts-view`, `profile-view`, `truck-profile`).
 - Operator screens: `trucktrack_design/components/truck-track/operator/*.tsx` (`today-view`, `schedule-view`, `analytics-view`, `catering-view`, `settings-view`).
