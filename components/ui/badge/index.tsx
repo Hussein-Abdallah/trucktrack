@@ -39,7 +39,7 @@ const badgeTextStyle = tva({
   parentVariants: {
     action: {
       open: 'text-typography-black',
-      closed: 'text-typography-950',
+      closed: 'text-typography-white',
       accent: 'text-typography-black',
       muted: 'text-typography-500',
       moving: 'text-typography-black',
@@ -57,7 +57,7 @@ const badgeIconStyle = tva({
   parentVariants: {
     action: {
       open: 'text-typography-black',
-      closed: 'text-typography-950',
+      closed: 'text-typography-white',
       accent: 'text-typography-black',
       muted: 'text-typography-500',
       moving: 'text-typography-black',
@@ -90,6 +90,20 @@ export interface BadgeProps
   className?: string;
 }
 
+// Defensive: callers who write `<Badge>Open</Badge>` instead of
+// `<Badge><BadgeText>Open</BadgeText></Badge>` would otherwise hit RN's
+// "Text strings must be rendered within a <Text> component" crash. Wrap
+// text-like children in BadgeText automatically; pass elements through
+// unchanged so composition with BadgeIcon / custom nodes still works.
+function wrapBadgeChildren(children: React.ReactNode): React.ReactNode {
+  return React.Children.map(children, (child) => {
+    if (typeof child === 'string' || typeof child === 'number') {
+      return <BadgeText>{child}</BadgeText>;
+    }
+    return child;
+  });
+}
+
 function Badge({ children, action = 'muted', size = 'md', className, ...props }: BadgeProps) {
   const contextValue = useMemo(() => ({ action, size }), [action, size]);
 
@@ -100,7 +114,7 @@ function Badge({ children, action = 'muted', size = 'md', className, ...props }:
       context={contextValue}
       {...props}
     >
-      {children}
+      {wrapBadgeChildren(children)}
     </ContextView>
   );
 }
@@ -109,11 +123,16 @@ export interface BadgeTextProps
   extends React.ComponentPropsWithoutRef<typeof Text>, VariantProps<typeof badgeTextStyle> {}
 
 const BadgeText = React.forwardRef<React.ComponentRef<typeof Text>, BadgeTextProps>(
-  function BadgeText({ children, className, size, ...props }, ref) {
+  function BadgeText(
+    { children, className, size, numberOfLines = 1, ellipsizeMode = 'tail', ...props },
+    ref,
+  ) {
     const { size: parentSize, action: parentAction } = useStyleContext(SCOPE);
     return (
       <Text
         ref={ref}
+        numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}
         className={badgeTextStyle({
           parentVariants: {
             size: parentSize,

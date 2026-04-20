@@ -105,7 +105,7 @@ export default function BadgesDev() {
         </View>
 
         <View className="mb-8">
-          <SectionHeading>Long label wrapping (constrained width)</SectionHeading>
+          <SectionHeading>Long label truncation (default numberOfLines=1)</SectionHeading>
           <Row>
             <View className="w-24">
               <Badge action="accent">
