@@ -180,6 +180,7 @@ module.exports = {
         heading: ['BebasNeue'],
         body: ['DMSans'],
         mono: ['DMMono'],
+        'mono-medium': ['DMMono_Medium'],
       },
       fontWeight: {
         extrablack: '950',

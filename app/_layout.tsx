@@ -1,5 +1,5 @@
 import { BebasNeue_400Regular } from '@expo-google-fonts/bebas-neue';
-import { DMMono_400Regular } from '@expo-google-fonts/dm-mono';
+import { DMMono_400Regular, DMMono_500Medium } from '@expo-google-fonts/dm-mono';
 import { DMSans_300Light, DMSans_400Regular, DMSans_500Medium } from '@expo-google-fonts/dm-sans';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -20,6 +20,7 @@ export default function RootLayout() {
     DMSans: DMSans_400Regular,
     DMSans_Medium: DMSans_500Medium,
     DMMono: DMMono_400Regular,
+    DMMono_Medium: DMMono_500Medium,
   });
 
   if (fontError) {
