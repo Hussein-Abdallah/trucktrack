@@ -141,20 +141,15 @@ const Input = React.forwardRef<React.ComponentRef<typeof UIInput.Input>, InputPr
           </View>
         )}
         {rightSlot && (
-          <View className="absolute right-4 top-0 bottom-0 justify-center items-center">
+          <View
+            className="absolute right-4 top-0 bottom-0 justify-center items-center"
+            pointerEvents={isDisabled ? 'none' : 'auto'}
+          >
             {rightSlot}
           </View>
         )}
       </UIInput>
-      {error && (
-        <Text
-          className="mt-2 text-[12px] font-body text-error-400"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          {error}
-        </Text>
-      )}
+      {error && <Text className="mt-2 text-[12px] font-body text-error-400">{error}</Text>}
     </View>
   );
 });
@@ -172,6 +167,7 @@ export interface InputIconProps
 const InputIcon = React.forwardRef<React.ComponentRef<typeof UIInput.Icon>, InputIconProps>(
   function InputIcon({ className, size, ...props }, ref) {
     const { size: parentSize } = useStyleContext(SCOPE);
+    const resolvedSize = typeof size === 'string' ? size : parentSize;
 
     if (typeof size === 'number') {
       return (
@@ -190,7 +186,7 @@ const InputIcon = React.forwardRef<React.ComponentRef<typeof UIInput.Icon>, Inpu
         ref={ref}
         {...props}
         className={inputIconStyle({
-          parentVariants: { size: parentSize },
+          parentVariants: { size: resolvedSize },
           class: className,
         })}
       />
