@@ -48,3 +48,6 @@ supabase/.branches/
 #claude
 .mcp.json
 .claude
+
+# Local-only design reference (v0.dev Next.js preview — not committed)
+trucktrack_design/

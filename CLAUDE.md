@@ -147,6 +147,24 @@ Labels/badges:    DM Mono 10–11px UPPERCASE letter-spacing: 1.5
 - `borderRadius: 4` for modals, dropdowns, bottom sheets
 - No drop shadows, gradients, blur, or glow effects anywhere
 
+## Design References
+
+- The canonical design for every consumer + operator screen lives in **`trucktrack_design/`** — a v0.dev-generated Next.js preview project at the repo root. It is **local-only and gitignored** — not shipped in this repo. Obtain the latest drop from the product owner or regenerate via v0.dev before implementing any UI ticket.
+- It is **reference only**. The main app never imports from it (so Metro never pulls it into the bundle); `tsc`, ESLint, and Prettier explicitly ignore it via `tsconfig.json`, `eslint.config.js`, and `.prettierignore`.
+- When implementing a ticket:
+  1. Open the matching file (see paths below) side-by-side with the destination file in `app/` or `components/`.
+  2. Mirror layout, spacing, hierarchy, and UX flow exactly — **structure and interaction come from the reference**.
+  3. Translate web primitives to React Native: `div` → `View`, `span`/`p`/`h1`–`h6` → `Text`, `button` → Gluestack `<Button>`, `input` → Gluestack `<Input>`, `img`/`next/image` → `<Image>` from `react-native`, `a`/`next/link` → Expo Router `<Link>`, `onClick` → `onPress`, `lucide-react` → Feather icons from `@expo/vector-icons`. For image-heavy screens needing caching or blurhash, reconsider `expo-image` (`npx expo install expo-image`).
+  4. Tailwind classes map 1:1 to NativeWind; drop `hover:*` (use `active:*` for press feedback) and `md:` / `lg:` breakpoints.
+  5. Remap v0's greys (`bg-zinc-*`, `text-slate-*`) to Street Fire tokens. Never hardcode hex.
+  6. **Styling comes from this doc, not the reference.** Shape rules, palette, typography, and UI patterns sections above win on any styling conflict. No shadows / gradients / blur / glow — ever, regardless of the design.
+  7. Do **not** edit files inside `trucktrack_design/`. If the design is wrong, the user iterates in v0 and re-drops.
+- Consumer screens: `trucktrack_design/components/truck-track/consumer/*.tsx` (`map-view`, `following-view`, `stamps-view`, `alerts-view`, `profile-view`, `truck-profile`).
+- Operator screens: `trucktrack_design/components/truck-track/operator/*.tsx` (`today-view`, `schedule-view`, `analytics-view`, `catering-view`, `settings-view`).
+- Auth + onboarding: `trucktrack_design/components/truck-track/auth/auth.tsx` and `.../onboarding/onboarding.tsx`.
+- Shared primitives (cards, badges, buttons, tab bar, bottom sheet, loyalty card, empty state, alert item): `trucktrack_design/components/truck-track/*.tsx`.
+- Previewing the design locally: `cd trucktrack_design && pnpm install && pnpm dev` — `pnpm` is what the v0.dev-generated Next.js project ships with (separate from the main repo's `npm` setup); this runs an isolated Next.js dev server.
+
 ## UI Patterns
 
 - **One primary (orange) button per screen maximum**
