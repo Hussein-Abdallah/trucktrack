@@ -13,7 +13,7 @@ export type TruckScheduleStatus = 'scheduled' | 'live' | 'cancelled';
 
 export interface Profile {
   id: string;
-  role: UserRole;
+  roles: UserRole[];
   display_name: string | null;
   avatar_url: string | null;
   language: AppLanguage;
