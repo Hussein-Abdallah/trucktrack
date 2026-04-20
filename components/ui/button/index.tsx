@@ -168,8 +168,9 @@ const SPINNER_FOREGROUND: Record<string, string> = {
   success: CTA_WHITE,
 };
 
-export interface ButtonSpinnerProps
-  extends React.ComponentPropsWithoutRef<typeof UIButton.Spinner> {}
+export interface ButtonSpinnerProps extends React.ComponentPropsWithoutRef<
+  typeof UIButton.Spinner
+> {}
 
 const ButtonSpinner = React.forwardRef<
   React.ElementRef<typeof UIButton.Spinner>,
