@@ -33,7 +33,7 @@ const sizeContainer: Record<ButtonSize, string> = {
   lg: 'h-[52px] px-6',
 };
 
-const baseLabel = 'font-mono uppercase tracking-[1px] text-typography-950';
+const baseLabel = 'font-mono uppercase tracking-[1px] text-white';
 
 const sizeLabel: Record<ButtonSize, string> = {
   sm: 'text-[10px]',
