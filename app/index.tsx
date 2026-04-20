@@ -25,7 +25,16 @@ export default function Index() {
     return <Redirect href="/auth/login" />;
   }
 
-  if (session.role !== variant) {
+  // profiles.roles is CHECK-constrained to be non-empty at the DB level
+  // (TT-13 migration), but TypeScript sees Profile['roles'] as a plain
+  // array. Treat any empty-roles session as broken and force re-auth
+  // rather than risking an undefined role downstream.
+  if (session.roles.length === 0) {
+    return <Redirect href="/auth/login" />;
+  }
+
+  if (!session.roles.includes(variant)) {
+    const signedInRole = session.roles[0];
     return (
       <View className="flex-1 items-center justify-center gap-4 bg-background-0 px-6">
         <Text className="font-heading text-4xl tracking-wider text-typography-950">
@@ -34,7 +43,7 @@ export default function Index() {
         <Text className="text-center font-body text-base text-typography-500">
           {t('routes.auth.wrongApp.message', {
             variant: t(`routes.auth.wrongApp.variant.${variant}`),
-            role: t(`routes.auth.wrongApp.role.${session.role}`),
+            role: t(`routes.auth.wrongApp.role.${signedInRole}`),
           })}
         </Text>
         <Pressable
