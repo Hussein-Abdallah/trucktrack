@@ -37,13 +37,7 @@ export function Badge({ variant, children, className }: BadgeProps) {
 
   return (
     <View accessibilityRole="text" className={containerClass}>
-      {isTextLike(children) ? (
-        <Text className={labelClass} numberOfLines={1}>
-          {children}
-        </Text>
-      ) : (
-        children
-      )}
+      {isTextLike(children) ? <Text className={labelClass}>{children}</Text> : children}
     </View>
   );
 }
