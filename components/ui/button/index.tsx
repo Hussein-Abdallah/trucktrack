@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { createButton } from '@gluestack-ui/core/button/creator';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/core/icon/creator';
