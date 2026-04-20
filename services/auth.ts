@@ -88,7 +88,12 @@ export async function signIn(args: SignInArgs): Promise<AuthResult> {
 }
 
 export async function signOut(): Promise<void> {
-  const { error } = await supabase.auth.signOut();
+  // Default scope in supabase-js is 'global', which revokes every
+  // session across every device. Use 'local' so tapping "sign out" on
+  // this phone doesn't also log the user out on their tablet / web.
+  // Callers that truly want cross-device logout should wrap their own
+  // helper rather than flip this default.
+  const { error } = await supabase.auth.signOut({ scope: 'local' });
   if (error) throw mapSupabaseAuthError(error);
 }
 
@@ -97,11 +102,14 @@ export async function signOut(): Promise<void> {
 // to guarantee the variant's role is recorded when the same email
 // signs into the second app binary.
 export async function ensureRoleForVariant(userId: string, role: UserRole): Promise<void> {
+  // maybeSingle (vs single) returns data=null for zero rows rather than
+  // erroring — makes the explicit "Profile row missing" branch below
+  // reachable when the trigger somehow didn't materialise a row.
   const { data, error: selectError } = await supabase
     .from('profiles')
     .select('roles')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (selectError) throw mapSupabasePostgrestError(selectError);
   if (!data) throw new UnknownAuthError('Profile row missing for authenticated user');
