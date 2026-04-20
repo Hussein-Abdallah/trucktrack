@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
+import { classNames, isTextLike } from '@/components/ui/_utils';
+
 export type BadgeVariant = 'open' | 'closed' | 'accent' | 'muted' | 'moving';
 
 export interface BadgeProps {
@@ -28,22 +30,6 @@ const variantLabel: Record<BadgeVariant, string> = {
   muted: 'text-typography-500',
   moving: 'text-typography-black',
 };
-
-function classNames(...parts: (string | false | undefined)[]): string {
-  return parts.filter(Boolean).join(' ');
-}
-
-// Mirrors the Button helper — wrap text-like children inside <Text> so
-// React Native doesn't throw "Text strings must be rendered within a
-// <Text> component". null / undefined / boolean render as nothing, so
-// arrays like `[count, ' ', label]` containing conditional falsy entries
-// are safe.
-function isTextLike(node: ReactNode): boolean {
-  if (node === null || node === undefined || typeof node === 'boolean') return true;
-  if (typeof node === 'string' || typeof node === 'number') return true;
-  if (Array.isArray(node)) return node.every(isTextLike);
-  return false;
-}
 
 export function Badge({ variant, children, className }: BadgeProps) {
   const containerClass = classNames(baseContainer, variantContainer[variant], className);

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { PressableProps } from 'react-native';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { classNames, isTextLike, stringifyTextLike } from '@/components/ui/_utils';
 import { CTA_WHITE } from '@/theme/colors';
 
 export type ButtonAction = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
@@ -42,29 +43,6 @@ const sizeLabel: Record<ButtonSize, string> = {
   md: 'text-[11px]',
   lg: 'text-[12px]',
 };
-
-function classNames(...parts: (string | false | undefined)[]): string {
-  return parts.filter(Boolean).join(' ');
-}
-
-// Children like `{foo} {bar}` arrive as an array of strings/numbers, not a
-// single string. Wrap any all-text-like children in <Text> so React Native
-// doesn't throw "Text strings must be rendered within a <Text> component".
-// null / undefined / boolean are treated as text-like because React renders
-// them as nothing — keeps arrays like `['Save', condition && ' now']` safe.
-function isTextLike(node: ReactNode): boolean {
-  if (node === null || node === undefined || typeof node === 'boolean') return true;
-  if (typeof node === 'string' || typeof node === 'number') return true;
-  if (Array.isArray(node)) return node.every(isTextLike);
-  return false;
-}
-
-function stringifyTextLike(node: ReactNode): string {
-  if (node === null || node === undefined || typeof node === 'boolean') return '';
-  if (typeof node === 'string' || typeof node === 'number') return String(node);
-  if (Array.isArray(node)) return node.map(stringifyTextLike).join('');
-  return '';
-}
 
 export function Button({
   action = 'primary',
