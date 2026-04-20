@@ -25,10 +25,15 @@ export default function Index() {
     return <Redirect href="/auth/login" />;
   }
 
+  // profiles.roles is CHECK-constrained to be non-empty at the DB level
+  // (TT-13 migration), but TypeScript sees Profile['roles'] as a plain
+  // array. Treat any empty-roles session as broken and force re-auth
+  // rather than risking an undefined role downstream.
+  if (session.roles.length === 0) {
+    return <Redirect href="/auth/login" />;
+  }
+
   if (!session.roles.includes(variant)) {
-    // If we reach here the user has at least one role but none match the
-    // current app variant, so `roles[0]` is safe and gives the wrong-app
-    // message something concrete to name.
     const signedInRole = session.roles[0];
     return (
       <View className="flex-1 items-center justify-center gap-4 bg-background-0 px-6">

@@ -1,10 +1,15 @@
 import { create } from 'zustand';
 
-export type UserRole = 'consumer' | 'operator';
+import type { Profile } from '@/lib/types';
+
+// Derived from Profile so a schema change flows through automatically —
+// CLAUDE.md rule: "Always use shared types from lib/types.ts — never
+// inline one-off interfaces for DB entities."
+export type UserRole = Profile['roles'][number];
 
 export interface AuthSession {
   userId: string;
-  roles: UserRole[];
+  roles: Profile['roles'];
 }
 
 interface AuthState {
