@@ -3,7 +3,6 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
-import { CTA_WHITE } from '@/theme/colors';
 
 type ButtonAction = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -64,7 +63,7 @@ export default function ButtonsDev() {
             <Row>
               {SIZES.map((size) => (
                 <Button key={size} action={action} size={size} isDisabled>
-                  <ButtonSpinner color={CTA_WHITE} />
+                  <ButtonSpinner />
                 </Button>
               ))}
             </Row>

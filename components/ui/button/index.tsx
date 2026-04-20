@@ -11,6 +11,8 @@ import {
 import { cssInterop } from 'nativewind';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { CTA_WHITE } from '@/theme/colors';
+
 // Street Fire Button — sharp-corner pill alternative. `action` is a domain
 // concept (primary / secondary / ghost / danger / success) rather than
 // Gluestack's default semantic actions. Pressed state uses a lighter token
@@ -129,13 +131,15 @@ export interface ButtonTextProps
 }
 
 const ButtonText = React.forwardRef<React.ElementRef<typeof UIButton.Text>, ButtonTextProps>(
-  ({ className, size, numberOfLines = 1, ellipsizeMode = 'tail', ...props }, ref) => {
+  ({ className, size, ...props }, ref) => {
     const { size: parentSize } = useStyleContext(SCOPE);
+    // No default numberOfLines — buttons grow to fit content (callers can
+    // still pass the prop when they want truncation). Badge's default
+    // truncation is correct for pill chips; Button is a container that
+    // should expand to fit French labels per CLAUDE.md.
     return (
       <UIButton.Text
         ref={ref}
-        numberOfLines={numberOfLines}
-        ellipsizeMode={ellipsizeMode}
         {...props}
         className={buttonTextStyle({
           parentVariants: { size: parentSize },
@@ -147,7 +151,15 @@ const ButtonText = React.forwardRef<React.ElementRef<typeof UIButton.Text>, Butt
   },
 );
 
-const ButtonSpinner = UIButton.Spinner;
+// Default spinner colour to CTA_WHITE so callers don't have to wire it up
+// every time; they can still override `color` for edge cases (e.g. a
+// spinner on a ghost button over a light surface).
+const ButtonSpinner = React.forwardRef<
+  React.ElementRef<typeof UIButton.Spinner>,
+  React.ComponentPropsWithoutRef<typeof UIButton.Spinner>
+>(({ color = CTA_WHITE, ...props }, ref) => (
+  <UIButton.Spinner ref={ref} color={color} {...props} />
+));
 
 // ButtonIcon's `size` prop accepts both tva tokens ('sm'|'md'|'lg') AND
 // explicit numeric overrides from PrimitiveIcon — the two types conflict
