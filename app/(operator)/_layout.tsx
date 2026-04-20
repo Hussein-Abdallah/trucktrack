@@ -42,7 +42,7 @@ export default function OperatorLayout() {
     return <Redirect href="/auth/login" />;
   }
 
-  if (session.role !== 'operator') {
+  if (!session.roles.includes('operator')) {
     return <Redirect href="/(consumer)" />;
   }
 

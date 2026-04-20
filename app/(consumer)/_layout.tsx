@@ -42,7 +42,7 @@ export default function ConsumerLayout() {
     return <Redirect href="/auth/login" />;
   }
 
-  if (session.role !== 'consumer') {
+  if (!session.roles.includes('consumer')) {
     return <Redirect href="/(operator)/today" />;
   }
 

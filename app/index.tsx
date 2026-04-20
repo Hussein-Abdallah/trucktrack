@@ -25,7 +25,11 @@ export default function Index() {
     return <Redirect href="/auth/login" />;
   }
 
-  if (session.role !== variant) {
+  if (!session.roles.includes(variant)) {
+    // If we reach here the user has at least one role but none match the
+    // current app variant, so `roles[0]` is safe and gives the wrong-app
+    // message something concrete to name.
+    const signedInRole = session.roles[0];
     return (
       <View className="flex-1 items-center justify-center gap-4 bg-background-0 px-6">
         <Text className="font-heading text-4xl tracking-wider text-typography-950">
@@ -34,7 +38,7 @@ export default function Index() {
         <Text className="text-center font-body text-base text-typography-500">
           {t('routes.auth.wrongApp.message', {
             variant: t(`routes.auth.wrongApp.variant.${variant}`),
-            role: t(`routes.auth.wrongApp.role.${session.role}`),
+            role: t(`routes.auth.wrongApp.role.${signedInRole}`),
           })}
         </Text>
         <Pressable
