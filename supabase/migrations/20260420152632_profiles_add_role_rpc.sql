@@ -27,6 +27,8 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  v_rows_updated integer;
 begin
   if auth.uid() is null then
     raise exception 'not authenticated' using errcode = '42501';
@@ -39,6 +41,18 @@ begin
   set roles = array_append(roles, p_role)
   where id = p_user_id
     and not (p_role = any(roles));
+
+  -- Zero rows updated has two meanings: the role was already present
+  -- (idempotent success) or the profile row doesn't exist (must raise,
+  -- otherwise the RPC reports success while the role was never
+  -- assigned). Disambiguate with a follow-up existence probe.
+  get diagnostics v_rows_updated = row_count;
+  if v_rows_updated = 0 then
+    if not exists (select 1 from public.profiles where id = p_user_id) then
+      raise exception 'profile row missing for authenticated user'
+        using errcode = 'P0002';
+    end if;
+  end if;
 end;
 $$;
 
