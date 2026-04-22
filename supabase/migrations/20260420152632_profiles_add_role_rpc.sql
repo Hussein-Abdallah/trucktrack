@@ -30,6 +30,16 @@ as $$
 declare
   v_rows_updated integer;
 begin
+  -- Reject NULL / empty roles up-front. Without this, NULL p_role makes
+  -- the WHERE clause below evaluate to NULL (three-valued logic), the
+  -- UPDATE no-ops, the existence probe finds the row, and the function
+  -- silently returns success without appending anything. The
+  -- profiles_roles_valid CHECK doesn't catch it either — `<@` against
+  -- a NULL element evaluates to NULL, which CHECK treats as passing.
+  if p_role is null or btrim(p_role) = '' then
+    raise exception 'role must be a non-empty string' using errcode = '22004';
+  end if;
+
   if auth.uid() is null then
     raise exception 'not authenticated' using errcode = '42501';
   end if;
