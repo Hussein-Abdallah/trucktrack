@@ -1,4 +1,4 @@
-import Mapbox, { Camera, MapView as RNMapboxMapView } from '@rnmapbox/maps';
+import Mapbox, { MapView as RNMapboxMapView } from '@rnmapbox/maps';
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -32,10 +32,16 @@ Mapbox.setAccessToken(PUBLIC_TOKEN);
 // once at import, not on every component mount.
 Mapbox.setTelemetryEnabled(false);
 
-// Ottawa city center — anchor every fresh launch here until the locate
-// flow (TT-36) lands and recenters on the user.
-const OTTAWA: [number, number] = [-75.6972, 45.4215];
-const DEFAULT_ZOOM = 12;
+/** Ottawa city center — default camera anchor when the screen has no
+ *  user location to recenter on. Exported so callers (the consumer
+ *  screen) can pass it to their own `<Camera defaultSettings>`. */
+export const OTTAWA_CENTER: [number, number] = [-75.6972, 45.4215];
+/** Default city-wide zoom — close enough to see neighbourhoods, far
+ *  enough to fit several truck pins without panning. */
+export const DEFAULT_ZOOM = 12;
+/** Closer-in zoom used by the locate-on-user flow (TT-36) so the user
+ *  dot lands centred with a comfortable viewport around it. */
+export const USER_ZOOM = 15;
 
 // Mapbox's pre-built dark style is the closest match to Street Fire App
 // Black without writing a custom style spec. A bespoke style is a future
@@ -43,7 +49,9 @@ const DEFAULT_ZOOM = 12;
 const DARK_STYLE = 'mapbox://styles/mapbox/dark-v11';
 
 interface MapViewProps {
-  /** Pins, user puck, callouts — anything that lives inside the Mapbox map context. */
+  /** Camera, pins, user puck, callouts — anything that lives inside
+   *  the Mapbox map context. The screen owns the `<Camera>` so it can
+   *  hold the ref and animate the viewport (e.g. locate button). */
   children?: ReactNode;
 }
 
@@ -60,7 +68,6 @@ export function MapView({ children }: MapViewProps) {
       compassEnabled={false}
       scaleBarEnabled={false}
     >
-      <Camera defaultSettings={{ centerCoordinate: OTTAWA, zoomLevel: DEFAULT_ZOOM }} />
       {children}
     </RNMapboxMapView>
   );

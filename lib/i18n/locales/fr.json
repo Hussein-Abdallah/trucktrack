@@ -55,5 +55,11 @@
     "openNow": "OUVERT",
     "closed": "FERMÉ",
     "unknownLocation": "—"
+  },
+  "map": {
+    "locateButton": {
+      "label": "Ma position",
+      "deniedHint": "Activez la localisation dans les Réglages"
+    }
   }
 }

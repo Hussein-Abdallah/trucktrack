@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MarkerView } from '@rnmapbox/maps';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -11,7 +11,11 @@ interface TruckPinProps {
 }
 
 const PIN_SIZE = 40;
-const ICON_SIZE = 20;
+// MaterialCommunityIcons "truck" reads better at 24 than the prior
+// 20px Feather map-pin since the truck silhouette has more internal
+// detail. (MCI doesn't ship a "food-truck" glyph in this SDK version,
+// so a plain truck is the closest fit — swap if a richer set lands.)
+const ICON_SIZE = 24;
 const ARROW_HALF = 6;
 const ARROW_HEIGHT = 8;
 const TRANSPARENT = 'transparent';
@@ -39,7 +43,7 @@ export function TruckPin({ truck, onPress }: TruckPinProps) {
         accessibilityLabel={truck.name}
       >
         <View style={isOpen ? styles.squareOpen : styles.squareClosed}>
-          <Feather name="map-pin" size={ICON_SIZE} color={WARM_CREAM} />
+          <MaterialCommunityIcons name="truck" size={ICON_SIZE} color={WARM_CREAM} />
         </View>
         <View style={isOpen ? styles.arrowOpen : styles.arrowClosed} />
       </Pressable>

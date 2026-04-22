@@ -1,8 +1,17 @@
-import { StyleSheet, View } from 'react-native';
+import { Camera } from '@rnmapbox/maps';
+import { useEffect, useRef } from 'react';
+import { AppState, Linking, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { MapView } from '@/components/map/MapView';
+import { LocateButton } from '@/components/map/LocateButton';
+import { DEFAULT_ZOOM, MapView, OTTAWA_CENTER, USER_ZOOM } from '@/components/map/MapView';
+import { UserLocationDot } from '@/components/map/UserLocationDot';
 import { TruckPin } from '@/components/truck/TruckPin';
 import { useTrucks } from '@/hooks/useTrucks';
+import { useLocationStore } from '@/stores/locationStore';
+import { APP_BLACK } from '@/theme/colors';
+
+const CAMERA_FLY_MS = 600;
 
 export default function ConsumerMapScreen() {
   // Loading / empty / error UX (skeletons + retry CTA on the bottom
@@ -12,15 +21,83 @@ export default function ConsumerMapScreen() {
   // fetch failures to the dev console so they aren't swallowed silently
   // (Sentry hookup is a separate ticket).
   const { data: trucks = [], error } = useTrucks();
-
   if (error) {
     // eslint-disable-next-line no-console
     console.error('[useTrucks] fetch failed:', error);
   }
 
+  const permissionStatus = useLocationStore((s) => s.permissionStatus);
+  const coords = useLocationStore((s) => s.coords);
+  const cameraRef = useRef<Camera>(null);
+  // Top inset = device safe-area top (notch / Dynamic Island) plus a
+  // visual margin so the locate button doesn't sit flush against the
+  // system chrome. Hardcoding 20 only worked on devices where the safe
+  // area top is < 20pt, which excludes anything with a notch.
+  const insets = useSafeAreaInsets();
+
+  // Permission lifecycle: prompt on first mount, re-sync on app resume
+  // (handles user toggling location in Settings while backgrounded),
+  // tear down the watch on unmount so the GPS subscription doesn't leak.
+  useEffect(() => {
+    const {
+      permissionStatus: current,
+      requestPermission,
+      refresh,
+      teardown,
+    } = useLocationStore.getState();
+
+    if (current === 'undetermined') {
+      void requestPermission();
+    } else if (current === 'granted') {
+      void refresh();
+    }
+
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      // requestPermission() is a no-op prompt when status is already
+      // determined — it just re-reads the OS state. That's exactly the
+      // resync we want here.
+      void useLocationStore.getState().requestPermission();
+    });
+
+    return () => {
+      sub.remove();
+      teardown();
+    };
+  }, []);
+
+  // Two distinct non-actionable states the button needs to express:
+  // - permissionDenied: tap routes to OS Settings (recovery path).
+  // - isLocating: permission is granted but the first GPS fix hasn't
+  //   landed yet — tap is a true no-op, just wait.
+  // Splitting them at the prop layer keeps a11y hints honest (the
+  // "open Settings" hint shouldn't fire while we're just waiting).
+  const permissionDenied = permissionStatus === 'denied';
+  const isLocating = permissionStatus === 'granted' && !coords;
+
+  const handleLocate = () => {
+    if (permissionDenied) {
+      // The OS won't re-prompt after a denial — only Settings can flip
+      // it. Send the user there directly so they have a recovery path.
+      void Linking.openSettings();
+      return;
+    }
+    if (!coords) return;
+    cameraRef.current?.setCamera({
+      centerCoordinate: [coords.lng, coords.lat],
+      zoomLevel: USER_ZOOM,
+      animationDuration: CAMERA_FLY_MS,
+      animationMode: 'flyTo',
+    });
+  };
+
   return (
     <View style={styles.container}>
       <MapView>
+        <Camera
+          ref={cameraRef}
+          defaultSettings={{ centerCoordinate: OTTAWA_CENTER, zoomLevel: DEFAULT_ZOOM }}
+        />
         {trucks.map((truck) => (
           <TruckPin
             key={truck.id}
@@ -33,11 +110,40 @@ export default function ConsumerMapScreen() {
             }}
           />
         ))}
+        {coords ? <UserLocationDot coords={coords} /> : null}
       </MapView>
+      {/* Overlay covers the full container so the LocateButton has a
+          known, full-screen frame. Flexbox (alignItems: 'flex-end' +
+          paddingTop) handles the actual top-right positioning instead
+          of absolute offsets on the button itself — that combo runs
+          into a Fabric quirk where Pressable's top/right collapse to
+          0/0 inside an absolute-fill parent. pointerEvents="box-none"
+          lets touches fall through to the map below. */}
+      <View
+        style={[styles.overlay, { paddingTop: insets.top + OVERLAY_TOP_MARGIN }]}
+        pointerEvents="box-none"
+      >
+        <LocateButton
+          permissionDenied={permissionDenied}
+          isLocating={isLocating}
+          onPress={handleLocate}
+        />
+      </View>
     </View>
   );
 }
 
+// Visual margin between the safe-area top edge and the locate button.
+// Combined with insets.top at render time so the button clears the
+// notch / Dynamic Island on every device.
+const OVERLAY_TOP_MARGIN = 20;
+const OVERLAY_RIGHT_INSET = 20;
+
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: APP_BLACK },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'flex-end',
+    paddingRight: OVERLAY_RIGHT_INSET,
+  },
 });

@@ -2,6 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { Redirect, Tabs, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
 import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
@@ -34,9 +35,16 @@ function tabIcon(name: FeatherIconName) {
   };
 }
 
+// Tab-bar height when no system inset. Mirrors the consumer layout.
+const TAB_BAR_BASE_HEIGHT = 56;
+
 export default function OperatorLayout() {
   const session = useAuthStore((state) => state.session);
   const { t } = useTranslation();
+  // Custom tabBarStyle clobbers react-navigation's auto safe-area
+  // padding, so we fold the inset back in manually. See consumer layout
+  // for the full reasoning.
+  const insets = useSafeAreaInsets();
 
   if (!session) {
     return <Redirect href="/auth/login" />;
@@ -60,6 +68,8 @@ export default function OperatorLayout() {
           backgroundColor: CHARCOAL,
           borderTopColor: MID,
           borderTopWidth: 1,
+          height: TAB_BAR_BASE_HEIGHT + insets.bottom,
+          paddingBottom: insets.bottom,
         },
         tabBarLabelStyle: {
           fontFamily: 'DMMono',
