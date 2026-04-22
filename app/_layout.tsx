@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -14,6 +15,21 @@ import '@/global.css';
 import '@/lib/i18n';
 import { queryClient } from '@/services/queryClient';
 import { APP_BLACK, FIRE_ORANGE, WARM_CREAM } from '@/theme/colors';
+
+// Lock the native window background to App Black at module load so the
+// brief gap between splash dismissal and the first RN paint matches the
+// app theme instead of flashing the OS-default surface (most visible on
+// Android cold-start). Fire-and-forget: a failure here would only leave
+// the OS default behind a splash that's about to disappear — nothing
+// functional depends on the result. Dev-only console.warn keeps
+// integration regressions findable during local QA without polluting
+// production logs.
+void SystemUI.setBackgroundColorAsync(APP_BLACK).catch((error: unknown) => {
+  if (__DEV__) {
+    // eslint-disable-next-line no-console
+    console.warn('[system-ui] Failed to set window background color', error);
+  }
+});
 
 export default function RootLayout() {
   const { t } = useTranslation();
