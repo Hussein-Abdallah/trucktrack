@@ -32,12 +32,17 @@ const withLocalizedInfoPlist = (config, { locales }) => {
         const lprojDir = path.join(projectRoot, projectName, `${lang}.lproj`);
         fs.mkdirSync(lprojDir, { recursive: true });
 
-        // Format: `"KEY" = "value";` — one per line, double quotes
-        // inside values escaped. UTF-8 is what Xcode expects (UTF-16
-        // also works but UTF-8 is friendlier for source diffs).
+        // Format: `"KEY" = "value";` — one per line, with C-style
+        // escaping (backslash + double-quote). UTF-8 is what Xcode
+        // expects (UTF-16 also works but UTF-8 is friendlier for
+        // source diffs). Backslashes are escaped FIRST so the quote
+        // pass doesn't double-escape any backslashes it generates.
         const content =
           Object.entries(strings)
-            .map(([key, value]) => `"${key}" = "${value.replace(/"/g, '\\"')}";`)
+            .map(([key, value]) => {
+              const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+              return `"${key}" = "${escaped}";`;
+            })
             .join('\n') + '\n';
 
         fs.writeFileSync(path.join(lprojDir, 'InfoPlist.strings'), content, 'utf8');

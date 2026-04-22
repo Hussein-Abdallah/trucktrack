@@ -66,10 +66,17 @@ export default function ConsumerMapScreen() {
     };
   }, []);
 
-  const locateDisabled = permissionStatus !== 'granted' || !coords;
+  // Two distinct non-actionable states the button needs to express:
+  // - permissionDenied: tap routes to OS Settings (recovery path).
+  // - isLocating: permission is granted but the first GPS fix hasn't
+  //   landed yet — tap is a true no-op, just wait.
+  // Splitting them at the prop layer keeps a11y hints honest (the
+  // "open Settings" hint shouldn't fire while we're just waiting).
+  const permissionDenied = permissionStatus === 'denied';
+  const isLocating = permissionStatus === 'granted' && !coords;
 
   const handleLocate = () => {
-    if (permissionStatus === 'denied') {
+    if (permissionDenied) {
       // The OS won't re-prompt after a denial — only Settings can flip
       // it. Send the user there directly so they have a recovery path.
       void Linking.openSettings();
@@ -116,7 +123,11 @@ export default function ConsumerMapScreen() {
         style={[styles.overlay, { paddingTop: insets.top + OVERLAY_TOP_MARGIN }]}
         pointerEvents="box-none"
       >
-        <LocateButton disabled={locateDisabled} onPress={handleLocate} />
+        <LocateButton
+          permissionDenied={permissionDenied}
+          isLocating={isLocating}
+          onPress={handleLocate}
+        />
       </View>
     </View>
   );

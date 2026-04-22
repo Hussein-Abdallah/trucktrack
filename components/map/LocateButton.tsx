@@ -5,10 +5,13 @@ import { Pressable } from 'react-native';
 import { CHARCOAL, FIRE_ORANGE, MID, MUTED } from '@/theme/colors';
 
 interface LocateButtonProps {
-  /** When true, the icon dims and tap routes to OS Settings instead of
-   *  recentering — used when permission is denied or coords aren't
-   *  available yet. */
-  disabled: boolean;
+  /** True when OS permission is denied. Tap routes to Settings via the
+   *  caller; the a11y hint surfaces the recovery path. */
+  permissionDenied: boolean;
+  /** True when permission is granted but the first GPS fix hasn't
+   *  arrived yet. Visually dim, no a11y hint about Settings (the user
+   *  doesn't need to do anything — wait). */
+  isLocating: boolean;
   onPress: () => void;
 }
 
@@ -19,26 +22,31 @@ const ICON_SIZE = 25;
 // Fabric when applied via Pressable's function-style prop). Mirrors
 // AvatarHeaderButton in (consumer)/_layout.tsx — same proven pattern
 // for circular icon-only floating controls.
-export function LocateButton({ disabled, onPress }: LocateButtonProps) {
+export function LocateButton({ permissionDenied, isLocating, onPress }: LocateButtonProps) {
   const { t } = useTranslation();
+  // Visual treatment is the same for both non-actionable states (denied
+  // + locating). The split lives at the semantic layer: a11y hint only
+  // fires for denied, since "open Settings" is misleading when the
+  // user just needs to wait for GPS to lock.
+  const dimmed = permissionDenied || isLocating;
 
   return (
     <Pressable
       onPress={onPress}
       className={`h-[50px] w-[50px] items-center justify-center rounded-full border active:opacity-70 ${
-        disabled ? 'opacity-60' : ''
+        dimmed ? 'opacity-60' : ''
       }`}
       style={{ backgroundColor: CHARCOAL, borderColor: MID }}
       accessibilityRole="button"
       accessibilityLabel={t('map.locateButton.label')}
-      // Hint conveys the swapped action when permission is denied
+      // Hint conveys the swapped action only when permission is denied
       // (button still triggers Linking.openSettings — it's not actually
       // disabled). We deliberately do NOT set accessibilityState.disabled
       // because that would tell screen readers the control is inert,
       // hiding the recovery path from assistive-tech users.
-      accessibilityHint={disabled ? t('map.locateButton.deniedHint') : undefined}
+      accessibilityHint={permissionDenied ? t('map.locateButton.deniedHint') : undefined}
     >
-      <Feather name="navigation" size={ICON_SIZE} color={disabled ? MUTED : FIRE_ORANGE} />
+      <Feather name="navigation" size={ICON_SIZE} color={dimmed ? MUTED : FIRE_ORANGE} />
     </Pressable>
   );
 }
