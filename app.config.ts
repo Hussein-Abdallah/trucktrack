@@ -82,6 +82,12 @@ export default (): ExpoConfig => {
       bundleIdentifier: v.iosBundleIdentifier,
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        // Tell iOS the app ships English + French resources so it picks
+        // the right .lproj/InfoPlist.strings for OS-level dialogs (e.g.
+        // the location permission prompt) based on device language.
+        CFBundleDevelopmentRegion: 'en',
+        CFBundleLocalizations: ['en', 'fr'],
+        CFBundleAllowMixedLocalizations: true,
       },
     },
     android: {
@@ -115,6 +121,32 @@ export default (): ExpoConfig => {
       // The runtime public token (EXPO_PUBLIC_MAPBOX_TOKEN) is separate;
       // it's read by the app code at render time.
       '@rnmapbox/maps',
+      // Foreground when-in-use only — we don't track location in the
+      // background. The plugin wires NSLocationWhenInUseUsageDescription
+      // on iOS and ACCESS_FINE_LOCATION + ACCESS_COARSE_LOCATION on
+      // Android automatically. The English value here is the default /
+      // base Info.plist string; the French translation lives in the
+      // fr.lproj/InfoPlist.strings file that withLocalizedInfoPlist
+      // writes at prebuild time.
+      [
+        'expo-location',
+        {
+          locationWhenInUsePermission: 'Find food trucks near you.',
+        },
+      ],
+      [
+        './plugins/withLocalizedInfoPlist',
+        {
+          locales: {
+            en: {
+              NSLocationWhenInUseUsageDescription: 'Find food trucks near you.',
+            },
+            fr: {
+              NSLocationWhenInUseUsageDescription: 'Trouvez des camions-restaurants près de vous.',
+            },
+          },
+        },
+      ],
     ],
     extra: {
       eas: v.easProjectId ? { projectId: v.easProjectId } : {},
