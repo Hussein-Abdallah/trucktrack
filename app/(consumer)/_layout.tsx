@@ -2,6 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { Redirect, Tabs, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
 import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
@@ -34,9 +35,20 @@ function tabIcon(name: FeatherIconName) {
   };
 }
 
+// Tab-bar height when no system inset (iOS without home indicator,
+// Android with hardware buttons). react-navigation's default is ~50;
+// we keep our brand height stable across surfaces.
+const TAB_BAR_BASE_HEIGHT = 56;
+
 export default function ConsumerLayout() {
   const session = useAuthStore((state) => state.session);
   const { t } = useTranslation();
+  // Custom tabBarStyle clobbers react-navigation's auto safe-area
+  // padding (it merges shallowly and our custom keys win), so we have
+  // to fold the inset back in manually. Without this, the Android
+  // system gesture/back bar sits on top of the tab bar when
+  // edgeToEdgeEnabled is on.
+  const insets = useSafeAreaInsets();
 
   if (!session) {
     return <Redirect href="/auth/login" />;
@@ -60,6 +72,8 @@ export default function ConsumerLayout() {
           backgroundColor: CHARCOAL,
           borderTopColor: MID,
           borderTopWidth: 1,
+          height: TAB_BAR_BASE_HEIGHT + insets.bottom,
+          paddingBottom: insets.bottom,
         },
         tabBarLabelStyle: {
           fontFamily: 'DMMono',

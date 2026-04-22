@@ -9,6 +9,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
@@ -65,23 +66,31 @@ export default function RootLayout() {
     // (and any future gesture-driven UI) can install pan responders. RN
     // gesture-handler 2.x requires this at the root or gestures silently
     // fail to fire on Android — iOS is more forgiving but inconsistent.
+    //
+    // SafeAreaProvider must wrap any subtree that calls useSafeAreaInsets
+    // or relies on react-navigation's bottom-tabs auto-insetting. Without
+    // it, the consumer/operator tab bars sit flush against the Android
+    // system navigation bar (overlap with home/back/recents) because
+    // edgeToEdgeEnabled lets the app draw under the system bars.
     <GestureHandlerRootView style={rootStyle}>
-      <QueryClientProvider client={queryClient}>
-        <GluestackUIProvider mode="dark">
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: APP_BLACK },
-              headerStyle: { backgroundColor: APP_BLACK },
-              headerTintColor: WARM_CREAM,
-              headerTitleStyle: { color: WARM_CREAM },
-              headerShadowVisible: false,
-              headerTitle: '',
-            }}
-          />
-          <StatusBar style="light" />
-        </GluestackUIProvider>
-      </QueryClientProvider>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <GluestackUIProvider mode="dark">
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: APP_BLACK },
+                headerStyle: { backgroundColor: APP_BLACK },
+                headerTintColor: WARM_CREAM,
+                headerTitleStyle: { color: WARM_CREAM },
+                headerShadowVisible: false,
+                headerTitle: '',
+              }}
+            />
+            <StatusBar style="light" />
+          </GluestackUIProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
