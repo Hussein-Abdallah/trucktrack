@@ -18,6 +18,18 @@
         "APP_VARIANT": "operator"
       }
     },
+    "development-consumer-simulator": {
+      "extends": "development-consumer",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "development-operator-simulator": {
+      "extends": "development-operator",
+      "ios": {
+        "simulator": true
+      }
+    },
     "preview-consumer": {
       "distribution": "internal",
       "channel": "preview-consumer",

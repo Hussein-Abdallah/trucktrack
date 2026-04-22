@@ -101,7 +101,21 @@ export default (): ExpoConfig => {
       favicon: './assets/favicon.png',
     },
     owner: 'sainabdallah',
-    plugins: ['expo-font', 'expo-localization', 'expo-router'],
+    plugins: [
+      'expo-font',
+      'expo-localization',
+      'expo-router',
+      // @rnmapbox/maps' native build needs to download the Mapbox SDK from
+      // their private artifact registry — that requires a secret token with
+      // Downloads:Read scope, scoped per-build (NOT bundled with the JS).
+      // The plugin reads the token from the RNMAPBOX_MAPS_DOWNLOAD_TOKEN
+      // env var (set in .env.local for local prebuild + EAS Secret for
+      // cloud builds). The deprecated `RNMapboxMapsDownloadToken` plugin
+      // option is gone — env-var-only is the supported path.
+      // The runtime public token (EXPO_PUBLIC_MAPBOX_TOKEN) is separate;
+      // it's read by the app code at render time.
+      '@rnmapbox/maps',
+    ],
     extra: {
       eas: v.easProjectId ? { projectId: v.easProjectId } : {},
       APP_VARIANT: variant,

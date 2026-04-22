@@ -85,13 +85,15 @@ npm run ios:consumer | ios:operator | android:consumer | android:operator
 
 Bare `npm run start` / `ios` / `android` default to `APP_VARIANT=consumer`.
 
-**EAS profiles** (in `eas.json`): six variant-aware profiles — `development-consumer`, `development-operator`, `preview-consumer`, `preview-operator`, `production-consumer`, `production-operator`. Each sets `APP_VARIANT` in its `env` block. There is no bare `development`/`preview`/`production` — always pick a variant.
+**EAS profiles** (in `eas.json`): eight variant-aware profiles — `development-consumer`, `development-operator`, `development-consumer-simulator`, `development-operator-simulator`, `preview-consumer`, `preview-operator`, `production-consumer`, `production-operator`. Each sets `APP_VARIANT` in its `env` block. There is no bare `development`/`preview`/`production` — always pick a variant. The `*-simulator` dev profiles produce iOS Simulator-compatible `.app` bundles (no signing, no UDID); the bare `development-*` profiles produce signed `.ipa`s for physical iPhone install.
 
 **Runtime variant source**: always read via `lib/appVariant.ts` (`getAppVariant()`), never `process.env.APP_VARIANT` (undefined on native at runtime).
 
 **Route-tree rule**: both `(consumer)/` and `(operator)/` stay bundled into both binaries — Expo Router's `require.context` can't be scoped per variant. The gate in `app/index.tsx` makes the "wrong" group unreachable. ~2 MB overhead per build; revisit only if app size becomes a review-blocker.
 
 **Dev workflow rule**: always Ctrl-C Metro and restart when switching variants. Stale manifest cache = wrong name / icon / routing.
+
+**Native-module verification rule — hard gate, no exceptions**: any change requiring a fresh dev client build (new native dep via `npx expo install`, an `app.config.ts` plugin add/edit, an `expo-*` upgrade that bumps native peers, etc.) must be verified on **all three surfaces** before the PR merges: **iOS device, iOS simulator, and Android (emulator or device)**. Document the three checks in the PR body so the reviewer can see them. The Mapbox install (TT-34) is the canonical example — Expo Go cannot load custom native modules, and a build that works on one surface routinely breaks on another (e.g., touch-gesture conflicts on Android, simulator GPS quirks). Catching it pre-merge is dramatically cheaper than after.
 
 **Operator billing rule — critical, enforce in code review**:
 
