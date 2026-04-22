@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 
 import { CHARCOAL, FIRE_ORANGE, MID, MUTED } from '@/theme/colors';
 
@@ -12,20 +12,23 @@ interface LocateButtonProps {
   onPress: () => void;
 }
 
-const SIZE = 40;
-const ICON_SIZE = 20;
+const ICON_SIZE = 25;
 
+// NativeWind className handles size + shape + layout (the StyleSheet
+// equivalent silently dropped backgroundColor/borderRadius under iOS
+// Fabric when applied via Pressable's function-style prop). Mirrors
+// AvatarHeaderButton in (consumer)/_layout.tsx — same proven pattern
+// for circular icon-only floating controls.
 export function LocateButton({ disabled, onPress }: LocateButtonProps) {
   const { t } = useTranslation();
 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        disabled && styles.disabled,
-        pressed && !disabled && styles.pressed,
-      ]}
+      className={`h-[50px] w-[50px] items-center justify-center rounded-full border active:opacity-70 ${
+        disabled ? 'opacity-60' : ''
+      }`}
+      style={{ backgroundColor: CHARCOAL, borderColor: MID }}
       accessibilityRole="button"
       accessibilityLabel={t('map.locateButton.label')}
       accessibilityHint={disabled ? t('map.locateButton.deniedHint') : undefined}
@@ -35,26 +38,3 @@ export function LocateButton({ disabled, onPress }: LocateButtonProps) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  // Sized box only — positioning is handled by the parent flex overlay
-  // in app/(consumer)/index.tsx (alignItems flex-end + paddingTop). This
-  // separation works around an iOS Fabric quirk where position:absolute
-  // on a Pressable nested inside an absolute-fill wrapper collapses the
-  // top/right offsets to 0/0.
-  button: {
-    width: SIZE,
-    height: SIZE,
-    backgroundColor: CHARCOAL,
-    borderWidth: 1,
-    borderColor: MID,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-});
