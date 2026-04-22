@@ -1,4 +1,5 @@
 import Mapbox, { Camera, MapView as RNMapboxMapView } from '@rnmapbox/maps';
+import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
 // Public Mapbox token (pk.*). Read at module load so a missing/malformed
@@ -41,7 +42,12 @@ const DEFAULT_ZOOM = 12;
 // design polish ticket — this is the "good enough for MVP" baseline.
 const DARK_STYLE = 'mapbox://styles/mapbox/dark-v11';
 
-export function MapView() {
+interface MapViewProps {
+  /** Pins, user puck, callouts — anything that lives inside the Mapbox map context. */
+  children?: ReactNode;
+}
+
+export function MapView({ children }: MapViewProps) {
   return (
     <RNMapboxMapView
       style={styles.map}
@@ -55,6 +61,7 @@ export function MapView() {
       scaleBarEnabled={false}
     >
       <Camera defaultSettings={{ centerCoordinate: OTTAWA, zoomLevel: DEFAULT_ZOOM }} />
+      {children}
     </RNMapboxMapView>
   );
 }

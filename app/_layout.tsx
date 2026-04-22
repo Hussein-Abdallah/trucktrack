@@ -1,6 +1,7 @@
 import { BebasNeue_400Regular } from '@expo-google-fonts/bebas-neue';
 import { DMMono_400Regular, DMMono_500Medium } from '@expo-google-fonts/dm-mono';
 import { DMSans_300Light, DMSans_400Regular, DMSans_500Medium } from '@expo-google-fonts/dm-sans';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -11,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 import '@/lib/i18n';
+import { queryClient } from '@/services/queryClient';
 import { APP_BLACK, FIRE_ORANGE, WARM_CREAM } from '@/theme/colors';
 
 export default function RootLayout() {
@@ -48,20 +50,22 @@ export default function RootLayout() {
     // gesture-handler 2.x requires this at the root or gestures silently
     // fail to fire on Android — iOS is more forgiving but inconsistent.
     <GestureHandlerRootView style={rootStyle}>
-      <GluestackUIProvider mode="dark">
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: APP_BLACK },
-            headerStyle: { backgroundColor: APP_BLACK },
-            headerTintColor: WARM_CREAM,
-            headerTitleStyle: { color: WARM_CREAM },
-            headerShadowVisible: false,
-            headerTitle: '',
-          }}
-        />
-        <StatusBar style="light" />
-      </GluestackUIProvider>
+      <QueryClientProvider client={queryClient}>
+        <GluestackUIProvider mode="dark">
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: APP_BLACK },
+              headerStyle: { backgroundColor: APP_BLACK },
+              headerTintColor: WARM_CREAM,
+              headerTitleStyle: { color: WARM_CREAM },
+              headerShadowVisible: false,
+              headerTitle: '',
+            }}
+          />
+          <StatusBar style="light" />
+        </GluestackUIProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }
