@@ -11,7 +11,13 @@ export type AppLanguage = 'en' | 'fr';
 export type TruckPlan = 'free' | 'starter' | 'pro' | 'festival';
 export type TruckScheduleStatus = 'scheduled' | 'live' | 'cancelled';
 
-export interface Profile {
+// DB-entity shapes use `type` rather than `interface` so they cleanly
+// extend Supabase's `Record<string, unknown>` constraint on
+// GenericTable.Row / Insert / Update. CLI-generated types follow the
+// same convention; swapping to interfaces breaks `.from('x').select(…)`
+// inference (rows resolve to `never`). CLAUDE.md's "always interface"
+// rule applies to React component props, not DB entities.
+export type Profile = {
   id: string;
   roles: UserRole[];
   display_name: string | null;
@@ -19,9 +25,9 @@ export interface Profile {
   language: AppLanguage;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Truck {
+export type Truck = {
   id: string;
   operator_id: string;
   name: string;
@@ -33,9 +39,9 @@ export interface Truck {
   catering_enabled: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface TruckSchedule {
+export type TruckSchedule = {
   id: string;
   truck_id: string;
   /** ISO date (yyyy-MM-dd). */
@@ -51,16 +57,16 @@ export interface TruckSchedule {
   status: TruckScheduleStatus;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Follow {
+export type Follow = {
   consumer_id: string;
   truck_id: string;
   notify_open: boolean;
   notify_location_change: boolean;
   notify_special: boolean;
   created_at: string;
-}
+};
 
 // Minimal Database shape for `createClient<Database>()` in services/supabase.ts.
 // Hand-crafted from the table shapes above; Insert makes columns with a DB
@@ -69,7 +75,7 @@ export interface Follow {
 // A future ticket should replace this with `supabase gen types typescript`
 // output so the file stays in lockstep with migrations automatically — until
 // then, keep in sync by hand when schemas change.
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       profiles: {
@@ -137,9 +143,21 @@ export interface Database {
         Relationships: [];
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
+    // Supabase CLI-generated types use `{ [_ in never]: never }` for
+    // empty namespaces rather than `Record<string, never>`. The two are
+    // NOT equivalent for supabase-js's table-inference — Record forces
+    // every key to map to `never` (which the type checker folds into
+    // `never` for the schema), while `[_ in never]` is a genuinely empty
+    // object type. Using the CLI pattern so `.from('profiles').select(…)`
+    // resolves to the row type instead of `never`.
+    Views: { [_ in never]: never };
+    Functions: {
+      profiles_add_role: {
+        Args: { p_user_id: string; p_role: UserRole };
+        Returns: void;
+      };
+    };
+    Enums: { [_ in never]: never };
+    CompositeTypes: { [_ in never]: never };
   };
-}
+};
