@@ -55,5 +55,11 @@
     "openNow": "OPEN NOW",
     "closed": "CLOSED",
     "unknownLocation": "—"
+  },
+  "map": {
+    "locateButton": {
+      "label": "My location",
+      "deniedHint": "Enable location in Settings"
+    }
   }
 }
