@@ -46,9 +46,11 @@ export function MapView() {
     <RNMapboxMapView
       style={styles.map}
       styleURL={DARK_STYLE}
-      logoEnabled={false}
-      attributionEnabled
-      attributionPosition={{ bottom: 8, right: 8 }}
+      // logo + attribution stay enabled (Mapbox TOS §1.4 mandates both
+      // for non-Enterprise accounts using Mapbox-hosted styles like
+      // dark-v11). Disabling either is a real foot-gun — text alone is
+      // not sufficient. Default position for both is bottom-left, which
+      // sits cleanly under the future bottom sheet (TT-37) snap points.
       compassEnabled={false}
       scaleBarEnabled={false}
     >
