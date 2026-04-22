@@ -21,8 +21,15 @@ import { APP_BLACK, FIRE_ORANGE, WARM_CREAM } from '@/theme/colors';
 // app theme instead of flashing the OS-default surface (most visible on
 // Android cold-start). Fire-and-forget: a failure here would only leave
 // the OS default behind a splash that's about to disappear — nothing
-// functional depends on the result.
-SystemUI.setBackgroundColorAsync(APP_BLACK).catch(() => {});
+// functional depends on the result. Dev-only console.warn keeps
+// integration regressions findable during local QA without polluting
+// production logs.
+void SystemUI.setBackgroundColorAsync(APP_BLACK).catch((error: unknown) => {
+  if (__DEV__) {
+    // eslint-disable-next-line no-console
+    console.warn('[system-ui] Failed to set window background color', error);
+  }
+});
 
 export default function RootLayout() {
   const { t } = useTranslation();
