@@ -50,5 +50,10 @@
       "profile": "Truck Profile",
       "idLabel": "ID: {{id}}"
     }
+  },
+  "truckCard": {
+    "openNow": "OPEN NOW",
+    "closed": "CLOSED",
+    "unknownLocation": "—"
   }
 }
