@@ -182,36 +182,43 @@ values
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------
--- 3. Today's truck_schedules — 5 rows.
---    - Smoke's, Tacos, Beavertails, Pho King, Shawarma have today rows
---    - Frostbite + Maple Cup are is_active=false (no schedule needed)
---    - Mystery Truck intentionally has NO schedule row (tests the
---      "active truck without a schedule today" path)
+-- 3. Today's truck_schedules — up to 5 rows.
+--    - Smoke's + Tacos: live-now, always seeded for today
+--    - Beavertails: closed-today, seeded only when full window fits today
+--    - Pho King: scheduled-later, seeded only when full window fits today
+--    - Shawarma: cancelled, always seeded for today (status filter hides)
+--    - Frostbite + Maple Cup: is_active=false, no schedule needed
+--    - Mystery Truck: intentionally no schedule row at all
 --
 -- Time-of-reset invariance: open/close are computed RELATIVE TO NOW
--- so the documented matrix holds regardless of the local clock. Fixed
--- times like 09:00–22:00 drift — at 23:00 the seed reads as "closed"
--- rather than "open now". Dynamic offsets keep the intended state
--- stable.
+-- so the documented matrix holds regardless of the local clock.
 --
--- Date integrity at edge-of-day: the `date` column is computed from
--- the SAME offset as the times, so a row that semantically belongs to
--- yesterday (closed-today seeded at 06:00) or tomorrow (scheduled-
--- later seeded at 23:31) lands on the correct day. The useTrucks
--- query filters `date = current_date`, so those edge-time rows are
--- correctly hidden from "today's" results — the alternative (row
--- with date=today + clock-wrapped time) would render as internally
--- inconsistent. Net effect: the closed-today row is absent from
--- ~00:00–06:30 resets and the scheduled-later row is absent from
--- ~17:30–23:59 resets — accepted as preferable to misleading data.
+-- Date integrity invariant: every seeded row satisfies
+-- `open_time < close_time` on its `date` column. Live-now uses a
+-- full-day window today; cancelled uses arbitrary same-day times;
+-- closed-today and scheduled-later are CONDITIONALLY inserted via
+-- INSERT…SELECT…WHERE so a row only lands when both its open AND
+-- close offsets fall within current_date. Anchoring just `date`
+-- (with the times still derived from now()±offset) doesn't satisfy
+-- the invariant — at e.g. 06:00 reset, closed-today's open offset
+-- wraps to yesterday's clock (23:30) while close stays today's
+-- clock (05:30), producing open>close on whichever date we anchor.
+--
+-- Net visibility under this rule:
+--   - closed-today seeded between ~06:30 and ~23:59:30 reset (≈17.5h)
+--   - scheduled-later seeded between 00:00 and ~17:29:30 reset (≈17.5h)
+-- The remaining ~6.5h/day each row is absent from the seed entirely,
+-- which is preferable to surfacing internally inconsistent data.
 -- ---------------------------------------------------------------------
+
+-- Always-seeded rows: live-now (×2) + cancelled.
 insert into public.truck_schedules (
   id, truck_id, date, location_lat, location_lng, location_label,
   open_time, close_time, status
 )
 values
   -- LIVE NOW — full-day window always brackets now(). isOpen=true at
-  -- any reset clock time. Date is unambiguously today.
+  -- any reset clock time.
   ('c0000000-0000-0000-0000-000000000001',
    'b0000000-0000-0000-0000-000000000001', current_date,
    45.4283, -75.6919, 'ByWard Market',
@@ -223,33 +230,6 @@ values
    45.4001, -75.6831, 'Lansdowne Park',
    time '00:00:00', time '23:59:59', 'live'),
 
-  -- CLOSED TODAY — window ENDED 30min before now() and lasted 6h.
-  -- Status='live' so the useTrucks query (filtering for live/scheduled)
-  -- still returns it; isOpen derives false because now > close_time.
-  -- date is derived from the close-time offset — falls onto yesterday
-  -- when reset is between 00:00 and 00:30, dropping the row from
-  -- today's results during that ~30min window.
-  ('c0000000-0000-0000-0000-000000000003',
-   'b0000000-0000-0000-0000-000000000003',
-   (now() - interval '30 minutes')::date,
-   45.4218, -75.6995, 'Sparks Street',
-   (date_trunc('second', now() - interval '6 hours 30 minutes'))::time,
-   (date_trunc('second', now() - interval '30 minutes'))::time,
-   'live'),
-
-  -- SCHEDULED LATER TODAY — window OPENS 30min from now() and lasts
-  -- 6h. Renders as a grey pin with "Opens at HH:MM" in the sheet
-  -- (TT-39). date is derived from the open-time offset — shifts to
-  -- tomorrow when reset is after ~23:30, dropping the row from
-  -- today's results until then.
-  ('c0000000-0000-0000-0000-000000000004',
-   'b0000000-0000-0000-0000-000000000004',
-   (now() + interval '30 minutes')::date,
-   45.4099, -75.7101, 'Preston Street',
-   (date_trunc('second', now() + interval '30 minutes'))::time,
-   (date_trunc('second', now() + interval '6 hours 30 minutes'))::time,
-   'scheduled'),
-
   -- CANCELLED TODAY — useTrucks filter excludes cancelled, so no pin
   -- renders. Times + date are arbitrary; the cancelled status is what
   -- matters.
@@ -257,4 +237,45 @@ values
    'b0000000-0000-0000-0000-000000000005', current_date,
    45.3956, -75.7559, 'Westboro',
    time '11:00', time '20:00', 'cancelled')
+on conflict (id) do nothing;
+
+-- CLOSED TODAY — window ENDED 30min before now() and lasted 6h.
+-- Status='live' so the useTrucks query still returns it; isOpen
+-- derives false because now > close_time. The WHERE clause guarantees
+-- both offsets land on current_date so open_time < close_time always
+-- holds on the seeded date.
+insert into public.truck_schedules (
+  id, truck_id, date, location_lat, location_lng, location_label,
+  open_time, close_time, status
+)
+select
+  'c0000000-0000-0000-0000-000000000003'::uuid,
+  'b0000000-0000-0000-0000-000000000003'::uuid,
+  current_date,
+  45.4218, -75.6995, 'Sparks Street',
+  (date_trunc('second', now() - interval '6 hours 30 minutes'))::time,
+  (date_trunc('second', now() - interval '30 minutes'))::time,
+  'live'
+where (now() - interval '6 hours 30 minutes')::date = current_date
+  and (now() - interval '30 minutes')::date = current_date
+on conflict (id) do nothing;
+
+-- SCHEDULED LATER TODAY — window OPENS 30min from now() and lasts 6h.
+-- Renders as a grey pin with "Opens at HH:MM" in the sheet (TT-39).
+-- The WHERE clause guarantees both offsets land on current_date so
+-- open_time < close_time always holds on the seeded date.
+insert into public.truck_schedules (
+  id, truck_id, date, location_lat, location_lng, location_label,
+  open_time, close_time, status
+)
+select
+  'c0000000-0000-0000-0000-000000000004'::uuid,
+  'b0000000-0000-0000-0000-000000000004'::uuid,
+  current_date,
+  45.4099, -75.7101, 'Preston Street',
+  (date_trunc('second', now() + interval '30 minutes'))::time,
+  (date_trunc('second', now() + interval '6 hours 30 minutes'))::time,
+  'scheduled'
+where (now() + interval '30 minutes')::date = current_date
+  and (now() + interval '6 hours 30 minutes')::date = current_date
 on conflict (id) do nothing;
