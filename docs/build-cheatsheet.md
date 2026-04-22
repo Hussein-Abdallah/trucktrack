@@ -22,6 +22,7 @@ npm run android:operator      # Android emulator/device, operator
 Bare `npm run start | ios | android` defaults to `APP_VARIANT=consumer`.
 
 In the Metro UI:
+
 - `i` → open iOS simulator
 - `a` → open Android emulator
 - `r` → reload
@@ -60,6 +61,7 @@ APP_VARIANT=consumer npx expo run:ios --configuration Release
 ```
 
 **First-time iOS prereqs:**
+
 ```bash
 brew install cocoapods         # NOT via gem — rbenv conflicts
 pod --version                  # confirm brew's pod resolves
@@ -80,6 +82,7 @@ APP_VARIANT=consumer npx expo run:android --variant release
 ```
 
 **First-time Android prereqs:**
+
 ```bash
 brew install --cask android-studio
 brew install --cask temurin@17           # JDK 17 — NOT 25, gradle breaks
@@ -115,14 +118,14 @@ eas build:configure
 
 ### Profile reference (`eas.json`)
 
-| Profile                            | Variant  | Target                       | Use                                |
-| ---------------------------------- | -------- | ---------------------------- | ---------------------------------- |
-| `development-consumer`             | consumer | iOS device (.ipa) + Android  | Daily dev on physical device       |
-| `development-operator`             | operator | iOS device (.ipa) + Android  | Daily dev on physical device       |
-| `development-consumer-simulator`   | consumer | iOS simulator (.app)         | Run dev client in iOS sim          |
-| `development-operator-simulator`   | operator | iOS simulator (.app)         | Run dev client in iOS sim          |
-| `preview-consumer` / `-operator`   |          | Internal distribution        | Share with testers                 |
-| `production-consumer` / `-operator`|          | App Store / Play Store ready | Final release builds               |
+| Profile                             | Variant  | Target                       | Use                          |
+| ----------------------------------- | -------- | ---------------------------- | ---------------------------- |
+| `development-consumer`              | consumer | iOS device (.ipa) + Android  | Daily dev on physical device |
+| `development-operator`              | operator | iOS device (.ipa) + Android  | Daily dev on physical device |
+| `development-consumer-simulator`    | consumer | iOS simulator (.app)         | Run dev client in iOS sim    |
+| `development-operator-simulator`    | operator | iOS simulator (.app)         | Run dev client in iOS sim    |
+| `preview-consumer` / `-operator`    |          | Internal distribution        | Share with testers           |
+| `production-consumer` / `-operator` |          | App Store / Play Store ready | Final release builds         |
 
 There is no bare `development` / `preview` / `production` — always pick a variant.
 
@@ -143,6 +146,7 @@ eas build --profile production-consumer --platform ios
 ```
 
 When the build finishes:
+
 - **Device build**: scan the QR code from the EAS build page, install via Safari → Settings → trust profile
 - **Simulator build**: download the `.tar.gz`, extract → drag the `.app` into the running Simulator window
 
@@ -156,9 +160,11 @@ eas build --profile production-consumer --platform android
 ```
 
 Output is an `.apk` (dev/preview) or `.aab` (production). Install dev/preview apks via:
+
 ```bash
 adb install path/to/app.apk
 ```
+
 Or scan the QR from the EAS build page on the device.
 
 ### Both platforms in one command
@@ -174,12 +180,14 @@ eas build --profile development-consumer --platform all
 JS-only changes (TS, components, hooks, styles, i18n strings) → **no rebuild**, Metro reload is enough.
 
 You **must rebuild** the dev client (local or EAS) when:
+
 - Adding a native dep (`npx expo install @some/native-package`)
 - Editing `app.config.ts` plugins or native config (icons, splash, bundle id, scheme)
 - Bumping any `expo-*` package that changes native peers
 - Changing entries in `ios/Podfile` or `android/build.gradle` (we don't, but if `prebuild` regenerates them differently — yes)
 
 After a native rebuild, the **3-surface verification gate is mandatory** before merge:
+
 1. iOS physical device
 2. iOS simulator
 3. Android (emulator or device)
