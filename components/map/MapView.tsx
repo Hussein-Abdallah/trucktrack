@@ -1,5 +1,4 @@
 import Mapbox, { Camera, MapView as RNMapboxMapView } from '@rnmapbox/maps';
-import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
 // Public Mapbox token (pk.*). Read at module load so a missing/malformed
@@ -22,11 +21,15 @@ if (PUBLIC_TOKEN.startsWith('sk.')) {
   throw new Error(
     'EXPO_PUBLIC_MAPBOX_TOKEN looks like a secret token (sk.*). ' +
       'Use the public token (pk.*) here. The sk.* token belongs in ' +
-      'MAPBOX_DOWNLOADS_TOKEN (consumed by EAS Build, not bundled).',
+      'RNMAPBOX_MAPS_DOWNLOAD_TOKEN (consumed by EAS Build, not bundled).',
   );
 }
 
 Mapbox.setAccessToken(PUBLIC_TOKEN);
+// Suppress Mapbox's analytics pipeline — telemetry ships through PostHog
+// per the architecture (CLAUDE.md). Idempotent + module-scoped so it fires
+// once at import, not on every component mount.
+Mapbox.setTelemetryEnabled(false);
 
 // Ottawa city center — anchor every fresh launch here until the locate
 // flow (TT-36) lands and recenters on the user.
@@ -39,12 +42,6 @@ const DEFAULT_ZOOM = 12;
 const DARK_STYLE = 'mapbox://styles/mapbox/dark-v11';
 
 export function MapView() {
-  useEffect(() => {
-    // Suppress the "telemetry on by default" prompt — we ship analytics
-    // through PostHog (see CLAUDE.md), not Mapbox's metrics pipeline.
-    Mapbox.setTelemetryEnabled(false);
-  }, []);
-
   return (
     <RNMapboxMapView
       style={styles.map}
