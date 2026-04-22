@@ -23,9 +23,10 @@
 -- remains valid.
 --
 -- Date sensitivity: schedules use CURRENT_DATE so `db:reset` next
--- Tuesday still produces "today's" schedules. Open-window times bracket
--- a wide enough range (09:00–22:00) that "open now" trucks read as open
--- regardless of the local time the dev resets the DB.
+-- Tuesday still produces "today's" schedules. UI states are kept stable
+-- across the 24-hour cycle by combining full-day windows (live-now
+-- trucks) with now()-relative offsets (closed-today, scheduled-later).
+-- See the schedules section comment block for the wrap-behaviour proof.
 -- ====================================================================
 
 -- ---------------------------------------------------------------------
@@ -208,13 +209,13 @@ values
   ('c0000000-0000-0000-0000-000000000001',
    'b0000000-0000-0000-0000-000000000001', current_date,
    45.4283, -75.6919, 'ByWard Market',
-   time '00:00:30', time '23:59:30', 'live'),
+   time '00:00:00', time '23:59:59', 'live'),
 
   -- LIVE NOW + catering operator at Lansdowne.
   ('c0000000-0000-0000-0000-000000000002',
    'b0000000-0000-0000-0000-000000000002', current_date,
    45.4001, -75.6831, 'Lansdowne Park',
-   time '00:00:30', time '23:59:30', 'live'),
+   time '00:00:00', time '23:59:59', 'live'),
 
   -- CLOSED TODAY — window ends 30min before now() and lasts 6h. Status
   -- is 'live' so the useTrucks query (filtering for live/scheduled)
