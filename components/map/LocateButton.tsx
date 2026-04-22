@@ -31,8 +31,12 @@ export function LocateButton({ disabled, onPress }: LocateButtonProps) {
       style={{ backgroundColor: CHARCOAL, borderColor: MID }}
       accessibilityRole="button"
       accessibilityLabel={t('map.locateButton.label')}
+      // Hint conveys the swapped action when permission is denied
+      // (button still triggers Linking.openSettings — it's not actually
+      // disabled). We deliberately do NOT set accessibilityState.disabled
+      // because that would tell screen readers the control is inert,
+      // hiding the recovery path from assistive-tech users.
       accessibilityHint={disabled ? t('map.locateButton.deniedHint') : undefined}
-      accessibilityState={{ disabled }}
     >
       <Feather name="navigation" size={ICON_SIZE} color={disabled ? MUTED : FIRE_ORANGE} />
     </Pressable>

@@ -1,6 +1,7 @@
 import { Camera } from '@rnmapbox/maps';
 import { useEffect, useRef } from 'react';
 import { AppState, Linking, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LocateButton } from '@/components/map/LocateButton';
 import { DEFAULT_ZOOM, MapView, OTTAWA_CENTER, USER_ZOOM } from '@/components/map/MapView';
@@ -28,6 +29,11 @@ export default function ConsumerMapScreen() {
   const permissionStatus = useLocationStore((s) => s.permissionStatus);
   const coords = useLocationStore((s) => s.coords);
   const cameraRef = useRef<Camera>(null);
+  // Top inset = device safe-area top (notch / Dynamic Island) plus a
+  // visual margin so the locate button doesn't sit flush against the
+  // system chrome. Hardcoding 20 only worked on devices where the safe
+  // area top is < 20pt, which excludes anything with a notch.
+  const insets = useSafeAreaInsets();
 
   // Permission lifecycle: prompt on first mount, re-sync on app resume
   // (handles user toggling location in Settings while backgrounded),
@@ -106,14 +112,20 @@ export default function ConsumerMapScreen() {
           into a Fabric quirk where Pressable's top/right collapse to
           0/0 inside an absolute-fill parent. pointerEvents="box-none"
           lets touches fall through to the map below. */}
-      <View style={styles.overlay} pointerEvents="box-none">
+      <View
+        style={[styles.overlay, { paddingTop: insets.top + OVERLAY_TOP_MARGIN }]}
+        pointerEvents="box-none"
+      >
         <LocateButton disabled={locateDisabled} onPress={handleLocate} />
       </View>
     </View>
   );
 }
 
-const OVERLAY_TOP_INSET = 20;
+// Visual margin between the safe-area top edge and the locate button.
+// Combined with insets.top at render time so the button clears the
+// notch / Dynamic Island on every device.
+const OVERLAY_TOP_MARGIN = 20;
 const OVERLAY_RIGHT_INSET = 20;
 
 const styles = StyleSheet.create({
@@ -121,7 +133,6 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'flex-end',
-    paddingTop: OVERLAY_TOP_INSET,
     paddingRight: OVERLAY_RIGHT_INSET,
   },
 });

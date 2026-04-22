@@ -72,7 +72,10 @@ export const useLocationStore = create<LocationState>((set, get) => ({
     } catch (err) {
       // Simulator without GPS, or a transient OS error. Render no dot;
       // the locate button stays visible but does nothing on tap until
-      // a refresh succeeds. Surface the error for dev triage.
+      // a refresh succeeds. Clear coords so callers don't render the
+      // last-known position when the watch is no longer active. Surface
+      // the error for dev triage.
+      set({ _subscription: null, coords: null });
       // eslint-disable-next-line no-console
       console.warn('[locationStore] watchPositionAsync failed:', err);
     }
@@ -80,6 +83,9 @@ export const useLocationStore = create<LocationState>((set, get) => ({
 
   teardown: () => {
     get()._subscription?.remove();
-    set({ _subscription: null });
+    // Clear coords alongside the subscription so a later remount starts
+    // from a clean slate — matches the documented contract on the
+    // teardown property above.
+    set({ _subscription: null, coords: null });
   },
 }));
