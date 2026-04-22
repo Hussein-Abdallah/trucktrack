@@ -156,6 +156,12 @@ function mapSupabaseAuthError(err: SupabaseAuthError): AuthError {
 function mapSupabasePostgrestError(err: PostgrestLikeError): AuthError {
   const message = err.message;
   if (isNetworkError(message)) return new NetworkError(message);
-  if (violatesRolesCheck(message)) return new InvalidRoleError(message);
+  // SQLSTATE 22004 (null_value_not_allowed) — profiles_add_role raises
+  // this when p_role is null or empty. Same user-facing meaning as a
+  // profiles_roles_valid CHECK violation: the caller passed something
+  // that isn't a usable UserRole.
+  if (err.code === '22004' || violatesRolesCheck(message)) {
+    return new InvalidRoleError(message);
+  }
   return new UnknownAuthError(message);
 }
