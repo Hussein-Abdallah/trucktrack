@@ -33,6 +33,14 @@ function pickSchedule(rows: TruckSchedule[]): TruckSchedule | null {
   return [...rows].sort((a, b) => a.open_time.localeCompare(b.open_time))[0];
 }
 
+// Compares device-local clock seconds against schedule.open_time /
+// close_time as if both are in the same timezone. Per CLAUDE.md the
+// MVP is Ottawa-first, so device-local ≈ Ottawa-local ≈ what operators
+// entered when seeding their schedules — the comparison is correct in
+// practice. When the app expands beyond Ottawa, schedules will need a
+// timezone column (or canonical UTC storage) and this helper will need
+// to project both sides into the same zone before comparing.
+// TODO(multi-city): timezone-aware open/close comparison.
 function deriveIsOpen(schedule: TruckSchedule): boolean {
   if (schedule.status !== 'live') return false;
   const now = nowSecondsLocal();
@@ -69,8 +77,11 @@ async function fetchTrucks(): Promise<TruckWithSchedule[]> {
 }
 
 export function useTrucks() {
+  // Including today in the key forces a fresh fetch when the date rolls
+  // over — without it, an app left mounted past midnight would keep
+  // serving yesterday's schedules from cache until staleTime expires.
   return useQuery<TruckWithSchedule[]>({
-    queryKey: ['trucks'],
+    queryKey: ['trucks', todayIso()],
     queryFn: fetchTrucks,
   });
 }
