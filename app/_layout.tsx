@@ -6,6 +6,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
@@ -42,19 +43,27 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider mode="dark">
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: APP_BLACK },
-          headerStyle: { backgroundColor: APP_BLACK },
-          headerTintColor: WARM_CREAM,
-          headerTitleStyle: { color: WARM_CREAM },
-          headerShadowVisible: false,
-          headerTitle: '',
-        }}
-      />
-      <StatusBar style="light" />
-    </GluestackUIProvider>
+    // GestureHandlerRootView wraps the entire app so @gorhom/bottom-sheet
+    // (and any future gesture-driven UI) can install pan responders. RN
+    // gesture-handler 2.x requires this at the root or gestures silently
+    // fail to fire on Android — iOS is more forgiving but inconsistent.
+    <GestureHandlerRootView style={rootStyle}>
+      <GluestackUIProvider mode="dark">
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: APP_BLACK },
+            headerStyle: { backgroundColor: APP_BLACK },
+            headerTintColor: WARM_CREAM,
+            headerTitleStyle: { color: WARM_CREAM },
+            headerShadowVisible: false,
+            headerTitle: '',
+          }}
+        />
+        <StatusBar style="light" />
+      </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const rootStyle = { flex: 1 };
