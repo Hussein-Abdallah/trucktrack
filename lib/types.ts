@@ -68,6 +68,24 @@ export type Follow = {
   created_at: string;
 };
 
+// Derived shape for the consumer map / list surfaces. The useTrucks
+// hook (TT-35) joins trucks with today's truck_schedules row (or null
+// if the truck has no schedule today) and computes isOpen against now().
+// Lives here, not in the hook file, so any view component can take this
+// type as a prop without depending on the hook implementation.
+export type TruckWithSchedule = Truck & {
+  schedule: TruckSchedule | null;
+  isOpen: boolean;
+};
+
+// Lat/lng pair used by distance helpers (lib/utils.ts) and the
+// locationStore (TT-36). Matches the Mapbox/Geo convention of lat
+// before lng in object form.
+export interface Coord {
+  lat: number;
+  lng: number;
+}
+
 // Minimal Database shape for `createClient<Database>()` in services/supabase.ts.
 // Hand-crafted from the table shapes above; Insert makes columns with a DB
 // default optional (id where gen_random_uuid() applies, created_at / updated_at,
