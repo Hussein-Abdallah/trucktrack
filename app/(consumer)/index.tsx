@@ -1,8 +1,15 @@
-import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { RoutePlaceholder } from '@/components/shared/RoutePlaceholder';
+import { MapView } from '@/components/map/MapView';
 
 export default function ConsumerMapScreen() {
-  const { t } = useTranslation();
-  return <RoutePlaceholder title={t('routes.consumer.map')} />;
+  return (
+    <View style={styles.container}>
+      <MapView />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+});

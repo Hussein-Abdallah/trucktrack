@@ -32,6 +32,7 @@
     "@gluestack-ui/utils": "^3.0.19",
     "@legendapp/motion": "^2.5.3",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@rnmapbox/maps": "^10.3.0",
     "@supabase/supabase-js": "^2.103.3",
     "expo": "~54.0.33",
     "expo-constants": "~18.0.13",
