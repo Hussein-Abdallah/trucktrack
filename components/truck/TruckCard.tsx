@@ -1,15 +1,16 @@
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 
 import { Badge, BadgeText } from '@/components/ui/badge';
 import type { AppLanguage, TruckWithSchedule } from '@/lib/types';
 import { formatDistance } from '@/lib/utils';
+import { MUTED } from '@/theme/colors';
 
 interface TruckCardProps {
   truck: TruckWithSchedule;
   /** Optional — omitted when the user has no location permission. */
   distanceKm?: number;
-  locale: AppLanguage;
   onPress?: () => void;
 }
 
@@ -22,10 +23,13 @@ function formatTime(time: string): string {
   return time.slice(0, 5);
 }
 
-export function TruckCard({ truck, distanceKm, locale, onPress }: TruckCardProps) {
-  const isFr = locale === 'fr';
-  const openLabel = isFr ? 'OUVERT' : 'OPEN NOW';
-  const closedLabel = isFr ? 'FERMÉ' : 'CLOSED';
+export function TruckCard({ truck, distanceKm, onPress }: TruckCardProps) {
+  const { t, i18n } = useTranslation();
+  // Distance formatter needs the locale for the en-CA / fr-CA decimal-
+  // separator switch (Intl.NumberFormat). Labels come from t() — never
+  // hardcoded — so dropping the locale prop in favour of i18n's own
+  // language context keeps callers from having to thread it through.
+  const locale: AppLanguage = i18n.language === 'fr' ? 'fr' : 'en';
 
   const todayHours = truck.schedule
     ? `${formatTime(truck.schedule.open_time)} – ${formatTime(truck.schedule.close_time)}`
@@ -44,7 +48,7 @@ export function TruckCard({ truck, distanceKm, locale, onPress }: TruckCardProps
         {truck.cover_url ? (
           <Image source={{ uri: truck.cover_url }} className="h-full w-full" resizeMode="cover" />
         ) : (
-          <Feather name="map-pin" size={24} color="#888888" />
+          <Feather name="map-pin" size={24} color={MUTED} />
         )}
       </View>
 
@@ -58,7 +62,7 @@ export function TruckCard({ truck, distanceKm, locale, onPress }: TruckCardProps
             {truck.name}
           </Text>
           <Badge action={truck.isOpen ? 'open' : 'closed'} size="sm">
-            <BadgeText>{truck.isOpen ? openLabel : closedLabel}</BadgeText>
+            <BadgeText>{t(truck.isOpen ? 'truckCard.openNow' : 'truckCard.closed')}</BadgeText>
           </Badge>
         </View>
 
@@ -79,9 +83,9 @@ export function TruckCard({ truck, distanceKm, locale, onPress }: TruckCardProps
         {/* Location + distance */}
         <View className="flex-row items-center gap-3">
           <View className="flex-row items-center gap-1">
-            <Feather name="map-pin" size={ICON_SIZE} color="#888888" />
+            <Feather name="map-pin" size={ICON_SIZE} color={MUTED} />
             <Text numberOfLines={1} className="font-body text-sm text-typography-500">
-              {truck.schedule?.location_label ?? '—'}
+              {truck.schedule?.location_label ?? t('truckCard.unknownLocation')}
             </Text>
           </View>
           {distanceKm !== undefined ? (
@@ -94,7 +98,7 @@ export function TruckCard({ truck, distanceKm, locale, onPress }: TruckCardProps
         {/* Today's hours — only shown when there's a schedule today */}
         {todayHours ? (
           <View className="mt-1 flex-row items-center gap-1">
-            <Feather name="clock" size={ICON_SIZE} color="#888888" />
+            <Feather name="clock" size={ICON_SIZE} color={MUTED} />
             <Text className="font-body text-sm text-typography-500">{todayHours}</Text>
           </View>
         ) : null}

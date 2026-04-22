@@ -2,6 +2,8 @@ import { Feather } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { Text, View } from 'react-native';
 
+import { MUTED } from '@/theme/colors';
+
 type FeatherIconName = ComponentProps<typeof Feather>['name'];
 
 interface EmptyStateProps {
@@ -10,8 +12,6 @@ interface EmptyStateProps {
   /** Defaults to 'inbox' — generic catch-all. */
   icon?: FeatherIconName;
 }
-
-const ICON_COLOR = '#888888';
 
 /**
  * Generic empty-state primitive. Used for "no trucks scheduled today",
@@ -22,7 +22,7 @@ const ICON_COLOR = '#888888';
 export function EmptyState({ title, message, icon = 'inbox' }: EmptyStateProps) {
   return (
     <View className="items-center justify-center gap-3 px-6 py-12">
-      <Feather name={icon} size={40} color={ICON_COLOR} />
+      <Feather name={icon} size={40} color={MUTED} />
       <Text className="text-center font-heading text-2xl tracking-wider text-typography-950">
         {title}
       </Text>

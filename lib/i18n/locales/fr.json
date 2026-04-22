@@ -50,5 +50,10 @@
       "profile": "Profil du camion",
       "idLabel": "ID : {{id}}"
     }
+  },
+  "truckCard": {
+    "openNow": "OUVERT",
+    "closed": "FERMÉ",
+    "unknownLocation": "—"
   }
 }
