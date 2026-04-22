@@ -44,13 +44,24 @@ export const BottomSheet = forwardRef<GorhomBottomSheet, BottomSheetProps>(funct
   // Memoise both the resolved snap-point array and its source-point list.
   // @gorhom/bottom-sheet warns if snapPoints changes identity between
   // renders even when values are equal — and the default-fallback array
-  // here is recreated every render unless wrapped.
+  // here is recreated every render unless wrapped. Empty arrays fall
+  // through to the default so a careless `snapPoints={[]}` doesn't yield
+  // a sheet that can't render.
   const points = useMemo<readonly SnapPoint[]>(
-    () => snapPoints ?? ['peek', 'half', 'full'],
+    () => (snapPoints && snapPoints.length > 0 ? snapPoints : ['peek', 'half', 'full']),
     [snapPoints],
   );
   const resolvedSnapPoints = useMemo(() => points.map((p) => SNAP_HEIGHTS[p]), [points]);
-  const initial = initialSnap ?? 'half';
+
+  // Validate initialSnap is actually in points — caller could pass
+  // `initialSnap='full'` with `snapPoints={['peek', 'half']}` and we'd
+  // hand @gorhom an index of -1 (closed). Fall back to 'half' if it's
+  // in points, then to the lowest snap.
+  const initial: SnapPoint = (() => {
+    if (initialSnap && points.includes(initialSnap)) return initialSnap;
+    if (points.includes('half')) return 'half';
+    return points[0];
+  })();
   const initialIndex = points.indexOf(initial);
 
   return (
@@ -58,6 +69,12 @@ export const BottomSheet = forwardRef<GorhomBottomSheet, BottomSheetProps>(funct
       ref={ref}
       snapPoints={resolvedSnapPoints}
       index={initialIndex}
+      // v5.2.x defaults enableDynamicSizing=true, which inserts a
+      // content-height-derived snap point and sorts the array — the
+      // onChange index → SnapPoint name lookup below would break
+      // because indices would no longer match `points`. Disabled so
+      // the array we passed is the array @gorhom uses, period.
+      enableDynamicSizing={false}
       backgroundStyle={styles.background}
       handleStyle={styles.handle}
       handleIndicatorStyle={styles.handleIndicator}
