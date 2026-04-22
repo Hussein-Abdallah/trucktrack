@@ -188,24 +188,30 @@ on conflict (id) do nothing;
 --    - Mystery Truck intentionally has NO schedule row (tests the
 --      "active truck without a schedule today" path)
 --
--- Time-of-reset invariance: open/close are computed RELATIVE TO NOW so
--- the documented matrix holds regardless of the local clock. Fixed times
--- like 09:00–22:00 drift — at 23:00 the seed reads as "closed" rather
--- than "open now". Dynamic offsets keep the intended state stable.
+-- Time-of-reset invariance: open/close are computed RELATIVE TO NOW
+-- so the documented matrix holds regardless of the local clock. Fixed
+-- times like 09:00–22:00 drift — at 23:00 the seed reads as "closed"
+-- rather than "open now". Dynamic offsets keep the intended state
+-- stable.
 --
--- Time wrap behaviour at midnight: Postgres `time` arithmetic wraps mod
--- 24h, but the isOpen logic (open <= now < close) gives the right answer
--- in every wrap case for these specific intents — verified across the
--- 24-hour cycle. For the "closed" and "scheduled" trucks at least one
--- side of the AND clause is false in any wrap configuration.
+-- Date integrity at edge-of-day: the `date` column is computed from
+-- the SAME offset as the times, so a row that semantically belongs to
+-- yesterday (closed-today seeded at 06:00) or tomorrow (scheduled-
+-- later seeded at 23:31) lands on the correct day. The useTrucks
+-- query filters `date = current_date`, so those edge-time rows are
+-- correctly hidden from "today's" results — the alternative (row
+-- with date=today + clock-wrapped time) would render as internally
+-- inconsistent. Net effect: the closed-today row is absent from
+-- ~00:00–06:30 resets and the scheduled-later row is absent from
+-- ~17:30–23:59 resets — accepted as preferable to misleading data.
 -- ---------------------------------------------------------------------
 insert into public.truck_schedules (
   id, truck_id, date, location_lat, location_lng, location_label,
   open_time, close_time, status
 )
 values
-  -- LIVE NOW — full-day window always brackets now(). isOpen=true at any
-  -- reset clock time.
+  -- LIVE NOW — full-day window always brackets now(). isOpen=true at
+  -- any reset clock time. Date is unambiguously today.
   ('c0000000-0000-0000-0000-000000000001',
    'b0000000-0000-0000-0000-000000000001', current_date,
    45.4283, -75.6919, 'ByWard Market',
@@ -217,27 +223,36 @@ values
    45.4001, -75.6831, 'Lansdowne Park',
    time '00:00:00', time '23:59:59', 'live'),
 
-  -- CLOSED TODAY — window ends 30min before now() and lasts 6h. Status
-  -- is 'live' so the useTrucks query (filtering for live/scheduled)
+  -- CLOSED TODAY — window ENDED 30min before now() and lasted 6h.
+  -- Status='live' so the useTrucks query (filtering for live/scheduled)
   -- still returns it; isOpen derives false because now > close_time.
+  -- date is derived from the close-time offset — falls onto yesterday
+  -- when reset is between 00:00 and 00:30, dropping the row from
+  -- today's results during that ~30min window.
   ('c0000000-0000-0000-0000-000000000003',
-   'b0000000-0000-0000-0000-000000000003', current_date,
+   'b0000000-0000-0000-0000-000000000003',
+   (now() - interval '30 minutes')::date,
    45.4218, -75.6995, 'Sparks Street',
    (date_trunc('second', now() - interval '6 hours 30 minutes'))::time,
    (date_trunc('second', now() - interval '30 minutes'))::time,
    'live'),
 
-  -- SCHEDULED LATER TODAY — window starts 30min after now() and lasts
-  -- 6h. Renders as a grey pin with "Opens at HH:MM" in the sheet (TT-39).
+  -- SCHEDULED LATER TODAY — window OPENS 30min from now() and lasts
+  -- 6h. Renders as a grey pin with "Opens at HH:MM" in the sheet
+  -- (TT-39). date is derived from the open-time offset — shifts to
+  -- tomorrow when reset is after ~23:30, dropping the row from
+  -- today's results until then.
   ('c0000000-0000-0000-0000-000000000004',
-   'b0000000-0000-0000-0000-000000000004', current_date,
+   'b0000000-0000-0000-0000-000000000004',
+   (now() + interval '30 minutes')::date,
    45.4099, -75.7101, 'Preston Street',
    (date_trunc('second', now() + interval '30 minutes'))::time,
    (date_trunc('second', now() + interval '6 hours 30 minutes'))::time,
    'scheduled'),
 
   -- CANCELLED TODAY — useTrucks filter excludes cancelled, so no pin
-  -- renders. Times are arbitrary; the cancelled status is what matters.
+  -- renders. Times + date are arbitrary; the cancelled status is what
+  -- matters.
   ('c0000000-0000-0000-0000-000000000005',
    'b0000000-0000-0000-0000-000000000005', current_date,
    45.3956, -75.7559, 'Westboro',
