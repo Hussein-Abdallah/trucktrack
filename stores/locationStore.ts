@@ -77,6 +77,12 @@ export const useLocationStore = create<LocationState>((set, get) => ({
           timeInterval: 30_000,
         },
         (loc) => {
+          // Late-callback guard: Expo's watchPositionAsync can deliver
+          // a callback AFTER subscription.remove() due to platform
+          // timing on iOS/Android. Without this check, a stale watch
+          // can repopulate coords seconds after teardown — defeating
+          // the unmount cleanup.
+          if (get()._watchEpoch !== epoch || get().permissionStatus !== 'granted') return;
           set({ coords: { lat: loc.coords.latitude, lng: loc.coords.longitude } });
         },
       );
