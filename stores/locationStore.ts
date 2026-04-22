@@ -40,9 +40,9 @@ export const useLocationStore = create<LocationState>((set, get) => ({
     if (permissionStatus === 'granted') {
       await get().refresh();
     } else {
-      // Permission revoked or denied — clear coords + stop the watch.
+      // Permission revoked or denied — teardown stops the watch and
+      // clears coords in one shot.
       get().teardown();
-      set({ coords: null });
     }
   },
 
