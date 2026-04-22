@@ -13,7 +13,16 @@
       "following": "Abonnements",
       "stamps": "Fidélité",
       "alerts": "Alertes",
-      "profile": "Profil"
+      "profile": "Profil",
+      "mapScreen": {
+        "wordmark": "TRUCKTRACK",
+        "nearbyTrucks": "Camions à proximité",
+        "openNowCount": "{{count}} OUVERTS",
+        "emptyTitle": "Aucun camion prévu aujourd'hui",
+        "emptyMessage": "Revenez plus tard pour les mises à jour.",
+        "errorTitle": "Impossible de charger",
+        "errorMessage": "Tirez pour rafraîchir."
+      }
     },
     "operator": {
       "today": "Aujourd'hui",

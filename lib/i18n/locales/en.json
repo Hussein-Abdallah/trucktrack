@@ -13,7 +13,16 @@
       "following": "Following",
       "stamps": "Stamps",
       "alerts": "Alerts",
-      "profile": "Profile"
+      "profile": "Profile",
+      "mapScreen": {
+        "wordmark": "TRUCKTRACK",
+        "nearbyTrucks": "Nearby Trucks",
+        "openNowCount": "{{count}} OPEN NOW",
+        "emptyTitle": "No trucks scheduled today",
+        "emptyMessage": "Check back later for updates.",
+        "errorTitle": "Couldn't load trucks",
+        "errorMessage": "Pull to refresh."
+      }
     },
     "operator": {
       "today": "Today",
