@@ -77,24 +77,34 @@ values
    'authenticated', 'authenticated', now(), now())
 on conflict (id) do nothing;
 
--- Avatar URLs — separate UPDATE since the trigger doesn't carry avatar_url.
--- Unsplash portrait photos. Verified 200 OK at commit time.
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000001';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000002';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000003';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000004';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000005';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000006';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000007';
-update public.profiles set avatar_url = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&q=80'
-  where id = 'a0000000-0000-0000-0000-000000000008';
+-- Avatar URLs — separate UPDATE since the TT-13 trigger doesn't carry
+-- avatar_url through raw_user_meta_data. Single VALUES-driven UPDATE
+-- with `is distinct from` so re-running the seed is a true no-op (no
+-- updated_at trigger fire when nothing's changed).
+-- Unsplash portrait photos. All URLs verified 200 OK at commit time.
+update public.profiles p
+set avatar_url = v.avatar_url
+from (
+  values
+    ('a0000000-0000-0000-0000-000000000001'::uuid,
+     'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000002'::uuid,
+     'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000003'::uuid,
+     'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000004'::uuid,
+     'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000005'::uuid,
+     'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000006'::uuid,
+     'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000007'::uuid,
+     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80'),
+    ('a0000000-0000-0000-0000-000000000008'::uuid,
+     'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&q=80')
+) as v(id, avatar_url)
+where p.id = v.id
+  and p.avatar_url is distinct from v.avatar_url;
 
 -- ---------------------------------------------------------------------
 -- 2. Trucks — 8 rows covering every plan tier + paused state.
@@ -176,44 +186,59 @@ on conflict (id) do nothing;
 --    - Frostbite + Maple Cup are is_active=false (no schedule needed)
 --    - Mystery Truck intentionally has NO schedule row (tests the
 --      "active truck without a schedule today" path)
+--
+-- Time-of-reset invariance: open/close are computed RELATIVE TO NOW so
+-- the documented matrix holds regardless of the local clock. Fixed times
+-- like 09:00–22:00 drift — at 23:00 the seed reads as "closed" rather
+-- than "open now". Dynamic offsets keep the intended state stable.
+--
+-- Time wrap behaviour at midnight: Postgres `time` arithmetic wraps mod
+-- 24h, but the isOpen logic (open <= now < close) gives the right answer
+-- in every wrap case for these specific intents — verified across the
+-- 24-hour cycle. For the "closed" and "scheduled" trucks at least one
+-- side of the AND clause is false in any wrap configuration.
 -- ---------------------------------------------------------------------
 insert into public.truck_schedules (
   id, truck_id, date, location_lat, location_lng, location_label,
   open_time, close_time, status
 )
 values
-  -- LIVE NOW — wide window so "open now" reads true regardless of when
-  -- the dev runs db:reset.
+  -- LIVE NOW — full-day window always brackets now(). isOpen=true at any
+  -- reset clock time.
   ('c0000000-0000-0000-0000-000000000001',
    'b0000000-0000-0000-0000-000000000001', current_date,
    45.4283, -75.6919, 'ByWard Market',
-   '09:00', '22:00', 'live'),
+   time '00:00:30', time '23:59:30', 'live'),
 
   -- LIVE NOW + catering operator at Lansdowne.
   ('c0000000-0000-0000-0000-000000000002',
    'b0000000-0000-0000-0000-000000000002', current_date,
    45.4001, -75.6831, 'Lansdowne Park',
-   '09:00', '22:00', 'live'),
+   time '00:00:30', time '23:59:30', 'live'),
 
-  -- CLOSED TODAY — open window in the past (06:00–10:00). Status is
-  -- 'live' so the useTrucks query (filtering for live/scheduled) still
-  -- returns it; isOpen derives false because now > close_time.
+  -- CLOSED TODAY — window ends 30min before now() and lasts 6h. Status
+  -- is 'live' so the useTrucks query (filtering for live/scheduled)
+  -- still returns it; isOpen derives false because now > close_time.
   ('c0000000-0000-0000-0000-000000000003',
    'b0000000-0000-0000-0000-000000000003', current_date,
    45.4218, -75.6995, 'Sparks Street',
-   '06:00', '10:00', 'live'),
+   (date_trunc('second', now() - interval '6 hours 30 minutes'))::time,
+   (date_trunc('second', now() - interval '30 minutes'))::time,
+   'live'),
 
-  -- SCHEDULED LATER TODAY — opens at 18:00 onward. Renders as a grey
-  -- pin with "Opens at 18:00" label in the bottom sheet (TT-39).
+  -- SCHEDULED LATER TODAY — window starts 30min after now() and lasts
+  -- 6h. Renders as a grey pin with "Opens at HH:MM" in the sheet (TT-39).
   ('c0000000-0000-0000-0000-000000000004',
    'b0000000-0000-0000-0000-000000000004', current_date,
    45.4099, -75.7101, 'Preston Street',
-   '18:00', '23:00', 'scheduled'),
+   (date_trunc('second', now() + interval '30 minutes'))::time,
+   (date_trunc('second', now() + interval '6 hours 30 minutes'))::time,
+   'scheduled'),
 
   -- CANCELLED TODAY — useTrucks filter excludes cancelled, so no pin
-  -- renders. The row exists so the filter logic gets exercised.
+  -- renders. Times are arbitrary; the cancelled status is what matters.
   ('c0000000-0000-0000-0000-000000000005',
    'b0000000-0000-0000-0000-000000000005', current_date,
    45.3956, -75.7559, 'Westboro',
-   '11:00', '20:00', 'cancelled')
+   time '11:00', time '20:00', 'cancelled')
 on conflict (id) do nothing;
