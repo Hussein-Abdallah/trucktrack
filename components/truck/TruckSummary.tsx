@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge, BadgeText } from '@/components/ui/badge';
+import { deriveIsOpen } from '@/lib/schedule';
 import type { AppLanguage, TruckWithSchedule } from '@/lib/types';
 import { formatDistance } from '@/lib/utils';
 import {
@@ -57,6 +58,7 @@ export function TruckSummary({
   const todayHours = truck.schedule
     ? `${formatTime(truck.schedule.open_time)} – ${formatTime(truck.schedule.close_time)}`
     : null;
+  const isOpen = deriveIsOpen(truck.schedule);
 
   return (
     <View style={styles.container}>
@@ -105,8 +107,8 @@ export function TruckSummary({
 
       {/* Status + distance row */}
       <View style={styles.statusRow}>
-        <Badge action={truck.isOpen ? 'open' : 'closed'} size="sm">
-          <BadgeText>{t(truck.isOpen ? 'truckCard.openNow' : 'truckCard.closed')}</BadgeText>
+        <Badge action={isOpen ? 'open' : 'closed'} size="sm">
+          <BadgeText>{t(isOpen ? 'truckCard.openNow' : 'truckCard.closed')}</BadgeText>
         </Badge>
         {distanceKm !== undefined ? (
           <Text style={styles.distance}>{formatDistance(distanceKm, locale)}</Text>

@@ -70,12 +70,12 @@ export type Follow = {
 
 // Derived shape for the consumer map / list surfaces. The useTrucks
 // hook (TT-35) joins trucks with today's truck_schedules row (or null
-// if the truck has no schedule today) and computes isOpen against now().
-// Lives here, not in the hook file, so any view component can take this
-// type as a prop without depending on the hook implementation.
+// if the truck has no schedule today). Open/closed is NOT cached here —
+// callers compute it at render via deriveIsOpen(schedule) from
+// lib/schedule.ts so a pin flips state the moment the wall clock
+// crosses close_time, not on the next refetch.
 export type TruckWithSchedule = Truck & {
   schedule: TruckSchedule | null;
-  isOpen: boolean;
 };
 
 // Lat/lng pair used by distance helpers (lib/utils.ts) and the
