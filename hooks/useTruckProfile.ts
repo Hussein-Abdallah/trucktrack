@@ -47,7 +47,12 @@ async function fetchTruckProfile(id: string): Promise<TruckProfileData | null> {
 export function useTruckProfile(id: string | undefined) {
   return useQuery<TruckProfileData | null>({
     queryKey: ['truck', id, todayIso()],
-    queryFn: () => fetchTruckProfile(id as string),
+    queryFn: () => {
+      // `enabled` gates this, but guard anyway so TS narrows id to string
+      // without a cast, and a misconfigured caller fails loud.
+      if (!id) throw new Error('useTruckProfile: id is required');
+      return fetchTruckProfile(id);
+    },
     enabled: Boolean(id),
   });
 }
