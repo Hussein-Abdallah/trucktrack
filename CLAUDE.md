@@ -242,7 +242,7 @@ Examples:
 
 ## Technical Debt — TT-43
 
-Real defects caught during review but consciously deferred get filed as children of **TT-43 — Technical Debt — wrap before MVP launch**. The bar to file (not skip) is all three:
+Real defects caught during review but consciously deferred get filed as children of **TT-43 — Technical Debt — wrap before MVP launch**. To file on TT-43 (rather than skip), all three must be met:
 
 1. A reviewer (human or CodeRabbit) flags a real correctness, security, or UX defect with a concrete failure scenario — not a style nit, not a "what if" without a path to it.
 2. Fixing it in the active PR is genuinely out of scope — different layer, different ticket boundary, different module, or requires a migration the active PR doesn't own.
