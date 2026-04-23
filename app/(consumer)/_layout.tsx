@@ -90,6 +90,10 @@ export default function ConsumerLayout() {
           tabBarLabel: t('routes.consumer.map'),
           tabBarAccessibilityLabel: t('routes.consumer.map'),
           tabBarIcon: tabIcon('map'),
+          // Map renders its own top-bar overlay (wordmark + profile)
+          // because the design needs edge-to-edge map under the
+          // overlay. Other tabs keep the standard navigation header.
+          headerShown: false,
         }}
       />
       <Tabs.Screen

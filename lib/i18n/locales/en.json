@@ -13,7 +13,26 @@
       "following": "Following",
       "stamps": "Stamps",
       "alerts": "Alerts",
-      "profile": "Profile"
+      "profile": "Profile",
+      "mapScreen": {
+        "wordmark": "TRUCKTRACK",
+        "nearbyTrucks": "Nearby Trucks",
+        "openNowCount_one": "{{count}} OPEN NOW",
+        "openNowCount_other": "{{count}} OPEN NOW",
+        "emptyTitle": "No trucks scheduled today",
+        "emptyMessage": "Check back later for updates.",
+        "errorTitle": "Couldn't load trucks",
+        "errorMessage": "Pull to refresh.",
+        "closeSelection": "Close",
+        "summary": {
+          "follow": "Follow",
+          "unfollow": "Unfollow",
+          "followersCount": "{{count}} Followers",
+          "catering": "Catering",
+          "viewDetails": "Details",
+          "getDirections": "Directions"
+        }
+      }
     },
     "operator": {
       "today": "Today",

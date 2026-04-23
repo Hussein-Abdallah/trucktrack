@@ -1,4 +1,8 @@
-import GorhomBottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import GorhomBottomSheet, {
+  BottomSheetFlatList,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
+import type { BottomSheetFlatListMethods } from '@gorhom/bottom-sheet';
 import { forwardRef, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
@@ -87,7 +91,8 @@ export const BottomSheet = forwardRef<GorhomBottomSheet, BottomSheetProps>(funct
   );
 });
 
-export { BottomSheetScrollView };
+export { BottomSheetFlatList, BottomSheetScrollView };
+export type { BottomSheetFlatListMethods };
 
 const styles = StyleSheet.create({
   background: {

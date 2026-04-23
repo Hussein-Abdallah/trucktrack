@@ -1,3 +1,5 @@
+import { Linking, Platform } from 'react-native';
+
 import type { AppLanguage, Coord } from '@/lib/types';
 
 const EARTH_RADIUS_KM = 6371;
@@ -37,4 +39,37 @@ export function formatDistance(km: number, locale: AppLanguage): string {
     maximumFractionDigits: 1,
   });
   return `${fmt.format(Math.max(km, 0.1))} km`;
+}
+
+/**
+ * Open the native maps app with directions to a destination. iOS uses
+ * Apple Maps (preinstalled, opens reliably without a Google account);
+ * Android uses Google Maps. Falls back to Google Maps on the web view
+ * if neither native app handles the URL — handled by the OS.
+ *
+ * `label` is shown as the destination name in Apple Maps' search box.
+ * Google Maps doesn't honor a custom label here — it geocodes from
+ * the lat/lng — so we omit it on the Android path.
+ */
+export async function openMapsDirections(opts: {
+  lat: number;
+  lng: number;
+  label?: string;
+}): Promise<void> {
+  const { lat, lng, label } = opts;
+  const encodedLabel = label ? encodeURIComponent(label) : '';
+  const url =
+    Platform.OS === 'ios'
+      ? `http://maps.apple.com/?daddr=${lat},${lng}${label ? `&q=${encodedLabel}` : ''}`
+      : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  // Linking.openURL rejects when no app handles the URL or the user
+  // cancels (rare for maps URLs since both platforms ship a default
+  // handler). Swallow + log so an unhandled rejection doesn't bubble
+  // up to the caller — the action is best-effort, not load-bearing.
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('[openMapsDirections] failed to open URL', url, error);
+  }
 }

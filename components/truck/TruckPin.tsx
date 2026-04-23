@@ -1,26 +1,36 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MarkerView } from '@rnmapbox/maps';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { TruckWithSchedule } from '@/lib/types';
-import { FIRE_ORANGE, MUTED, WARM_CREAM } from '@/theme/colors';
+import { CHARCOAL, FIRE_ORANGE, MUTED, WARM_CREAM } from '@/theme/colors';
 
 interface TruckPinProps {
   truck: TruckWithSchedule;
+  /** True when this pin matches the screen's selectedTruckId. Drives
+   *  the label rectangle's fill (orange when selected, charcoal when
+   *  not). The square + arrow stay status-driven (open vs closed). */
+  isSelected?: boolean;
   onPress: (truckId: string) => void;
 }
 
-const PIN_SIZE = 40;
-// MaterialCommunityIcons "truck" reads better at 24 than the prior
-// 20px Feather map-pin since the truck silhouette has more internal
-// detail. (MCI doesn't ship a "food-truck" glyph in this SDK version,
-// so a plain truck is the closest fit — swap if a richer set lands.)
+const SQUARE_SIZE = 40;
+// Fixed width so MarkerView's anchor math (which expects a stable
+// view geometry) stays correct across pins regardless of name length.
+// Long names truncate with an ellipsis; short names get a bit of
+// empty space on the right — acceptable trade for stable positioning.
+const LABEL_WIDTH = 120;
+const TOTAL_WIDTH = SQUARE_SIZE + LABEL_WIDTH;
 const ICON_SIZE = 24;
 const ARROW_HALF = 6;
 const ARROW_HEIGHT = 8;
 const TRANSPARENT = 'transparent';
+// Anchor at the bottom-center of the square (where the arrow tip sits)
+// so the pin visually points at the geographic coordinate, not at the
+// label's center.
+const ANCHOR_X = SQUARE_SIZE / 2 / TOTAL_WIDTH;
 
-export function TruckPin({ truck, onPress }: TruckPinProps) {
+export function TruckPin({ truck, isSelected = false, onPress }: TruckPinProps) {
   // No schedule = no coordinates to anchor on. The inner join in
   // useTrucks means this branch shouldn't fire in practice; the guard
   // exists so the type system stays honest about the nullable shape.
@@ -31,9 +41,7 @@ export function TruckPin({ truck, onPress }: TruckPinProps) {
   return (
     <MarkerView
       coordinate={[truck.schedule.location_lng, truck.schedule.location_lat]}
-      // Anchor the bottom (arrow tip) on the coordinate so the pin
-      // visually points to the exact location instead of floating above.
-      anchor={{ x: 0.5, y: 1 }}
+      anchor={{ x: ANCHOR_X, y: 1 }}
       allowOverlap
     >
       <Pressable
@@ -42,23 +50,50 @@ export function TruckPin({ truck, onPress }: TruckPinProps) {
         accessibilityRole="button"
         accessibilityLabel={truck.name}
       >
-        <View style={isOpen ? styles.squareOpen : styles.squareClosed}>
-          <MaterialCommunityIcons name="truck" size={ICON_SIZE} color={WARM_CREAM} />
+        <View style={styles.row}>
+          {/* Square + arrow: status-driven (open = fire-orange, closed
+              = muted). This is the pin's "anchor" half, so its color
+              reads the truck's open/closed state at a glance even
+              without selection. */}
+          <View style={isOpen ? styles.iconBoxOpen : styles.iconBoxClosed}>
+            <MaterialCommunityIcons name="truck" size={ICON_SIZE} color={WARM_CREAM} />
+          </View>
+          {/* Label: selection-driven (selected = fire-orange, default
+              = charcoal). Independent from status so the user can
+              spot which pin they tapped without losing the open/closed
+              cue from the square. */}
+          <View style={isSelected ? styles.labelSelected : styles.labelDefault}>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.labelText}>
+              {truck.name}
+            </Text>
+          </View>
         </View>
-        <View style={isOpen ? styles.arrowOpen : styles.arrowClosed} />
+        {/* Arrow centered beneath the square only — points at the
+            actual coordinate. Same status colour as the square so
+            the anchor half stays visually unified. */}
+        <View style={styles.arrowContainer}>
+          <View style={isOpen ? styles.arrowOpen : styles.arrowClosed} />
+        </View>
       </Pressable>
     </MarkerView>
   );
 }
 
 // Pre-built per-state styles — keeps colours static so
-// react-native/no-inline-styles + no-color-literals stay clean while
-// preserving the open/closed visual swap. Each key is referenced
-// directly in JSX above so no-unused-styles can see them.
+// react-native/no-inline-styles + no-color-literals stay clean.
+// Each key is referenced directly in JSX above so no-unused-styles
+// can see them.
 const baseSquare = {
-  width: PIN_SIZE,
-  height: PIN_SIZE,
+  width: SQUARE_SIZE,
+  height: SQUARE_SIZE,
   alignItems: 'center',
+  justifyContent: 'center',
+} as const;
+
+const baseLabel = {
+  width: LABEL_WIDTH,
+  height: SQUARE_SIZE,
+  paddingHorizontal: 10,
   justifyContent: 'center',
 } as const;
 
@@ -74,8 +109,22 @@ const baseArrow = {
 } as const;
 
 const styles = StyleSheet.create({
-  squareOpen: { ...baseSquare, backgroundColor: FIRE_ORANGE },
-  squareClosed: { ...baseSquare, backgroundColor: MUTED },
+  row: { flexDirection: 'row' },
+  iconBoxOpen: { ...baseSquare, backgroundColor: FIRE_ORANGE },
+  iconBoxClosed: { ...baseSquare, backgroundColor: MUTED },
+  labelSelected: { ...baseLabel, backgroundColor: FIRE_ORANGE },
+  labelDefault: { ...baseLabel, backgroundColor: CHARCOAL },
+  labelText: {
+    fontFamily: 'DMSans_Medium',
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: WARM_CREAM,
+  },
+  arrowContainer: {
+    width: SQUARE_SIZE,
+    alignItems: 'center',
+  },
   arrowOpen: { ...baseArrow, borderTopColor: FIRE_ORANGE },
   arrowClosed: { ...baseArrow, borderTopColor: MUTED },
 });
