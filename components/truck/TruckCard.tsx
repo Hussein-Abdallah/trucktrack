@@ -11,6 +11,10 @@ interface TruckCardProps {
   truck: TruckWithSchedule;
   /** Optional — omitted when the user has no location permission. */
   distanceKm?: number;
+  /** When true, render a fire-orange left accent + lighter background
+   *  to indicate the card matches the currently-selected pin on the
+   *  map. Selection state lives on the parent screen. */
+  isSelected?: boolean;
   onPress?: () => void;
 }
 
@@ -23,7 +27,7 @@ function formatTime(time: string): string {
   return time.slice(0, 5);
 }
 
-export function TruckCard({ truck, distanceKm, onPress }: TruckCardProps) {
+export function TruckCard({ truck, distanceKm, isSelected = false, onPress }: TruckCardProps) {
   const { t, i18n } = useTranslation();
   // Distance formatter needs the locale for the en-CA / fr-CA decimal-
   // separator switch (Intl.NumberFormat). Labels come from t() — never
@@ -38,7 +42,15 @@ export function TruckCard({ truck, distanceKm, onPress }: TruckCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="w-full flex-row gap-4 border border-outline-100 bg-background-50 p-4 active:bg-background-100"
+      className={
+        // Base card chrome stays identical between states; selection
+        // adds a 4px fire-orange left accent + bumps the background
+        // one shade lighter so the active row reads at a glance from
+        // across the bottom sheet.
+        isSelected
+          ? 'w-full flex-row gap-4 border border-outline-100 border-l-4 border-l-primary-500 bg-background-100 p-4 active:bg-background-200'
+          : 'w-full flex-row gap-4 border border-outline-100 bg-background-50 p-4 active:bg-background-100'
+      }
     >
       {/* Cover image — fallback to a centered map-pin glyph when null. */}
       <View

@@ -3,7 +3,7 @@ import type GorhomBottomSheet from '@gorhom/bottom-sheet';
 import { Camera } from '@rnmapbox/maps';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,6 +31,12 @@ const SNAP_HALF = 1;
 const SNAP_FULL = 2;
 const SKELETON_COUNT = 3;
 const SKELETON_KEYS = Array.from({ length: SKELETON_COUNT }, (_, i) => `truck-skel-${i}`);
+// Approximate height of a TruckCard + ItemSeparator. Used as the
+// fallback offset when scrollToIndex fails because the FlatList hasn't
+// measured the target row yet — better than missing the scroll entirely.
+// Cover (80) + 2×p-4 padding (32) + separator (8) ≈ 120pt.
+const ESTIMATED_ROW_HEIGHT = 120;
+const SCROLL_RETRY_DELAY_MS = 200;
 
 interface SortedTruck {
   truck: TruckWithSchedule;
@@ -58,6 +64,10 @@ export default function ConsumerMapScreen() {
   const sheetRef = useRef<GorhomBottomSheet>(null);
   const sheetIndexRef = useRef(SNAP_HALF);
   const listRef = useRef<BottomSheetFlatListMethods>(null);
+  // Currently-selected pin/card. Set on pin tap; rendered as a fire-
+  // orange left accent on the matching TruckCard so the user can spot
+  // their selection at a glance from across the bottom sheet.
+  const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
   // insets.top combined with a visual margin so overlays clear the
   // notch / Dynamic Island on every device.
   const insets = useSafeAreaInsets();
@@ -126,24 +136,28 @@ export default function ConsumerMapScreen() {
   const handlePinPress = (id: string) => {
     const truck = trucks.find((tr) => tr.id === id);
     if (!truck?.schedule) return;
+    setSelectedTruckId(id);
     cameraRef.current?.setCamera({
       centerCoordinate: [truck.schedule.location_lng, truck.schedule.location_lat],
       zoomLevel: USER_ZOOM,
       animationDuration: CAMERA_FLY_MS,
       animationMode: 'flyTo',
     });
-    // Snap to half if currently at peek so the user sees the matching
-    // card. If they're at full, leave them there — they're browsing.
-    if (sheetIndexRef.current === SNAP_PEEK) {
+    // Snap to half whenever we're not already there. From peek: user
+    // wants to see the card. From full: collapse so the camera-fly is
+    // visible — at full the sheet covers most of the map.
+    if (sheetIndexRef.current !== SNAP_HALF) {
       sheetRef.current?.snapToIndex(SNAP_HALF);
     }
     const idx = sortedTrucks.findIndex((s) => s.truck.id === id);
     if (idx >= 0) {
+      // scrollToIndex can throw if the FlatList hasn't measured the
+      // target row yet (windowing). The catch is the safety net; the
+      // onScrollToIndexFailed handler below is the actual recovery.
       try {
         listRef.current?.scrollToIndex({ index: idx, animated: true });
       } catch {
-        // scrollToIndex throws if the row isn't measured yet; the scroll
-        // is polish, not a contract — better to miss it than crash.
+        // No-op — the failure handler retries via scrollToOffset.
       }
     }
   };
@@ -209,11 +223,28 @@ export default function ConsumerMapScreen() {
           <TruckCard
             truck={item.truck}
             distanceKm={item.distanceKm}
+            isSelected={item.truck.id === selectedTruckId}
             onPress={() => handleCardPress(item.truck.id)}
           />
         )}
         ItemSeparatorComponent={ItemSeparator}
         contentContainerStyle={styles.listContent}
+        // Recovery for scrollToIndex when the FlatList hasn't measured
+        // the target row yet (windowing). Estimate the offset from row
+        // index × ESTIMATED_ROW_HEIGHT, scroll there, then retry the
+        // precise scrollToIndex on the next tick once the row is in
+        // the viewport.
+        onScrollToIndexFailed={(info) => {
+          const offset = info.index * ESTIMATED_ROW_HEIGHT;
+          listRef.current?.scrollToOffset({ offset, animated: true });
+          setTimeout(() => {
+            try {
+              listRef.current?.scrollToIndex({ index: info.index, animated: true });
+            } catch {
+              // Give up gracefully — the user can still scroll by hand.
+            }
+          }, SCROLL_RETRY_DELAY_MS);
+        }}
       />
     );
   };
