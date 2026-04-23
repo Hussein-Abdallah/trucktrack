@@ -240,6 +240,29 @@ Examples:
   chore(deps): upgrade Gluestack UI to v3.1.0
 ```
 
+## Technical Debt — TT-43
+
+Real defects caught during review but consciously deferred get filed as children of **TT-43 — Technical Debt — wrap before MVP launch**. To file on TT-43 (rather than skip), all three must be met:
+
+1. A reviewer (human or CodeRabbit) flags a real correctness, security, or UX defect with a concrete failure scenario — not a style nit, not a "what if" without a path to it.
+2. Fixing it in the active PR is genuinely out of scope — different layer, different ticket boundary, different module, or requires a migration the active PR doesn't own.
+3. The defect doesn't block the active feature shipping (no production user is hurt today).
+
+**Process when deferring:**
+
+1. Reply to the CodeRabbit comment under its thread. Explain (a) what the right structural fix is, (b) why it's out of scope for this PR, and (c) link the new ticket once it exists. Don't just say "deferred" — the reasoning is what stops the next reviewer from re-litigating it.
+2. Create a child ticket under TT-43 with: a short story, the failure scenario in plain language, the chosen approach, acceptance criteria, and an explicit **Out of Scope** section so future-you doesn't scope-creep when picking it up.
+3. Reference the spawning PR # and parent epic in the new ticket's description.
+
+**What does NOT belong on TT-43:**
+
+- Style nits, naming bikesheds, "could be cleaner" without a concrete defect.
+- Speculative refactors with no reviewer-flagged failure scenario.
+- Performance work without a measured regression.
+- "Future feature" wishes — those go on the product backlog, not tech debt.
+
+The list gets pulled down before MVP launch (TestFlight / Play internal testing cutoff). Keeping it real means we actually ship through it instead of declaring tech-debt bankruptcy.
+
 ## What NOT to Do
 
 - Never use `borderRadius > 0` on buttons or inputs
