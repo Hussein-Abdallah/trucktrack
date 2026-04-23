@@ -12,9 +12,7 @@ export interface TruckProfileData {
 // Two separate queries rather than a !inner join: the profile screen
 // must render a truck with no shifts today (unlike the map, which
 // filters trucks without a schedule). `!inner` would 404 them.
-async function fetchTruckProfile(id: string): Promise<TruckProfileData | null> {
-  const today = todayIso();
-
+async function fetchTruckProfile(id: string, today: string): Promise<TruckProfileData | null> {
   const { data: truck, error: truckErr } = await supabase
     .from('trucks')
     .select('*')
@@ -39,13 +37,17 @@ async function fetchTruckProfile(id: string): Promise<TruckProfileData | null> {
 }
 
 export function useTruckProfile(id: string | undefined) {
+  // Capture once per render so the queryKey and the filter below can't
+  // straddle a midnight-UTC rollover — otherwise data for day N+1 could
+  // cache under day N's key.
+  const today = todayIso();
   return useQuery<TruckProfileData | null>({
-    queryKey: ['truck', id, todayIso()],
+    queryKey: ['truck', id, today],
     queryFn: () => {
       // `enabled` gates this, but guard anyway so TS narrows id to string
       // without a cast, and a misconfigured caller fails loud.
       if (!id) throw new Error('useTruckProfile: id is required');
-      return fetchTruckProfile(id);
+      return fetchTruckProfile(id, today);
     },
     enabled: Boolean(id),
   });

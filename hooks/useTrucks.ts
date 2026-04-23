@@ -21,8 +21,7 @@ function pickSchedule(rows: TruckSchedule[]): TruckSchedule | null {
 // .returns<>() rather than fight the inferred type.
 type TruckWithSchedulesRow = Truck & { truck_schedules: TruckSchedule[] };
 
-async function fetchTrucks(): Promise<TruckWithSchedule[]> {
-  const today = todayIso();
+async function fetchTrucks(today: string): Promise<TruckWithSchedule[]> {
   const { data, error } = await supabase
     .from('trucks')
     .select('*, truck_schedules!inner(*)')
@@ -67,8 +66,10 @@ export function useTrucks() {
   // Including today in the key forces a fresh fetch when the date rolls
   // over — without it, an app left mounted past midnight would keep
   // serving yesterday's schedules from cache until staleTime expires.
+  // Capture once so the key and the filter can't straddle midnight UTC.
+  const today = todayIso();
   return useQuery<TruckWithSchedule[]>({
-    queryKey: ['trucks', todayIso()],
-    queryFn: fetchTrucks,
+    queryKey: ['trucks', today],
+    queryFn: () => fetchTrucks(today),
   });
 }
