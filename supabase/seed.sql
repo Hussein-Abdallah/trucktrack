@@ -27,8 +27,10 @@
 --   AND status IN ('live','scheduled')):
 --
 --   10 VISIBLE (always — no conditional inserts):
---     7 live, full-day window  → always "OPEN NOW" visually
+--     6 live, full-day window  → always "OPEN NOW" visually
 --     3 live, restricted hours → open or closed depending on clock
+--     1 scheduled (status='scheduled') → exercises the second branch
+--                                        of the useTrucks status filter
 --
 --   10 HIDDEN:
 --     3 cancelled today (status filter excludes)
@@ -356,8 +358,9 @@ on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------
 -- 3. Today's truck_schedules — 13 rows.
---    Visible 10 (status live, full-day or restricted hours) +
---    cancelled 3 (status='cancelled', filtered out by useTrucks).
+--    Visible 10 = 6 live full-day + 3 live restricted hours +
+--    1 scheduled (status='scheduled'), plus
+--    3 cancelled (status='cancelled', filtered out by useTrucks).
 --
 -- All schedules anchor on current_date so a fresh `npm run db:reset`
 -- always seeds for "today". Restricted-hour rows mix open/closed

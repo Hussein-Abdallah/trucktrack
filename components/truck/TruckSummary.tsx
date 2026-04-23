@@ -29,9 +29,12 @@ interface TruckSummaryProps {
 
 const ICON_SIZE = 16;
 const HERO_HEIGHT = 140;
-// Hardcoded follower count — the Follow heart UI is in but the
-// follows-count query lands in a separate ticket. See TT-XX (TBD).
-const PLACEHOLDER_FOLLOWERS = '1.2K';
+// Heart toggle below is local-only (no backend write). Kept as a
+// visual placeholder per product direction so the summary card layout
+// matches the design before the follows mutation lands. Follower
+// count was removed entirely after CodeRabbit pushback — heart is
+// the only "fake" element we kept since it's an interactive widget,
+// not data presented as ground truth.
 
 function formatTime(time: string): string {
   return time.slice(0, 5);
@@ -142,14 +145,6 @@ export function TruckSummary({
               ) : null}
             </View>
           ) : null}
-          <View style={styles.infoRow}>
-            <Feather name="users" size={ICON_SIZE} color={MUTED} />
-            <Text style={styles.infoText}>
-              {t('routes.consumer.mapScreen.summary.followersCount', {
-                count: PLACEHOLDER_FOLLOWERS,
-              })}
-            </Text>
-          </View>
         </View>
 
         <View style={styles.actionColumn}>

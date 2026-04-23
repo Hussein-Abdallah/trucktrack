@@ -62,5 +62,14 @@ export async function openMapsDirections(opts: {
     Platform.OS === 'ios'
       ? `http://maps.apple.com/?daddr=${lat},${lng}${label ? `&q=${encodedLabel}` : ''}`
       : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-  await Linking.openURL(url);
+  // Linking.openURL rejects when no app handles the URL or the user
+  // cancels (rare for maps URLs since both platforms ship a default
+  // handler). Swallow + log so an unhandled rejection doesn't bubble
+  // up to the caller — the action is best-effort, not load-bearing.
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('[openMapsDirections] failed to open URL', url, error);
+  }
 }

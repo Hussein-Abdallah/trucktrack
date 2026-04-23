@@ -338,7 +338,13 @@ export default function ConsumerMapScreen() {
         style={[styles.topBar, { paddingTop: insets.top + TOP_BAR_MARGIN }]}
         pointerEvents="box-none"
       >
-        <Text style={styles.wordmark}>{t('routes.consumer.mapScreen.wordmark')}</Text>
+        {/* Non-interactive label — explicit pointerEvents="none" so it
+            doesn't intercept map pans (the parent's box-none only
+            passes through empty areas; children stay hit-testable by
+            default). */}
+        <View pointerEvents="none">
+          <Text style={styles.wordmark}>{t('routes.consumer.mapScreen.wordmark')}</Text>
+        </View>
         <Pressable
           onPress={handleProfilePress}
           accessibilityRole="button"
