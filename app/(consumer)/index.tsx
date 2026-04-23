@@ -131,9 +131,16 @@ export default function ConsumerMapScreen() {
       .map<SortedTruck>((truck) => ({ truck, distanceKm: undefined }));
   }, [trucks, coords, i18n.language]);
 
-  const openCount = useMemo(
-    () => trucks.filter((tr) => deriveIsOpen(tr.schedule)).length,
-    [trucks],
+  // Inline (no useMemo) so the count stays consistent with TruckPin /
+  // TruckCard / TruckSummary, which all derive isOpen at render. Memoising
+  // on [trucks] would cache a stale count across renders triggered by
+  // anything other than a refetch — e.g., when the wall clock crosses
+  // close_time and the next render flips badges + pins but the count
+  // would still reflect pre-crossing status. Filtering N truck rows per
+  // render is trivial at MVP scale.
+  const openCount = trucks.reduce(
+    (count, tr) => count + (deriveIsOpen(tr.schedule) ? 1 : 0),
+    0,
   );
 
   const selectedSorted = useMemo(
