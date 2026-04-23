@@ -21,7 +21,16 @@
         "emptyTitle": "Aucun camion prévu aujourd'hui",
         "emptyMessage": "Revenez plus tard pour les mises à jour.",
         "errorTitle": "Impossible de charger",
-        "errorMessage": "Tirez pour rafraîchir."
+        "errorMessage": "Tirez pour rafraîchir.",
+        "closeSelection": "Fermer",
+        "summary": {
+          "follow": "Suivre",
+          "unfollow": "Ne plus suivre",
+          "followersCount": "{{count}} abonnés",
+          "catering": "Traiteur",
+          "viewDetails": "Détails",
+          "getDirections": "Itinéraire"
+        }
       }
     },
     "operator": {

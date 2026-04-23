@@ -21,7 +21,16 @@
         "emptyTitle": "No trucks scheduled today",
         "emptyMessage": "Check back later for updates.",
         "errorTitle": "Couldn't load trucks",
-        "errorMessage": "Pull to refresh."
+        "errorMessage": "Pull to refresh.",
+        "closeSelection": "Close",
+        "summary": {
+          "follow": "Follow",
+          "unfollow": "Unfollow",
+          "followersCount": "{{count}} Followers",
+          "catering": "Catering",
+          "viewDetails": "Details",
+          "getDirections": "Directions"
+        }
       }
     },
     "operator": {

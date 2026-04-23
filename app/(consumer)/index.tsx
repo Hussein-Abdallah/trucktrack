@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { AppState, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { BottomSheetFlatListMethods } from '@/components/map/BottomSheet';
 import { BottomSheet, BottomSheetFlatList } from '@/components/map/BottomSheet';
 import { LocateButton } from '@/components/map/LocateButton';
 import { DEFAULT_ZOOM, MapView, OTTAWA_CENTER, USER_ZOOM } from '@/components/map/MapView';
@@ -17,10 +16,11 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { TruckCard } from '@/components/truck/TruckCard';
 import { TruckCardSkeleton } from '@/components/truck/TruckCardSkeleton';
 import { TruckPin } from '@/components/truck/TruckPin';
+import { TruckSummary } from '@/components/truck/TruckSummary';
 import { Badge, BadgeText } from '@/components/ui/badge';
 import { useTrucks } from '@/hooks/useTrucks';
 import type { TruckWithSchedule } from '@/lib/types';
-import { haversineKm } from '@/lib/utils';
+import { haversineKm, openMapsDirections } from '@/lib/utils';
 import { useLocationStore } from '@/stores/locationStore';
 import { APP_BLACK, FIRE_ORANGE, MID, WARM_CREAM } from '@/theme/colors';
 
@@ -31,12 +31,6 @@ const SNAP_HALF = 1;
 const SNAP_FULL = 2;
 const SKELETON_COUNT = 3;
 const SKELETON_KEYS = Array.from({ length: SKELETON_COUNT }, (_, i) => `truck-skel-${i}`);
-// Approximate height of a TruckCard + ItemSeparator. Used as the
-// fallback offset when scrollToIndex fails because the FlatList hasn't
-// measured the target row yet — better than missing the scroll entirely.
-// Cover (80) + 2×p-4 padding (32) + separator (8) ≈ 120pt.
-const ESTIMATED_ROW_HEIGHT = 120;
-const SCROLL_RETRY_DELAY_MS = 200;
 
 interface SortedTruck {
   truck: TruckWithSchedule;
@@ -63,10 +57,14 @@ export default function ConsumerMapScreen() {
   const cameraRef = useRef<Camera>(null);
   const sheetRef = useRef<GorhomBottomSheet>(null);
   const sheetIndexRef = useRef(SNAP_HALF);
-  const listRef = useRef<BottomSheetFlatListMethods>(null);
-  // Currently-selected pin/card. Set on pin tap; rendered as a fire-
-  // orange left accent on the matching TruckCard so the user can spot
-  // their selection at a glance from across the bottom sheet.
+  // Snap the user was on right before entering selection mode.
+  // Captured on the first pin tap and restored on close X so dismissing
+  // the summary returns the sheet to where it was, instead of always
+  // forcing it back to half.
+  const preSelectionSnapRef = useRef<number | null>(null);
+  // Currently-selected pin/card. Set on pin tap, cleared by the close
+  // X. Drives both the sheet body (single focused card vs. full list)
+  // and the selected-card highlight.
   const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
   // insets.top combined with a visual margin so overlays clear the
   // notch / Dynamic Island on every device.
@@ -130,12 +128,24 @@ export default function ConsumerMapScreen() {
 
   const openCount = useMemo(() => trucks.filter((tr) => tr.isOpen).length, [trucks]);
 
+  const selectedSorted = useMemo(
+    () => (selectedTruckId ? sortedTrucks.find((s) => s.truck.id === selectedTruckId) : undefined),
+    [sortedTrucks, selectedTruckId],
+  );
+
   const permissionDenied = permissionStatus === 'denied';
   const isLocating = permissionStatus === 'granted' && !coords;
 
   const handlePinPress = (id: string) => {
     const truck = trucks.find((tr) => tr.id === id);
     if (!truck?.schedule) return;
+    // Capture pre-selection snap only on the FIRST pin tap (entering
+    // selection mode). If the user taps a different pin while a summary
+    // is already open, keep the original pre-selection value so close
+    // restores to where they actually started.
+    if (selectedTruckId === null) {
+      preSelectionSnapRef.current = sheetIndexRef.current;
+    }
     setSelectedTruckId(id);
     cameraRef.current?.setCamera({
       centerCoordinate: [truck.schedule.location_lng, truck.schedule.location_lat],
@@ -143,22 +153,34 @@ export default function ConsumerMapScreen() {
       animationDuration: CAMERA_FLY_MS,
       animationMode: 'flyTo',
     });
-    // Snap to half whenever we're not already there. From peek: user
-    // wants to see the card. From full: collapse so the camera-fly is
-    // visible — at full the sheet covers most of the map.
+    // Snap to half: the rich TruckSummary (hero image + status +
+    // info card + actions) doesn't fit cleanly in peek (24% screen).
+    // Half (50%) leaves enough vertical room for the summary while
+    // keeping the map visible above it. Pre-selection snap is
+    // captured above so close X restores wherever the user started.
     if (sheetIndexRef.current !== SNAP_HALF) {
       sheetRef.current?.snapToIndex(SNAP_HALF);
     }
-    const idx = sortedTrucks.findIndex((s) => s.truck.id === id);
-    if (idx >= 0) {
-      // scrollToIndex can throw if the FlatList hasn't measured the
-      // target row yet (windowing). The catch is the safety net; the
-      // onScrollToIndexFailed handler below is the actual recovery.
-      try {
-        listRef.current?.scrollToIndex({ index: idx, animated: true });
-      } catch {
-        // No-op — the failure handler retries via scrollToOffset.
-      }
+  };
+
+  const handleCloseSelection = () => {
+    setSelectedTruckId(null);
+    // Zoom out at the current center so the user gets the wider city
+    // context back without being yanked to a different location. No
+    // re-center — they keep their bearings on where the dismissed
+    // truck was.
+    cameraRef.current?.setCamera({
+      zoomLevel: DEFAULT_ZOOM,
+      animationDuration: CAMERA_FLY_MS,
+      animationMode: 'flyTo',
+    });
+    // Restore the pre-selection snap (captured on the first pin tap),
+    // so closing returns the sheet to where the user was. Falls back
+    // to half if nothing was captured (defensive — shouldn't fire).
+    const targetSnap = preSelectionSnapRef.current ?? SNAP_HALF;
+    preSelectionSnapRef.current = null;
+    if (sheetIndexRef.current !== targetSnap) {
+      sheetRef.current?.snapToIndex(targetSnap);
     }
   };
 
@@ -184,9 +206,33 @@ export default function ConsumerMapScreen() {
     });
   };
 
-  // Sheet body switches between four states. Extracted so the JSX tree
+  // Sheet body switches between five states. Extracted so the JSX tree
   // doesn't grow a banned nested ternary chain.
   const renderSheetBody = (): ReactNode => {
+    // Selected mode: a single focused card. Skips the list/loading/empty
+    // branches because we have a known selection regardless of fetch
+    // state — the card just renders from the selected row in
+    // sortedTrucks. (If selection points at a truck that's no longer in
+    // the dataset — e.g., deleted during a refetch — selectedSorted is
+    // undefined and we fall through to the normal list rendering.)
+    if (selectedSorted) {
+      return (
+        <TruckSummary
+          truck={selectedSorted.truck}
+          distanceKm={selectedSorted.distanceKm}
+          onClose={handleCloseSelection}
+          onViewDetails={() => handleCardPress(selectedSorted.truck.id)}
+          onGetDirections={() => {
+            if (!selectedSorted.truck.schedule) return;
+            void openMapsDirections({
+              lat: selectedSorted.truck.schedule.location_lat,
+              lng: selectedSorted.truck.schedule.location_lng,
+              label: selectedSorted.truck.name,
+            });
+          }}
+        />
+      );
+    }
     if (error) {
       return (
         <EmptyState
@@ -216,36 +262,34 @@ export default function ConsumerMapScreen() {
     }
     return (
       <BottomSheetFlatList
-        ref={listRef}
         data={sortedTrucks}
         keyExtractor={(item) => item.truck.id}
         renderItem={({ item }) => (
           <TruckCard
             truck={item.truck}
             distanceKm={item.distanceKm}
-            isSelected={item.truck.id === selectedTruckId}
+            isSelected={false}
             onPress={() => handleCardPress(item.truck.id)}
           />
         )}
         ItemSeparatorComponent={ItemSeparator}
         contentContainerStyle={styles.listContent}
-        // Recovery for scrollToIndex when the FlatList hasn't measured
-        // the target row yet (windowing). Estimate the offset from row
-        // index × ESTIMATED_ROW_HEIGHT, scroll there, then retry the
-        // precise scrollToIndex on the next tick once the row is in
-        // the viewport.
-        onScrollToIndexFailed={(info) => {
-          const offset = info.index * ESTIMATED_ROW_HEIGHT;
-          listRef.current?.scrollToOffset({ offset, animated: true });
-          setTimeout(() => {
-            try {
-              listRef.current?.scrollToIndex({ index: info.index, animated: true });
-            } catch {
-              // Give up gracefully — the user can still scroll by hand.
-            }
-          }, SCROLL_RETRY_DELAY_MS);
-        }}
       />
+    );
+  };
+
+  // List-mode header: title + open count. In selected mode the
+  // TruckSummary owns its own header (close button + truck name on
+  // the hero image), so the sheet header is hidden.
+  const renderSheetHeader = (): ReactNode => {
+    if (selectedSorted) return null;
+    return (
+      <View style={styles.sheetHeader}>
+        <Text style={styles.sheetTitle}>{t('routes.consumer.mapScreen.nearbyTrucks')}</Text>
+        <Badge action="accent" size="sm">
+          <BadgeText>{t('routes.consumer.mapScreen.openNowCount', { count: openCount })}</BadgeText>
+        </Badge>
+      </View>
     );
   };
 
@@ -257,7 +301,12 @@ export default function ConsumerMapScreen() {
           defaultSettings={{ centerCoordinate: OTTAWA_CENTER, zoomLevel: DEFAULT_ZOOM }}
         />
         {trucks.map((truck) => (
-          <TruckPin key={truck.id} truck={truck} onPress={handlePinPress} />
+          <TruckPin
+            key={truck.id}
+            truck={truck}
+            isSelected={truck.id === selectedTruckId}
+            onPress={handlePinPress}
+          />
         ))}
         {coords ? <UserLocationDot coords={coords} /> : null}
       </MapView>
@@ -299,15 +348,7 @@ export default function ConsumerMapScreen() {
           sheetIndexRef.current = snapToIndex(snap);
         }}
       >
-        <View style={styles.sheetHeader}>
-          <Text style={styles.sheetTitle}>{t('routes.consumer.mapScreen.nearbyTrucks')}</Text>
-          <Badge action="accent" size="sm">
-            <BadgeText>
-              {t('routes.consumer.mapScreen.openNowCount', { count: openCount })}
-            </BadgeText>
-          </Badge>
-        </View>
-
+        {renderSheetHeader()}
         {renderSheetBody()}
       </BottomSheet>
     </View>
