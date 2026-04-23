@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
 import { supabase } from '@/services/supabase';
@@ -77,6 +78,30 @@ async function fetchTrucks(): Promise<TruckWithSchedule[]> {
 }
 
 export function useTrucks() {
+  const queryClient = useQueryClient();
+
+  // Subscribe to Postgres changes on truck_schedules so the map updates
+  // within ~2s of an operator publishing/moving/cancelling — closes the
+  // gap that pull-to-refresh and the 30s staleTime leave open. The
+  // migration in 20260423041844_realtime_truck_schedules.sql is what
+  // makes the table emit events; without it this subscription is silent.
+  //
+  // Invalidate with prefix ['trucks'] (not the full date-suffixed key)
+  // so the match still works the moment the date rolls over and the key
+  // changes underneath us.
+  useEffect(() => {
+    const channel = supabase
+      .channel('trucks-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'truck_schedules' }, () => {
+        void queryClient.invalidateQueries({ queryKey: ['trucks'] });
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   // Including today in the key forces a fresh fetch when the date rolls
   // over — without it, an app left mounted past midnight would keep
   // serving yesterday's schedules from cache until staleTime expires.
