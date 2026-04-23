@@ -23,6 +23,7 @@ import { TruckPin } from '@/components/truck/TruckPin';
 import { TruckSummary } from '@/components/truck/TruckSummary';
 import { Badge, BadgeText } from '@/components/ui/badge';
 import { useTrucks } from '@/hooks/useTrucks';
+import { deriveIsOpen } from '@/lib/schedule';
 import type { TruckWithSchedule } from '@/lib/types';
 import { haversineKm, openMapsDirections } from '@/lib/utils';
 import { useLocationStore } from '@/stores/locationStore';
@@ -130,7 +131,10 @@ export default function ConsumerMapScreen() {
       .map<SortedTruck>((truck) => ({ truck, distanceKm: undefined }));
   }, [trucks, coords, i18n.language]);
 
-  const openCount = useMemo(() => trucks.filter((tr) => tr.isOpen).length, [trucks]);
+  const openCount = useMemo(
+    () => trucks.filter((tr) => deriveIsOpen(tr.schedule)).length,
+    [trucks],
+  );
 
   const selectedSorted = useMemo(
     () => (selectedTruckId ? sortedTrucks.find((s) => s.truck.id === selectedTruckId) : undefined),

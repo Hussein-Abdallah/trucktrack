@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MarkerView } from '@rnmapbox/maps';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { deriveIsOpen } from '@/lib/schedule';
 import type { TruckWithSchedule } from '@/lib/types';
 import { CHARCOAL, FIRE_ORANGE, MUTED, WARM_CREAM } from '@/theme/colors';
 
@@ -36,7 +37,10 @@ export function TruckPin({ truck, isSelected = false, onPress }: TruckPinProps) 
   // exists so the type system stays honest about the nullable shape.
   if (!truck.schedule) return null;
 
-  const isOpen = truck.isOpen;
+  // Render-time derivation so the pin flips on the next render after
+  // close_time passes — TT-40 realtime, focus, or any state change all
+  // suffice to trigger that next render.
+  const isOpen = deriveIsOpen(truck.schedule);
 
   return (
     <MarkerView

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 
 import { Badge, BadgeText } from '@/components/ui/badge';
+import { deriveIsOpen } from '@/lib/schedule';
 import type { AppLanguage, TruckWithSchedule } from '@/lib/types';
 import { formatDistance } from '@/lib/utils';
 import { MUTED } from '@/theme/colors';
@@ -38,6 +39,7 @@ export function TruckCard({ truck, distanceKm, isSelected = false, onPress }: Tr
   const todayHours = truck.schedule
     ? `${formatTime(truck.schedule.open_time)} – ${formatTime(truck.schedule.close_time)}`
     : null;
+  const isOpen = deriveIsOpen(truck.schedule);
 
   return (
     <Pressable
@@ -73,8 +75,8 @@ export function TruckCard({ truck, distanceKm, isSelected = false, onPress }: Tr
           >
             {truck.name}
           </Text>
-          <Badge action={truck.isOpen ? 'open' : 'closed'} size="sm">
-            <BadgeText>{t(truck.isOpen ? 'truckCard.openNow' : 'truckCard.closed')}</BadgeText>
+          <Badge action={isOpen ? 'open' : 'closed'} size="sm">
+            <BadgeText>{t(isOpen ? 'truckCard.openNow' : 'truckCard.closed')}</BadgeText>
           </Badge>
         </View>
 
