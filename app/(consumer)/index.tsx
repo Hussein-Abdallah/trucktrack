@@ -138,10 +138,7 @@ export default function ConsumerMapScreen() {
   // close_time and the next render flips badges + pins but the count
   // would still reflect pre-crossing status. Filtering N truck rows per
   // render is trivial at MVP scale.
-  const openCount = trucks.reduce(
-    (count, tr) => count + (deriveIsOpen(tr.schedule) ? 1 : 0),
-    0,
-  );
+  const openCount = trucks.reduce((count, tr) => count + (deriveIsOpen(tr.schedule) ? 1 : 0), 0);
 
   const selectedSorted = useMemo(
     () => (selectedTruckId ? sortedTrucks.find((s) => s.truck.id === selectedTruckId) : undefined),
