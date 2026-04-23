@@ -17,7 +17,8 @@
       "mapScreen": {
         "wordmark": "TRUCKTRACK",
         "nearbyTrucks": "Nearby Trucks",
-        "openNowCount": "{{count}} OPEN NOW",
+        "openNowCount_one": "{{count}} OPEN NOW",
+        "openNowCount_other": "{{count}} OPEN NOW",
         "emptyTitle": "No trucks scheduled today",
         "emptyMessage": "Check back later for updates.",
         "errorTitle": "Couldn't load trucks",

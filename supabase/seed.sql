@@ -417,10 +417,12 @@ values
    45.4380, -75.6680, 'Vanier',
    time '07:00:00', time '14:00:00', 'live'),
 
+  -- VISIBLE: scheduled (status='scheduled', filter passes — exercises
+  -- the second branch of the useTrucks status filter).
   ('c0000000-0000-0000-0000-000000000010',
    'b0000000-0000-0000-0000-000000000010', current_date,
    45.3940, -75.6920, 'Old Ottawa South',
-   time '17:00:00', time '22:00:00', 'live'),
+   time '17:00:00', time '22:00:00', 'scheduled'),
 
   -- HIDDEN: cancelled today (status filter excludes from useTrucks) --
   ('c0000000-0000-0000-0000-000000000011',
@@ -437,4 +439,25 @@ values
    'b0000000-0000-0000-0000-000000000013', current_date,
    45.4290, -75.6810, 'New Edinburgh',
    time '14:00:00', time '20:00:00', 'cancelled')
-on conflict (id) do nothing;
+-- DO UPDATE so reruns without `db:reset` refresh the seeded date to
+-- today. Without this, fixed UUIDs + DO NOTHING would freeze the date
+-- column on the first run, then useTrucks (which filters on
+-- current_date) would stop returning these rows tomorrow. `is distinct
+-- from` guard avoids needless trigger fires when nothing's changed.
+on conflict (id) do update
+set
+  date = excluded.date,
+  location_lat = excluded.location_lat,
+  location_lng = excluded.location_lng,
+  location_label = excluded.location_label,
+  open_time = excluded.open_time,
+  close_time = excluded.close_time,
+  status = excluded.status
+where
+  public.truck_schedules.date is distinct from excluded.date
+  or public.truck_schedules.location_lat is distinct from excluded.location_lat
+  or public.truck_schedules.location_lng is distinct from excluded.location_lng
+  or public.truck_schedules.location_label is distinct from excluded.location_label
+  or public.truck_schedules.open_time is distinct from excluded.open_time
+  or public.truck_schedules.close_time is distinct from excluded.close_time
+  or public.truck_schedules.status is distinct from excluded.status;

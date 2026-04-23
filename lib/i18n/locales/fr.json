@@ -17,7 +17,8 @@
       "mapScreen": {
         "wordmark": "TRUCKTRACK",
         "nearbyTrucks": "Camions à proximité",
-        "openNowCount": "{{count}} OUVERTS",
+        "openNowCount_one": "{{count}} OUVERT",
+        "openNowCount_other": "{{count}} OUVERTS",
         "emptyTitle": "Aucun camion prévu aujourd'hui",
         "emptyMessage": "Revenez plus tard pour les mises à jour.",
         "errorTitle": "Impossible de charger",

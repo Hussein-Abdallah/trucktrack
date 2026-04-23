@@ -5,10 +5,14 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState, Linking, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BottomSheet, BottomSheetFlatList } from '@/components/map/BottomSheet';
+import {
+  BottomSheet,
+  BottomSheetFlatList,
+  BottomSheetScrollView,
+} from '@/components/map/BottomSheet';
 import { LocateButton } from '@/components/map/LocateButton';
 import { DEFAULT_ZOOM, MapView, OTTAWA_CENTER, USER_ZOOM } from '@/components/map/MapView';
 import { UserLocationDot } from '@/components/map/UserLocationDot';
@@ -45,8 +49,8 @@ function snapToIndex(snap: 'peek' | 'half' | 'full'): number {
 }
 
 export default function ConsumerMapScreen() {
-  const { t } = useTranslation();
-  const { data: trucks = [], isLoading, error } = useTrucks();
+  const { t, i18n } = useTranslation();
+  const { data: trucks = [], isLoading, isRefetching, error, refetch } = useTrucks();
   if (error) {
     // eslint-disable-next-line no-console
     console.error('[useTrucks] fetch failed:', error);
@@ -122,9 +126,9 @@ export default function ConsumerMapScreen() {
         });
     }
     return [...trucks]
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => a.name.localeCompare(b.name, i18n.language))
       .map<SortedTruck>((truck) => ({ truck, distanceKm: undefined }));
-  }, [trucks, coords]);
+  }, [trucks, coords, i18n.language]);
 
   const openCount = useMemo(() => trucks.filter((tr) => tr.isOpen).length, [trucks]);
 
@@ -233,13 +237,25 @@ export default function ConsumerMapScreen() {
         />
       );
     }
+    // Wrap error + empty states in a scrollable so the
+    // "Pull to refresh." copy actually works — RefreshControl needs a
+    // scrollable parent to attach to.
+    const refreshControl = (
+      <RefreshControl
+        refreshing={isRefetching}
+        onRefresh={() => void refetch()}
+        tintColor={WARM_CREAM}
+      />
+    );
     if (error) {
       return (
-        <EmptyState
-          icon="alert-triangle"
-          title={t('routes.consumer.mapScreen.errorTitle')}
-          message={t('routes.consumer.mapScreen.errorMessage')}
-        />
+        <BottomSheetScrollView refreshControl={refreshControl}>
+          <EmptyState
+            icon="alert-triangle"
+            title={t('routes.consumer.mapScreen.errorTitle')}
+            message={t('routes.consumer.mapScreen.errorMessage')}
+          />
+        </BottomSheetScrollView>
       );
     }
     if (isLoading) {
@@ -253,17 +269,21 @@ export default function ConsumerMapScreen() {
     }
     if (sortedTrucks.length === 0) {
       return (
-        <EmptyState
-          icon="calendar"
-          title={t('routes.consumer.mapScreen.emptyTitle')}
-          message={t('routes.consumer.mapScreen.emptyMessage')}
-        />
+        <BottomSheetScrollView refreshControl={refreshControl}>
+          <EmptyState
+            icon="calendar"
+            title={t('routes.consumer.mapScreen.emptyTitle')}
+            message={t('routes.consumer.mapScreen.emptyMessage')}
+          />
+        </BottomSheetScrollView>
       );
     }
     return (
       <BottomSheetFlatList
         data={sortedTrucks}
         keyExtractor={(item) => item.truck.id}
+        refreshing={isRefetching}
+        onRefresh={() => void refetch()}
         renderItem={({ item }) => (
           <TruckCard
             truck={item.truck}
