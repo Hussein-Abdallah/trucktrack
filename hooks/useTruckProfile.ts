@@ -1,14 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { todayIso } from '@/lib/schedule';
 import type { Truck, TruckSchedule } from '@/lib/types';
 import { supabase } from '@/services/supabase';
-
-// yyyy-MM-dd in UTC — mirrors useTrucks (see hooks/useTrucks.ts:11).
-// Supabase runs UTC so this matches `current_date`; Ottawa's local
-// midnight boundary lands outside truck operating windows.
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export interface TruckProfileData {
   truck: Truck;

@@ -1,16 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+import { todayIso } from '@/lib/schedule';
 import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
 import { supabase } from '@/services/supabase';
-
-// yyyy-MM-dd in UTC — matches Postgres `current_date` on Supabase
-// (which runs UTC). Multi-timezone is a separate concern; for Ottawa
-// the midnight-UTC boundary lands at 7/8 pm local, well outside truck
-// operating windows.
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 // Multiple schedule rows for one truck on the same day shouldn't happen
 // in normal use, but recurring schedules can overlap. Per TT-35 AC: pick
