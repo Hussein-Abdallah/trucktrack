@@ -45,7 +45,15 @@
       "login": {
         "title": "Bon retour"
       },
-      "signup": "Inscription",
+      "signup": {
+        "title": "Créez votre compte",
+        "displayNameLabel": "Nom (facultatif)",
+        "displayNamePlaceholder": "Votre nom",
+        "submitLabel": "S'INSCRIRE",
+        "submittingLabel": "CRÉATION…",
+        "loginPrompt": "Vous avez déjà un compte ?",
+        "loginLink": "Connexion"
+      },
       "emailLabel": "Courriel",
       "emailPlaceholder": "vous@exemple.com",
       "passwordLabel": "Mot de passe",
@@ -59,6 +67,8 @@
         "emailRequired": "Le courriel est requis",
         "emailInvalid": "Entrez une adresse courriel valide",
         "passwordRequired": "Le mot de passe est requis",
+        "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+        "emailAlreadyRegistered": "Ce courriel est déjà utilisé. Connectez-vous à la place.",
         "invalidCredentials": "Courriel ou mot de passe incorrect",
         "network": "Vérifiez votre connexion et réessayez",
         "unknown": "Une erreur est survenue. Veuillez réessayer."
