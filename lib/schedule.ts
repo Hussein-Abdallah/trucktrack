@@ -1,5 +1,14 @@
 import type { TruckSchedule } from '@/lib/types';
 
+// yyyy-MM-dd in UTC — matches Postgres `current_date` on Supabase
+// (which runs UTC). Used by query keys and date filters so schedules
+// refetch on the midnight-UTC boundary. For Ottawa that lands at
+// 7/8pm local, well outside truck operating windows; multi-timezone
+// is a separate concern.
+export function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 // Convert HH:MM:SS to seconds since midnight so open/close windows are
 // directly comparable with the wall clock with one cheap subtraction.
 export function timeStrToSeconds(t: string): number {

@@ -1,16 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+import { todayIso } from '@/lib/schedule';
 import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
 import { supabase } from '@/services/supabase';
-
-// yyyy-MM-dd in UTC — matches Postgres `current_date` on Supabase
-// (which runs UTC). Multi-timezone is a separate concern; for Ottawa
-// the midnight-UTC boundary lands at 7/8 pm local, well outside truck
-// operating windows.
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 // Multiple schedule rows for one truck on the same day shouldn't happen
 // in normal use, but recurring schedules can overlap. Per TT-35 AC: pick
@@ -28,8 +21,7 @@ function pickSchedule(rows: TruckSchedule[]): TruckSchedule | null {
 // .returns<>() rather than fight the inferred type.
 type TruckWithSchedulesRow = Truck & { truck_schedules: TruckSchedule[] };
 
-async function fetchTrucks(): Promise<TruckWithSchedule[]> {
-  const today = todayIso();
+async function fetchTrucks(today: string): Promise<TruckWithSchedule[]> {
   const { data, error } = await supabase
     .from('trucks')
     .select('*, truck_schedules!inner(*)')
@@ -74,8 +66,10 @@ export function useTrucks() {
   // Including today in the key forces a fresh fetch when the date rolls
   // over — without it, an app left mounted past midnight would keep
   // serving yesterday's schedules from cache until staleTime expires.
+  // Capture once so the key and the filter can't straddle midnight UTC.
+  const today = todayIso();
   return useQuery<TruckWithSchedule[]>({
-    queryKey: ['trucks', todayIso()],
-    queryFn: fetchTrucks,
+    queryKey: ['trucks', today],
+    queryFn: () => fetchTrucks(today),
   });
 }

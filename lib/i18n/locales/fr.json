@@ -80,5 +80,19 @@
       "label": "Ma position",
       "deniedHint": "Activez la localisation dans les Réglages"
     }
+  },
+  "truck": {
+    "profile": {
+      "error": {
+        "title": "Impossible de charger le camion",
+        "message": "Vérifiez votre connexion et réessayez.",
+        "retry": "Réessayer"
+      },
+      "notFound": {
+        "title": "Camion introuvable",
+        "message": "Ce camion n'est pas disponible ou n'est plus actif.",
+        "back": "Retour à la carte"
+      }
+    }
   }
 }

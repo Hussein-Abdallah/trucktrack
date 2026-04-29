@@ -80,5 +80,19 @@
       "label": "My location",
       "deniedHint": "Enable location in Settings"
     }
+  },
+  "truck": {
+    "profile": {
+      "error": {
+        "title": "Couldn't load truck",
+        "message": "Check your connection and try again.",
+        "retry": "Retry"
+      },
+      "notFound": {
+        "title": "Truck not found",
+        "message": "This truck is unavailable or no longer active.",
+        "back": "Back to Map"
+      }
+    }
   }
 }
