@@ -1,5 +1,5 @@
 import { Link, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,17 +12,32 @@ import {
   UnknownAuthError,
   signIn,
 } from '@/services/auth';
+import { useAuthStore } from '@/stores/authStore';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function LoginScreen() {
   const { t } = useTranslation();
+  const session = useAuthStore((state) => state.session);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Drive the post-login redirect off the store, not off the signIn
+  // promise. signInWithPassword resolves before useAuthSubscription
+  // finishes its async hydration (await fetchProfileRoles +
+  // ensureRoleForVariant). If we replace('/') immediately on resolve,
+  // the gate at / sees a still-null session and bounces back here.
+  // Watching session means we navigate exactly when hydration lands —
+  // race-proof across cold-start with cached session and fresh login.
+  useEffect(() => {
+    if (session) {
+      router.replace('/');
+    }
+  }, [session]);
 
   const handleSubmit = async () => {
     if (busy) return;
@@ -53,11 +68,9 @@ export default function LoginScreen() {
     setBusy(true);
     try {
       await signIn({ email: trimmedEmail, password });
-      // signIn populates the session via SIGNED_IN through
-      // useAuthSubscription, but the route gate in app/index.tsx only
-      // runs when the user is at /. We're at /auth/login, so push back
-      // to / explicitly and let the gate route to onboarding/map.
-      router.replace('/');
+      // Navigation is handled by the useEffect above when session
+      // hydrates. Keep busy=true on success so the button stays in
+      // its SIGNING IN… state until the redirect fires.
     } catch (err) {
       if (err instanceof NetworkError) {
         setGlobalError(t('routes.auth.errors.network'));
@@ -71,7 +84,6 @@ export default function LoginScreen() {
       } else {
         setGlobalError(t('routes.auth.errors.unknown'));
       }
-    } finally {
       setBusy(false);
     }
   };

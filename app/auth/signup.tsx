@@ -1,5 +1,5 @@
 import { Link, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,12 +15,14 @@ import {
   UnknownAuthError,
   signUp,
 } from '@/services/auth';
+import { useAuthStore } from '@/stores/authStore';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LEN = 8;
 
 export default function SignupScreen() {
   const { t, i18n } = useTranslation();
+  const session = useAuthStore((state) => state.session);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -28,6 +30,17 @@ export default function SignupScreen() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Drive the post-signup redirect off the store, not off the signUp
+  // promise. signUp resolves before useAuthSubscription finishes its
+  // async hydration; navigating immediately can race the gate at /
+  // and bounce back here. Watching session means we navigate exactly
+  // when hydration lands.
+  useEffect(() => {
+    if (session) {
+      router.replace('/');
+    }
+  }, [session]);
 
   const handleSubmit = async () => {
     if (busy) return;
@@ -68,12 +81,9 @@ export default function SignupScreen() {
         language: i18n.language as AppLanguage,
         displayName: trimmedDisplayName || undefined,
       });
-      // signUp populates the session via SIGNED_IN through
-      // useAuthSubscription (enable_confirmations = false in dev), but
-      // the route gate in app/index.tsx only runs when the user is at
-      // /. We're at /auth/signup, so push back to / explicitly and let
-      // the gate route to onboarding.
-      router.replace('/');
+      // Navigation is handled by the useEffect above when session
+      // hydrates. Keep busy=true on success so the button stays in
+      // its CREATING… state until the redirect fires.
     } catch (err) {
       if (err instanceof EmailAlreadyRegisteredError) {
         setGlobalError(t('routes.auth.errors.emailAlreadyRegistered'));
@@ -86,7 +96,6 @@ export default function SignupScreen() {
       } else {
         setGlobalError(t('routes.auth.errors.unknown'));
       }
-    } finally {
       setBusy(false);
     }
   };
