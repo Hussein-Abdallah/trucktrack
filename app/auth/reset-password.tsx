@@ -2,13 +2,15 @@ import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { setRecoveryInProgress } from '@/hooks/useAuthSubscription';
 import { supabase } from '@/services/supabase';
+import { FIRE_ORANGE } from '@/theme/colors';
 
 const MIN_PASSWORD_LEN = 8;
 
@@ -40,27 +42,47 @@ export default function ResetPasswordScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    void (async () => {
-      const url = await Linking.getInitialURL();
-      if (cancelled) return;
-      const parsed = url ? parseTokenFragment(url) : null;
-      if (!parsed) {
-        // Also tolerate a session that may already be hydrated (e.g.
-        // if the user was navigated here from another in-app surface).
-        const { data } = await supabase.auth.getSession();
-        if (cancelled) return;
-        setTokenStatus(data.session ? 'valid' : 'expired');
-        return;
-      }
+
+    const applyTokens = async (parsed: { accessToken: string; refreshToken: string }) => {
+      setRecoveryInProgress(true);
       const { error } = await supabase.auth.setSession({
         access_token: parsed.accessToken,
         refresh_token: parsed.refreshToken,
       });
       if (cancelled) return;
       setTokenStatus(error ? 'expired' : 'valid');
+    };
+
+    void (async () => {
+      const url = await Linking.getInitialURL();
+      if (cancelled) return;
+      const parsed = url ? parseTokenFragment(url) : null;
+      if (parsed) {
+        await applyTokens(parsed);
+        return;
+      }
+      // Also tolerate a session that may already be hydrated (e.g.
+      // if the user was navigated here from another in-app surface).
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      setTokenStatus(data.session ? 'valid' : 'expired');
     })();
+
+    // Warm-app deep link: if the email is opened while the app is
+    // already running, getInitialURL won't fire — the URL arrives via
+    // this event listener instead.
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      const parsed = parseTokenFragment(url);
+      if (!parsed) return;
+      void applyTokens(parsed);
+    });
+
     return () => {
       cancelled = true;
+      sub.remove();
+      // Defensive: if the user backgrounds or unmounts mid-flow, clear
+      // the flag so a future SIGNED_IN doesn't get suppressed.
+      setRecoveryInProgress(false);
     };
   }, []);
 
@@ -97,6 +119,7 @@ export default function ResetPasswordScreen() {
       // in again with their new password — defensive against leaving
       // a recovery-scoped session hanging around.
       await supabase.auth.signOut({ scope: 'local' });
+      setRecoveryInProgress(false);
       router.replace('/auth/login');
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -108,7 +131,11 @@ export default function ResetPasswordScreen() {
   };
 
   if (tokenStatus === 'pending') {
-    return <SafeAreaView className="flex-1 bg-background-0" />;
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-background-0">
+        <ActivityIndicator color={FIRE_ORANGE} size="large" />
+      </SafeAreaView>
+    );
   }
 
   if (tokenStatus === 'expired') {
