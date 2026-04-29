@@ -41,22 +41,29 @@ export default function ConsumerOnboardingScreen() {
   const handleContinue = async () => {
     if (busy) return;
     setBusy(true);
-    // Best-effort profile update. Errors here (no real auth session
-    // under the dev shortcut, transient network blip, RLS denial) must
-    // not trap the user on onboarding — the AsyncStorage flag still
-    // gets set so they reach the map. Real signup metadata persists
-    // language at signup time (TT-13 trigger), so this update is the
-    // "user changed their mind during onboarding" path.
-    if (session?.userId) {
-      try {
-        await supabase.from('profiles').update({ language: lang }).eq('id', session.userId);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn('[onboarding] profiles.language update failed:', err);
+    try {
+      // Best-effort profile update. Errors here (no real auth session
+      // under the dev shortcut, transient network blip, RLS denial)
+      // must not trap the user on onboarding — the AsyncStorage flag
+      // still gets set so they reach the map. Real signup metadata
+      // persists language at signup time (TT-13 trigger), so this
+      // update is the "user changed their mind during onboarding" path.
+      if (session?.userId) {
+        try {
+          await supabase.from('profiles').update({ language: lang }).eq('id', session.userId);
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.warn('[onboarding] profiles.language update failed:', err);
+        }
       }
+      await markComplete();
+      router.replace('/(consumer)');
+    } finally {
+      // If markComplete() ever throws, the route doesn't change and
+      // the user stays on this screen — release the busy lock so they
+      // can retry instead of staring at a permanently disabled button.
+      setBusy(false);
     }
-    await markComplete();
-    router.replace('/(consumer)');
   };
 
   const locationGranted = permissionStatus === 'granted';
@@ -100,8 +107,13 @@ export default function ConsumerOnboardingScreen() {
                   {t('onboarding.location.description')}
                 </Text>
               </View>
+              {/* Always secondary — CLAUDE.md "One primary (orange) button
+                  per screen maximum"; the primary slot belongs to
+                  Continue, which is the screen-level CTA. The Allow
+                  Location button is a permission primer, not the main
+                  action. */}
               <Button
-                action={locationGranted ? 'secondary' : 'primary'}
+                action="secondary"
                 size="md"
                 onPress={handleAllowLocation}
                 isDisabled={locationGranted}
