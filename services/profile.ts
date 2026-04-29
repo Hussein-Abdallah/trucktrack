@@ -1,4 +1,4 @@
-import type { UserRole } from '@/lib/types';
+import type { AppLanguage, Profile, UserRole } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
 /**
@@ -22,4 +22,31 @@ export async function fetchProfileRoles(userId: string): Promise<UserRole[]> {
   if (error) throw error;
   if (!data) return [];
   return data.roles;
+}
+
+export async function fetchProfile(userId: string): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateProfileLanguage(userId: string, language: AppLanguage): Promise<void> {
+  // .select().single() forces PostgREST to surface a 0-rows-affected
+  // case as PGRST116 instead of returning success. Without it, an RLS
+  // predicate that hides the row from the writer (e.g. session expired
+  // mid-flight) returns "ok" with zero rows updated and the caller has
+  // no way to know the persisted value didn't actually change.
+  const { error } = await supabase
+    .from('profiles')
+    .update({ language })
+    .eq('id', userId)
+    .select('id')
+    .single();
+
+  if (error) throw error;
 }

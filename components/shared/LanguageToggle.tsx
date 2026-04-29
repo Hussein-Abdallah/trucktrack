@@ -5,6 +5,10 @@ import type { AppLanguage } from '@/lib/i18n';
 interface LanguageToggleProps {
   value: AppLanguage;
   onChange: (next: AppLanguage) => void;
+  /** Disables both buttons (e.g. while a persist-language request is in
+   *  flight). Disabled state dims opacity and blocks press to prevent
+   *  spam-tap from queuing contradictory requests. */
+  disabled?: boolean;
 }
 
 const OPTIONS: AppLanguage[] = ['en', 'fr'];
@@ -19,17 +23,18 @@ const LABELS: Record<AppLanguage, string> = {
  * (primary-400) with App-Black text; inactive uses background-50 with
  * Warm-Cream text. Per CLAUDE.md the corner radius stays at 0.
  */
-export function LanguageToggle({ value, onChange }: LanguageToggleProps) {
+export function LanguageToggle({ value, onChange, disabled = false }: LanguageToggleProps) {
   return (
-    <View className="flex-row gap-3">
+    <View className={`flex-row gap-3 ${disabled ? 'opacity-50' : ''}`}>
       {OPTIONS.map((option) => {
         const active = option === value;
         return (
           <Pressable
             key={option}
             accessibilityRole="button"
-            accessibilityState={{ selected: active }}
+            accessibilityState={{ selected: active, disabled }}
             accessibilityLabel={LABELS[option]}
+            disabled={disabled}
             onPress={() => onChange(option)}
             className={`flex-1 items-center justify-center py-4 ${
               active
