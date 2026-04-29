@@ -97,6 +97,11 @@
         "heading": "HORAIRE AUJOURD'HUI",
         "empty": "Aucun service aujourd'hui"
       },
+      "concept": {
+        "heading": "LE CONCEPT"
+      },
+      "shiftA11y": "{{location}}, {{hours}}{{liveSuffix}}",
+      "shiftA11yLiveSuffix": ", actuellement ouvert",
       "back": "Retour"
     }
   }

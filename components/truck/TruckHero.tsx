@@ -50,17 +50,34 @@ export function TruckHero({ truck, isOpen }: TruckHeroProps) {
         colors={['transparent', 'rgba(15,15,15,0.5)', '#0F0F0F']}
         style={StyleSheet.absoluteFill}
       />
-      <View className="absolute left-0 right-0 top-20 items-center">
+      {/* Status badge wraps in a Pressable-less View with an explicit
+          accessibilityLiveRegion so VoiceOver re-announces it the
+          moment open→closed transitions land (the next render after
+          the wall clock crosses close_time, via deriveIsOpen). */}
+      <View
+        accessible
+        accessibilityRole="text"
+        accessibilityLabel={t(statusKey)}
+        accessibilityLiveRegion="polite"
+        className="absolute left-0 right-0 top-20 items-center"
+      >
         <Badge action={isOpen ? 'open' : 'closed'} size="sm">
           <BadgeText>{t(statusKey)}</BadgeText>
         </Badge>
       </View>
       <View className="absolute bottom-4 left-0 right-0 px-4">
-        <Text className="text-center font-heading text-4xl tracking-wider text-typography-950">
+        <Text
+          accessibilityRole="header"
+          className="text-center font-heading text-4xl tracking-wider text-typography-950"
+        >
           {truck.name}
         </Text>
         {truck.cuisine_tags.length > 0 ? (
-          <View className="mt-3 flex-row flex-wrap justify-center gap-2">
+          <View
+            accessible
+            accessibilityLabel={truck.cuisine_tags.join(', ')}
+            className="mt-3 flex-row flex-wrap justify-center gap-2"
+          >
             {truck.cuisine_tags.map((tag) => (
               <View key={tag} className="bg-background-100 px-3 py-1">
                 <Text className="font-mono text-[10px] uppercase tracking-[1.5px] text-typography-500">

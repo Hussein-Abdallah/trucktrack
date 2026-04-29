@@ -97,6 +97,11 @@
         "heading": "TODAY'S SCHEDULE",
         "empty": "No shifts today"
       },
+      "concept": {
+        "heading": "THE CONCEPT"
+      },
+      "shiftA11y": "{{location}}, {{hours}}{{liveSuffix}}",
+      "shiftA11yLiveSuffix": ", currently open",
       "back": "Back"
     }
   }
