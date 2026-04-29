@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
 
 import { todayIso } from '@/lib/schedule';
 import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
@@ -40,6 +40,13 @@ async function fetchTrucks(today: string): Promise<TruckWithSchedule[]> {
 
 export function useTrucks() {
   const queryClient = useQueryClient();
+  // Per-instance channel name. supabase.channel() caches by name on the
+  // Realtime client; if useTrucks mounts in two screens, or fast-refresh
+  // re-runs the effect before removeChannel's async leave completes,
+  // the second mount gets the already-subscribed channel back and
+  // .on('postgres_changes', ...) throws because filters can't be added
+  // after subscribe. A per-mount unique id sidesteps the cache.
+  const channelKey = useId();
 
   // Subscribe to Postgres changes on truck_schedules so the map updates
   // within ~2s of an operator publishing/moving/cancelling — closes the
@@ -52,7 +59,7 @@ export function useTrucks() {
   // changes underneath us.
   useEffect(() => {
     const channel = supabase
-      .channel('trucks-realtime')
+      .channel(`trucks-realtime-${channelKey}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'truck_schedules' }, () => {
         void queryClient.invalidateQueries({ queryKey: ['trucks'] });
       })
@@ -61,7 +68,7 @@ export function useTrucks() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, channelKey]);
 
   // Including today in the key forces a fresh fetch when the date rolls
   // over — without it, an app left mounted past midnight would keep

@@ -1,5 +1,5 @@
-import { Link } from 'expo-router';
-import { useState } from 'react';
+import { Link, router } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,12 +15,20 @@ import {
   UnknownAuthError,
   signUp,
 } from '@/services/auth';
+import { useAuthStore } from '@/stores/authStore';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LEN = 8;
+// Watchdog: if useAuthSubscription's hydration fails silently (e.g.
+// the on-signup profile trigger didn't fire and ensureRoleForVariant
+// throws into setSession(null)), `session` never becomes truthy and
+// the button would stay in CREATING… forever. Release busy after this
+// bound and surface a generic error so the user can retry.
+const HYDRATION_TIMEOUT_MS = 6000;
 
 export default function SignupScreen() {
   const { t, i18n } = useTranslation();
+  const session = useAuthStore((state) => state.session);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -28,6 +36,32 @@ export default function SignupScreen() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hydrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hydrationTimerRef.current) clearTimeout(hydrationTimerRef.current);
+    };
+  }, []);
+
+  // Drive the post-signup redirect off the store, not off the signUp
+  // promise. signUp resolves before useAuthSubscription finishes its
+  // async hydration; navigating immediately can race the gate at /
+  // and bounce back here.
+  //
+  // Gate on roles.length > 0 so a malformed empty-roles session can't
+  // loop between / and /auth/signup.
+  useEffect(() => {
+    if (session && session.roles.length > 0) {
+      // Cancel the watchdog before navigating so the timer can't fire
+      // in the brief window between replace and unmount-cleanup.
+      if (hydrationTimerRef.current) {
+        clearTimeout(hydrationTimerRef.current);
+        hydrationTimerRef.current = null;
+      }
+      router.replace('/');
+    }
+  }, [session]);
 
   const handleSubmit = async () => {
     if (busy) return;
@@ -61,10 +95,6 @@ export default function SignupScreen() {
 
     setBusy(true);
     try {
-      // After signUp succeeds, supabase fires SIGNED_IN through
-      // useAuthSubscription (since enable_confirmations = false in
-      // dev), which hydrates the store. The route gate in
-      // app/index.tsx then takes the user to onboarding.
       await signUp({
         email: trimmedEmail,
         password,
@@ -72,6 +102,15 @@ export default function SignupScreen() {
         language: i18n.language as AppLanguage,
         displayName: trimmedDisplayName || undefined,
       });
+      // Navigation is handled by the useEffect above when session
+      // hydrates. Keep busy=true on success so the button stays in
+      // its CREATING… state until the redirect fires — but arm a
+      // watchdog so a silently-failing trigger / hydration doesn't
+      // freeze the button forever.
+      hydrationTimerRef.current = setTimeout(() => {
+        setGlobalError(t('routes.auth.errors.unknown'));
+        setBusy(false);
+      }, HYDRATION_TIMEOUT_MS);
     } catch (err) {
       if (err instanceof EmailAlreadyRegisteredError) {
         setGlobalError(t('routes.auth.errors.emailAlreadyRegistered'));
@@ -84,7 +123,6 @@ export default function SignupScreen() {
       } else {
         setGlobalError(t('routes.auth.errors.unknown'));
       }
-    } finally {
       setBusy(false);
     }
   };
