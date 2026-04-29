@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -61,10 +61,6 @@ export default function SignupScreen() {
 
     setBusy(true);
     try {
-      // After signUp succeeds, supabase fires SIGNED_IN through
-      // useAuthSubscription (since enable_confirmations = false in
-      // dev), which hydrates the store. The route gate in
-      // app/index.tsx then takes the user to onboarding.
       await signUp({
         email: trimmedEmail,
         password,
@@ -72,6 +68,12 @@ export default function SignupScreen() {
         language: i18n.language as AppLanguage,
         displayName: trimmedDisplayName || undefined,
       });
+      // signUp populates the session via SIGNED_IN through
+      // useAuthSubscription (enable_confirmations = false in dev), but
+      // the route gate in app/index.tsx only runs when the user is at
+      // /. We're at /auth/signup, so push back to / explicitly and let
+      // the gate route to onboarding.
+      router.replace('/');
     } catch (err) {
       if (err instanceof EmailAlreadyRegisteredError) {
         setGlobalError(t('routes.auth.errors.emailAlreadyRegistered'));

@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -52,10 +52,12 @@ export default function LoginScreen() {
 
     setBusy(true);
     try {
-      // After signIn succeeds, supabase fires SIGNED_IN through
-      // useAuthSubscription, which hydrates the store. The route gate
-      // in app/index.tsx then takes the user to onboarding/map.
       await signIn({ email: trimmedEmail, password });
+      // signIn populates the session via SIGNED_IN through
+      // useAuthSubscription, but the route gate in app/index.tsx only
+      // runs when the user is at /. We're at /auth/login, so push back
+      // to / explicitly and let the gate route to onboarding/map.
+      router.replace('/');
     } catch (err) {
       if (err instanceof NetworkError) {
         setGlobalError(t('routes.auth.errors.network'));
