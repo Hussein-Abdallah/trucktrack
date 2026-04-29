@@ -81,6 +81,19 @@
       "deniedHint": "Enable location in Settings"
     }
   },
+  "onboarding": {
+    "tagline": "Ottawa's Food Truck Finder",
+    "language": {
+      "heading": "LANGUAGE"
+    },
+    "location": {
+      "heading": "LOCATION ACCESS",
+      "description": "Find food trucks near you in real time.",
+      "allow": "ALLOW LOCATION",
+      "allowed": "ALLOWED"
+    },
+    "continue": "CONTINUE"
+  },
   "truck": {
     "profile": {
       "error": {
