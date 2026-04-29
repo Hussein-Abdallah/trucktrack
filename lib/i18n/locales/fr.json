@@ -81,6 +81,19 @@
       "deniedHint": "Activez la localisation dans les Réglages"
     }
   },
+  "onboarding": {
+    "tagline": "Trouveur de Food Trucks d'Ottawa",
+    "language": {
+      "heading": "LANGUE"
+    },
+    "location": {
+      "heading": "ACCÈS À LA POSITION",
+      "description": "Trouvez les camions près de vous en temps réel.",
+      "allow": "AUTORISER",
+      "allowed": "AUTORISÉE"
+    },
+    "continue": "CONTINUER"
+  },
   "truck": {
     "profile": {
       "error": {

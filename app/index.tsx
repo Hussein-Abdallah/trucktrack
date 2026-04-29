@@ -2,6 +2,7 @@ import { Redirect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { useConsumerOnboarding } from '@/hooks/useOnboarding';
 import { getAppVariant } from '@/lib/appVariant';
 import { useAuthStore } from '@/stores/authStore';
 import { FIRE_ORANGE } from '@/theme/colors';
@@ -10,10 +11,13 @@ export default function Index() {
   const session = useAuthStore((state) => state.session);
   const isResolving = useAuthStore((state) => state.isResolving);
   const signOut = useAuthStore((state) => state.signOut);
+  // Onboarding flag lives in AsyncStorage; resolve it in parallel with
+  // the auth store so the splash spinner covers both reads in one shot.
+  const { resolved: onbResolved, complete: onbComplete } = useConsumerOnboarding();
   const { t } = useTranslation();
   const variant = getAppVariant();
 
-  if (isResolving) {
+  if (isResolving || !onbResolved) {
     return (
       <View className="flex-1 items-center justify-center bg-background-0">
         <ActivityIndicator color={FIRE_ORANGE} size="large" />
@@ -59,7 +63,15 @@ export default function Index() {
   }
 
   if (variant === 'operator') {
+    // Operator-side onboarding is TT-9 — until then the operator goes
+    // straight to /today on every launch, matching today's behaviour.
     return <Redirect href="/(operator)/today" />;
+  }
+
+  // Consumer first-launch flow: route through onboarding once. After
+  // markComplete() lands the flag, subsequent launches skip this branch.
+  if (!onbComplete) {
+    return <Redirect href="/onboarding/consumer" />;
   }
 
   return <Redirect href="/(consumer)" />;
