@@ -53,6 +53,12 @@ export default function SignupScreen() {
   // loop between / and /auth/signup.
   useEffect(() => {
     if (session && session.roles.length > 0) {
+      // Cancel the watchdog before navigating so the timer can't fire
+      // in the brief window between replace and unmount-cleanup.
+      if (hydrationTimerRef.current) {
+        clearTimeout(hydrationTimerRef.current);
+        hydrationTimerRef.current = null;
+      }
       router.replace('/');
     }
   }, [session]);
