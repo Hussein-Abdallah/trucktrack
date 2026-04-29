@@ -42,14 +42,27 @@ export default function ResetPasswordScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    // Dedupe: on iOS the launch URL can arrive via both
+    // getInitialURL() and a 'url' event when the listener subscribes.
+    // Without this, two concurrent setSession calls fire for the same
+    // tokens and the second can stomp state mid-render.
+    let applied = false;
 
     const applyTokens = async (parsed: { accessToken: string; refreshToken: string }) => {
+      if (applied) return;
+      applied = true;
       setRecoveryInProgress(true);
       const { error } = await supabase.auth.setSession({
         access_token: parsed.accessToken,
         refresh_token: parsed.refreshToken,
       });
       if (cancelled) return;
+      if (error) {
+        // Expired/invalid token — clear the flag now so the user can
+        // navigate to /auth/forgot-password and re-login without the
+        // subscription suppressing their next SIGNED_IN event.
+        setRecoveryInProgress(false);
+      }
       setTokenStatus(error ? 'expired' : 'valid');
     };
 
@@ -115,11 +128,16 @@ export default function ResetPasswordScreen() {
         setGlobalError(t('routes.auth.errors.unknown'));
         return;
       }
+      // Clear the recovery flag *before* signOut so the SIGNED_OUT
+      // event is processed normally by the auth subscription. The
+      // subscription's SIGNED_OUT branch short-circuits before the
+      // recovery check today, but ordering this explicitly avoids
+      // load-bearing branch ordering across files.
+      setRecoveryInProgress(false);
       // Sign out of the recovery session so the user is forced to log
       // in again with their new password — defensive against leaving
       // a recovery-scoped session hanging around.
       await supabase.auth.signOut({ scope: 'local' });
-      setRecoveryInProgress(false);
       router.replace('/auth/login');
     } catch (err) {
       // eslint-disable-next-line no-console
