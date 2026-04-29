@@ -17,6 +17,7 @@ const BACK_BUTTON_SIZE = 40;
 const BACK_ICON_SIZE = 22;
 
 export default function TruckProfileScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -50,7 +51,7 @@ export default function TruckProfileScreen() {
         {!isPending ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Back"
+            accessibilityLabel={t('truck.profile.back')}
             onPress={handleBack}
             style={[styles.backButton, { top: insets.top + 8 }]}
           >
@@ -76,12 +77,10 @@ function renderBody({ isPending, isError, data, onRetry, onBack }: RenderBodyArg
   if (!data) return <NotFoundState onBack={onBack} />;
   // TT-46 ships the visible profile UI. TT-47 will add the concept
   // block + a11y pass and refine the skeleton to match this layout.
-  // Pass the first schedule into deriveIsOpen for the hero badge —
-  // schedules are sorted by open_time asc, and deriveIsOpen only
-  // returns true for the row whose status is 'live' AND clock is in
-  // the open/close window, so checking the first row reads correctly
-  // across single- and multi-shift days alike.
-  const heroIsOpen = deriveIsOpen(data.todaySchedules[0] ?? null);
+  // For multi-shift days the live row isn't necessarily the first,
+  // so check every shift — `deriveIsOpen` only returns true for the
+  // row whose status is 'live' AND clock is in the open/close window.
+  const heroIsOpen = data.todaySchedules.some((schedule) => deriveIsOpen(schedule));
   return (
     <ScrollView className="flex-1 bg-background-0" contentContainerStyle={styles.scrollContent}>
       <TruckHero truck={data.truck} isOpen={heroIsOpen} />
@@ -136,7 +135,10 @@ const styles = StyleSheet.create({
     left: 16,
     width: BACK_BUTTON_SIZE,
     height: BACK_BUTTON_SIZE,
-    borderRadius: BACK_BUTTON_SIZE / 2,
+    // Sharp corners per CLAUDE.md "Shape rules" — borderRadius 9999
+    // (pill) is reserved for status badges; everything else stays at
+    // 0. Floating chrome over the hero photo is no exception.
+    borderRadius: 0,
     backgroundColor: APP_BLACK_SCRIM,
     alignItems: 'center',
     justifyContent: 'center',

@@ -96,7 +96,8 @@
       "schedule": {
         "heading": "HORAIRE AUJOURD'HUI",
         "empty": "Aucun service aujourd'hui"
-      }
+      },
+      "back": "Retour"
     }
   }
 }

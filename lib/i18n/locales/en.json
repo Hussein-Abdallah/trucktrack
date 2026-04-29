@@ -96,7 +96,8 @@
       "schedule": {
         "heading": "TODAY'S SCHEDULE",
         "empty": "No shifts today"
-      }
+      },
+      "back": "Back"
     }
   }
 }
