@@ -1,39 +1,144 @@
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getAppVariant } from '@/lib/appVariant';
-import { useAuthStore } from '@/stores/authStore';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  EmailAlreadyRegisteredError,
+  NetworkError,
+  UnknownAuthError,
+  signIn,
+} from '@/services/auth';
 
-// TODO(TT-11/TT-13): replace dev role-toggle with real Supabase email/OAuth login.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function LoginScreen() {
   const { t } = useTranslation();
-  const signInAs = useAuthStore((state) => state.signInAs);
-  const variant = getAppVariant();
-  const devButtonKey =
-    variant === 'operator' ? 'routes.auth.devSignInOperator' : 'routes.auth.devSignInConsumer';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const handleSignIn = () => {
-    signInAs(variant);
-    router.replace('/');
+  const handleSubmit = async () => {
+    if (busy) return;
+
+    const trimmedEmail = email.trim();
+    let valid = true;
+    setGlobalError(null);
+
+    if (!trimmedEmail) {
+      setEmailError(t('routes.auth.errors.emailRequired'));
+      valid = false;
+    } else if (!EMAIL_RE.test(trimmedEmail)) {
+      setEmailError(t('routes.auth.errors.emailInvalid'));
+      valid = false;
+    } else {
+      setEmailError(null);
+    }
+
+    if (!password) {
+      setPasswordError(t('routes.auth.errors.passwordRequired'));
+      valid = false;
+    } else {
+      setPasswordError(null);
+    }
+
+    if (!valid) return;
+
+    setBusy(true);
+    try {
+      // After signIn succeeds, supabase fires SIGNED_IN through
+      // useAuthSubscription, which hydrates the store. The route gate
+      // in app/index.tsx then takes the user to onboarding/map.
+      await signIn({ email: trimmedEmail, password });
+    } catch (err) {
+      if (err instanceof NetworkError) {
+        setGlobalError(t('routes.auth.errors.network'));
+      } else if (err instanceof EmailAlreadyRegisteredError) {
+        // Shouldn't trip on signIn but the typed error exists; treat
+        // as invalid creds so we don't leak account-existence info.
+        setGlobalError(t('routes.auth.errors.invalidCredentials'));
+      } else if (err instanceof UnknownAuthError) {
+        // Supabase returns this for bad-creds among other things.
+        setGlobalError(t('routes.auth.errors.invalidCredentials'));
+      } else {
+        setGlobalError(t('routes.auth.errors.unknown'));
+      }
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <View className="flex-1 items-center justify-center gap-6 bg-background-0 px-6">
-      <Text className="font-heading text-4xl tracking-wider text-typography-950">
-        {t('routes.auth.login')}
-      </Text>
-      <Text className="font-mono text-xs uppercase tracking-widest text-typography-500">
-        {t('routes.auth.devHeader')}
-      </Text>
-      <Pressable
-        className="rounded-none bg-primary-400 px-8 py-4 active:bg-primary-200"
-        onPress={handleSignIn}
+    <SafeAreaView className="flex-1 bg-background-0">
+      <ScrollView
+        contentContainerClassName="flex-grow gap-6 px-6 py-8"
+        keyboardShouldPersistTaps="handled"
       >
-        <Text className="font-mono text-sm uppercase tracking-widest text-typography-950">
-          {t(devButtonKey)}
-        </Text>
-      </Pressable>
-    </View>
+        <View className="items-center gap-2 pb-4 pt-4">
+          <Text className="font-heading text-5xl tracking-wider text-primary-400">TRUCKTRACK</Text>
+          <Text className="font-heading text-2xl tracking-wider text-typography-950">
+            {t('routes.auth.login.title')}
+          </Text>
+        </View>
+
+        {globalError ? (
+          <View className="border border-error-400 bg-background-50 p-4">
+            <Text className="font-body text-sm text-error-400">{globalError}</Text>
+          </View>
+        ) : null}
+
+        <Input
+          label={t('routes.auth.emailLabel')}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          placeholder={t('routes.auth.emailPlaceholder')}
+          error={emailError ?? undefined}
+          isDisabled={busy}
+        />
+
+        <Input
+          label={t('routes.auth.passwordLabel')}
+          value={password}
+          onChangeText={setPassword}
+          autoCapitalize="none"
+          secureTextEntry
+          textContentType="password"
+          placeholder={t('routes.auth.passwordPlaceholder')}
+          error={passwordError ?? undefined}
+          isDisabled={busy}
+        />
+
+        <Button action="primary" size="lg" onPress={handleSubmit} isDisabled={busy}>
+          <ButtonText>
+            {busy ? t('routes.auth.submittingLabel') : t('routes.auth.submitLabel')}
+          </ButtonText>
+        </Button>
+
+        <View className="items-center gap-4 pt-2">
+          <Link href="/auth/forgot-password">
+            <Text className="font-mono text-xs uppercase tracking-[1.5px] text-typography-500">
+              {t('routes.auth.forgotPasswordLink')}
+            </Text>
+          </Link>
+          <Link href="/auth/signup">
+            <Text className="font-body text-sm text-typography-950">
+              {t('routes.auth.signupPrompt')}{' '}
+              <Text className="font-body-medium text-primary-400">
+                {t('routes.auth.signupLink')}
+              </Text>
+            </Text>
+          </Link>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
