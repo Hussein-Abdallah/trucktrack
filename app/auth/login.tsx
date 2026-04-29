@@ -1,5 +1,5 @@
 import { Link, router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +15,12 @@ import {
 import { useAuthStore } from '@/stores/authStore';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Watchdog: if useAuthSubscription's hydration fails silently after
+// signIn (e.g. fetchProfileRoles throws), `session` never becomes
+// truthy and the button would stay in SIGNING IN… forever. Release
+// busy after this bound and surface a generic error so the user can
+// retry.
+const HYDRATION_TIMEOUT_MS = 6000;
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -25,16 +31,26 @@ export default function LoginScreen() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const hydrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hydrationTimerRef.current) clearTimeout(hydrationTimerRef.current);
+    };
+  }, []);
 
   // Drive the post-login redirect off the store, not off the signIn
   // promise. signInWithPassword resolves before useAuthSubscription
   // finishes its async hydration (await fetchProfileRoles +
   // ensureRoleForVariant). If we replace('/') immediately on resolve,
   // the gate at / sees a still-null session and bounces back here.
-  // Watching session means we navigate exactly when hydration lands —
-  // race-proof across cold-start with cached session and fresh login.
+  // Watching session means we navigate exactly when hydration lands.
+  //
+  // Gate on roles.length > 0: app/index.tsx redirects to /auth/login
+  // when a session has empty roles (broken state). Without this guard,
+  // an empty-roles session would loop between / and /auth/login forever.
   useEffect(() => {
-    if (session) {
+    if (session && session.roles.length > 0) {
       router.replace('/');
     }
   }, [session]);
@@ -70,7 +86,13 @@ export default function LoginScreen() {
       await signIn({ email: trimmedEmail, password });
       // Navigation is handled by the useEffect above when session
       // hydrates. Keep busy=true on success so the button stays in
-      // its SIGNING IN… state until the redirect fires.
+      // its SIGNING IN… state until the redirect fires — but arm a
+      // watchdog so a silently-failing hydration doesn't freeze the
+      // button forever.
+      hydrationTimerRef.current = setTimeout(() => {
+        setGlobalError(t('routes.auth.errors.unknown'));
+        setBusy(false);
+      }, HYDRATION_TIMEOUT_MS);
     } catch (err) {
       if (err instanceof NetworkError) {
         setGlobalError(t('routes.auth.errors.network'));
