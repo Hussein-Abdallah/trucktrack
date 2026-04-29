@@ -68,10 +68,29 @@
         "emailInvalid": "Entrez une adresse courriel valide",
         "passwordRequired": "Le mot de passe est requis",
         "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+        "passwordsMismatch": "Les mots de passe ne correspondent pas",
         "emailAlreadyRegistered": "Ce courriel est déjà utilisé. Connectez-vous à la place.",
         "invalidCredentials": "Courriel ou mot de passe incorrect",
         "network": "Vérifiez votre connexion et réessayez",
         "unknown": "Une erreur est survenue. Veuillez réessayer."
+      },
+      "forgotPassword": {
+        "title": "Réinitialiser le mot de passe",
+        "body": "Entrez votre courriel et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+        "submitLabel": "ENVOYER LE LIEN",
+        "submittingLabel": "ENVOI…",
+        "sentMessage": "Si un compte existe pour ce courriel, un lien de réinitialisation est en route. Consultez votre boîte de réception.",
+        "backToLogin": "Retour à la connexion"
+      },
+      "resetPassword": {
+        "title": "Définir un nouveau mot de passe",
+        "newPasswordLabel": "Nouveau mot de passe",
+        "confirmPasswordLabel": "Confirmer le nouveau mot de passe",
+        "submitLabel": "ENREGISTRER",
+        "submittingLabel": "ENREGISTREMENT…",
+        "expiredTitle": "Lien expiré",
+        "expiredMessage": "Ce lien de réinitialisation n'est plus valide. Demandez-en un nouveau pour continuer.",
+        "requestNew": "DEMANDER UN NOUVEAU LIEN"
       },
       "signOut": "Déconnexion",
       "wrongApp": {

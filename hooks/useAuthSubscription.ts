@@ -11,6 +11,16 @@ import { useAuthStore } from '@/stores/authStore';
 // the route gate can take the user to /auth/login.
 const RESOLVE_TIMEOUT_MS = 5000;
 
+// Module-level flag set by the reset-password screen before it calls
+// setSession with recovery tokens. While true, the subscription skips
+// store hydration so the route gate doesn't redirect the user away
+// from /auth/reset-password mid-flow. Cleared after updateUser + sign
+// out land. Exported as a setter to keep the mutation point explicit.
+let recoveryInProgress = false;
+export function setRecoveryInProgress(value: boolean): void {
+  recoveryInProgress = value;
+}
+
 /**
  * Root-level hook: wires Supabase auth events to the auth store.
  *
@@ -51,6 +61,15 @@ export function useAuthSubscription(): void {
         try {
           if (event === 'SIGNED_OUT' || !session) {
             setSession(null);
+            return;
+          }
+          if (event === 'PASSWORD_RECOVERY' || recoveryInProgress) {
+            // Recovery session — don't hydrate the auth store. The
+            // reset-password screen needs the supabase client session
+            // to call updateUser, but the app shouldn't treat the user
+            // as fully signed in. After updateUser + signOut, SIGNED_OUT
+            // fires and the store stays clear. The route gate keeps the
+            // user on /auth/reset-password since no session is set.
             return;
           }
           const userId = session.user.id;

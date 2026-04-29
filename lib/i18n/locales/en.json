@@ -68,10 +68,29 @@
         "emailInvalid": "Enter a valid email address",
         "passwordRequired": "Password is required",
         "passwordTooShort": "Password must be at least 8 characters",
+        "passwordsMismatch": "Passwords don't match",
         "emailAlreadyRegistered": "This email is already in use. Log in instead.",
         "invalidCredentials": "Email or password is incorrect",
         "network": "Check your connection and try again",
         "unknown": "Something went wrong. Please try again."
+      },
+      "forgotPassword": {
+        "title": "Reset your password",
+        "body": "Enter your email and we'll send you a link to reset your password.",
+        "submitLabel": "SEND RESET LINK",
+        "submittingLabel": "SENDING…",
+        "sentMessage": "If an account exists for that email, a reset link is on its way. Check your inbox.",
+        "backToLogin": "Back to login"
+      },
+      "resetPassword": {
+        "title": "Set a new password",
+        "newPasswordLabel": "New password",
+        "confirmPasswordLabel": "Confirm new password",
+        "submitLabel": "SET PASSWORD",
+        "submittingLabel": "SAVING…",
+        "expiredTitle": "Link expired",
+        "expiredMessage": "This reset link is no longer valid. Request a new one to continue.",
+        "requestNew": "REQUEST NEW LINK"
       },
       "signOut": "Sign Out",
       "wrongApp": {
