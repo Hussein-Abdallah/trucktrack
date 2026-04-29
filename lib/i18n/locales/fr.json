@@ -14,6 +14,15 @@
       "stamps": "Fidélité",
       "alerts": "Alertes",
       "profile": "Profil",
+      "profileScreen": {
+        "displayNameFallback": "—",
+        "accountHeading": "COMPTE",
+        "deleteAccount": "Supprimer le compte",
+        "signOutConfirmTitle": "Se déconnecter ?",
+        "signOutConfirmMessage": "Vous devrez vous reconnecter pour accéder à votre compte.",
+        "cancel": "Annuler",
+        "loadError": "Impossible de charger votre profil. Vous pouvez tout de même vous déconnecter."
+      },
       "mapScreen": {
         "wordmark": "TRUCKTRACK",
         "nearbyTrucks": "Camions à proximité",

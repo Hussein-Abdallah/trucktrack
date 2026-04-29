@@ -14,6 +14,15 @@
       "stamps": "Stamps",
       "alerts": "Alerts",
       "profile": "Profile",
+      "profileScreen": {
+        "displayNameFallback": "—",
+        "accountHeading": "ACCOUNT",
+        "deleteAccount": "Delete account",
+        "signOutConfirmTitle": "Sign out?",
+        "signOutConfirmMessage": "You'll need to log in again to access your account.",
+        "cancel": "Cancel",
+        "loadError": "Couldn't load your profile. You can still sign out."
+      },
       "mapScreen": {
         "wordmark": "TRUCKTRACK",
         "nearbyTrucks": "Nearby Trucks",
