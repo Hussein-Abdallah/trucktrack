@@ -42,11 +42,27 @@
       "settings": "Réglages"
     },
     "auth": {
-      "login": "Connexion",
+      "login": {
+        "title": "Bon retour"
+      },
       "signup": "Inscription",
-      "devHeader": "Raccourcis dev",
-      "devSignInConsumer": "Connexion en tant que client",
-      "devSignInOperator": "Connexion en tant qu'opérateur",
+      "emailLabel": "Courriel",
+      "emailPlaceholder": "vous@exemple.com",
+      "passwordLabel": "Mot de passe",
+      "passwordPlaceholder": "••••••••",
+      "submitLabel": "CONNEXION",
+      "submittingLabel": "CONNEXION…",
+      "forgotPasswordLink": "Mot de passe oublié ?",
+      "signupPrompt": "Pas encore de compte ?",
+      "signupLink": "S'inscrire",
+      "errors": {
+        "emailRequired": "Le courriel est requis",
+        "emailInvalid": "Entrez une adresse courriel valide",
+        "passwordRequired": "Le mot de passe est requis",
+        "invalidCredentials": "Courriel ou mot de passe incorrect",
+        "network": "Vérifiez votre connexion et réessayez",
+        "unknown": "Une erreur est survenue. Veuillez réessayer."
+      },
       "signOut": "Déconnexion",
       "wrongApp": {
         "title": "Mauvaise application",

@@ -13,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
+import { useAuthSubscription } from '@/hooks/useAuthSubscription';
 import '@/lib/i18n';
 import { queryClient } from '@/services/queryClient';
 import { APP_BLACK, FIRE_ORANGE, WARM_CREAM } from '@/theme/colors';
@@ -34,6 +35,10 @@ void SystemUI.setBackgroundColorAsync(APP_BLACK).catch((error: unknown) => {
 
 export default function RootLayout() {
   const { t } = useTranslation();
+  // Subscribes to Supabase auth state at the root so every screen
+  // sees the same hydrated session. Must be called above any return
+  // so the subscription persists across the font-loading branches.
+  useAuthSubscription();
   const [fontsLoaded, fontError] = useFonts({
     BebasNeue: BebasNeue_400Regular,
     DMSans_Light: DMSans_300Light,

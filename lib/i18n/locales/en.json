@@ -42,11 +42,27 @@
       "settings": "Settings"
     },
     "auth": {
-      "login": "Log In",
+      "login": {
+        "title": "Welcome back"
+      },
       "signup": "Sign Up",
-      "devHeader": "Dev shortcuts",
-      "devSignInConsumer": "Sign in as Consumer",
-      "devSignInOperator": "Sign in as Operator",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "submitLabel": "LOG IN",
+      "submittingLabel": "SIGNING IN…",
+      "forgotPasswordLink": "Forgot password?",
+      "signupPrompt": "Don't have an account?",
+      "signupLink": "Sign up",
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email address",
+        "passwordRequired": "Password is required",
+        "invalidCredentials": "Email or password is incorrect",
+        "network": "Check your connection and try again",
+        "unknown": "Something went wrong. Please try again."
+      },
       "signOut": "Sign Out",
       "wrongApp": {
         "title": "Wrong App",
