@@ -21,3 +21,10 @@ export const WARM_CREAM = '#F5F0E8';
  * on WARM_CREAM. Mirrors `typography.white` in `tailwind.config.js`.
  */
 export const CTA_WHITE = '#FFFFFF';
+
+/**
+ * App-Black at ~60% alpha — used for floating chrome that overlays
+ * arbitrary photos (truck profile back button, hero overlays, etc.)
+ * so the chrome stays legible without fully blocking the image.
+ */
+export const APP_BLACK_SCRIM = '#0F0F0F99';
