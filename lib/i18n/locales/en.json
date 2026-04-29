@@ -45,7 +45,15 @@
       "login": {
         "title": "Welcome back"
       },
-      "signup": "Sign Up",
+      "signup": {
+        "title": "Create your account",
+        "displayNameLabel": "Name (optional)",
+        "displayNamePlaceholder": "Your name",
+        "submitLabel": "SIGN UP",
+        "submittingLabel": "CREATING…",
+        "loginPrompt": "Already have an account?",
+        "loginLink": "Log in"
+      },
       "emailLabel": "Email",
       "emailPlaceholder": "you@example.com",
       "passwordLabel": "Password",
@@ -59,6 +67,8 @@
         "emailRequired": "Email is required",
         "emailInvalid": "Enter a valid email address",
         "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "emailAlreadyRegistered": "This email is already in use. Log in instead.",
         "invalidCredentials": "Email or password is incorrect",
         "network": "Check your connection and try again",
         "unknown": "Something went wrong. Please try again."
