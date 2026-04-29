@@ -14,7 +14,10 @@ export function TodayScheduleSection({ schedules }: TodayScheduleSectionProps) {
 
   return (
     <View className="px-4 py-6">
-      <Text className="mb-4 border-b border-outline-100 pb-2 font-heading text-2xl tracking-wider text-typography-950">
+      <Text
+        accessibilityRole="header"
+        className="mb-4 border-b border-outline-100 pb-2 font-heading text-2xl tracking-wider text-typography-950"
+      >
         {t('truck.profile.schedule.heading')}
       </Text>
       {schedules.length === 0 ? (
@@ -37,6 +40,15 @@ interface ShiftCardProps {
 function ShiftCard({ shift }: ShiftCardProps) {
   const { t } = useTranslation();
   const live = deriveIsOpen(shift);
+  const hours = formatTimeRange(shift.open_time, shift.close_time);
+  // Combined a11y label so VoiceOver reads the card as one logical
+  // unit ("Place des Arts, 11:00 – 15:00, currently open") instead of
+  // three separate Texts.
+  const a11yLabel = t('truck.profile.shiftA11y', {
+    location: shift.location_label,
+    hours,
+    liveSuffix: live ? t('truck.profile.shiftA11yLiveSuffix') : '',
+  });
   // Live shift gets the fire-orange treatment with App-Black text.
   // Other shifts (scheduled / not-yet-live) use the charcoal surface
   // pattern that matches the rest of the dark UI.
@@ -54,10 +66,10 @@ function ShiftCard({ shift }: ShiftCardProps) {
     : 'font-mono text-[11px] uppercase tracking-[1.5px] text-typography-500';
 
   return (
-    <View className={wrapperClass}>
+    <View accessible accessibilityLabel={a11yLabel} className={wrapperClass}>
       {live ? <Text className={labelClass}>{t('truckCard.openNow')}</Text> : null}
       <Text className={headingClass}>{shift.location_label}</Text>
-      <Text className={hoursClass}>{formatTimeRange(shift.open_time, shift.close_time)}</Text>
+      <Text className={hoursClass}>{hours}</Text>
     </View>
   );
 }

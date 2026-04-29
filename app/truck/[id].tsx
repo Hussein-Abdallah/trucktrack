@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/components/shared/EmptyState';
 import { TodayScheduleSection } from '@/components/truck/TodayScheduleSection';
+import { TruckConceptSection } from '@/components/truck/TruckConceptSection';
 import { TruckHero } from '@/components/truck/TruckHero';
 import { TruckProfileSkeleton } from '@/components/truck/TruckProfileSkeleton';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -75,8 +76,6 @@ function renderBody({ isPending, isError, data, onRetry, onBack }: RenderBodyArg
   if (isPending) return <TruckProfileSkeleton />;
   if (isError) return <ErrorState onRetry={onRetry} />;
   if (!data) return <NotFoundState onBack={onBack} />;
-  // TT-46 ships the visible profile UI. TT-47 will add the concept
-  // block + a11y pass and refine the skeleton to match this layout.
   // For multi-shift days the live row isn't necessarily the first,
   // so check every shift — `deriveIsOpen` only returns true for the
   // row whose status is 'live' AND clock is in the open/close window.
@@ -85,6 +84,7 @@ function renderBody({ isPending, isError, data, onRetry, onBack }: RenderBodyArg
     <ScrollView className="flex-1 bg-background-0" contentContainerStyle={styles.scrollContent}>
       <TruckHero truck={data.truck} isOpen={heroIsOpen} />
       <TodayScheduleSection schedules={data.todaySchedules} />
+      <TruckConceptSection description={data.truck.description} />
     </ScrollView>
   );
 }
