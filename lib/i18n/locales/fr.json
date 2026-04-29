@@ -92,6 +92,10 @@
         "title": "Camion introuvable",
         "message": "Ce camion n'est pas disponible ou n'est plus actif.",
         "back": "Retour à la carte"
+      },
+      "schedule": {
+        "heading": "HORAIRE AUJOURD'HUI",
+        "empty": "Aucun service aujourd'hui"
       }
     }
   }

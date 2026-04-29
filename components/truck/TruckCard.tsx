@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 
 import { Badge, BadgeText } from '@/components/ui/badge';
-import { deriveIsOpen } from '@/lib/schedule';
+import { deriveIsOpen, formatTimeRange } from '@/lib/schedule';
 import type { AppLanguage, TruckWithSchedule } from '@/lib/types';
 import { formatDistance } from '@/lib/utils';
 import { MUTED } from '@/theme/colors';
@@ -22,12 +22,6 @@ interface TruckCardProps {
 const ICON_SIZE = 14;
 const COVER_SIZE = 80;
 
-// Format a Postgres TIME (HH:MM:SS) as HH:MM for display. Locale-agnostic
-// since 24-hour notation is standard in both en-CA and fr-CA.
-function formatTime(time: string): string {
-  return time.slice(0, 5);
-}
-
 export function TruckCard({ truck, distanceKm, isSelected = false, onPress }: TruckCardProps) {
   const { t, i18n } = useTranslation();
   // Distance formatter needs the locale for the en-CA / fr-CA decimal-
@@ -37,7 +31,7 @@ export function TruckCard({ truck, distanceKm, isSelected = false, onPress }: Tr
   const locale: AppLanguage = i18n.language === 'fr' ? 'fr' : 'en';
 
   const todayHours = truck.schedule
-    ? `${formatTime(truck.schedule.open_time)} – ${formatTime(truck.schedule.close_time)}`
+    ? formatTimeRange(truck.schedule.open_time, truck.schedule.close_time)
     : null;
   const isOpen = deriveIsOpen(truck.schedule);
 

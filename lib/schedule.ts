@@ -16,6 +16,12 @@ export function timeStrToSeconds(t: string): number {
   return h * 3600 + m * 60 + s;
 }
 
+// Display helper: HH:MM:SS columns (Postgres TIME) → "HH:MM – HH:MM".
+// Locale-agnostic — 24-hour notation works in en-CA and fr-CA.
+export function formatTimeRange(open: string, close: string): string {
+  return `${open.slice(0, 5)} – ${close.slice(0, 5)}`;
+}
+
 export function nowSecondsLocal(): number {
   const d = new Date();
   return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();

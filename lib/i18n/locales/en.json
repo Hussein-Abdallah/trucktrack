@@ -92,6 +92,10 @@
         "title": "Truck not found",
         "message": "This truck is unavailable or no longer active.",
         "back": "Back to Map"
+      },
+      "schedule": {
+        "heading": "TODAY'S SCHEDULE",
+        "empty": "No shifts today"
       }
     }
   }
