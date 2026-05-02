@@ -13,14 +13,18 @@
 create table public.operator_saved_locations (
   id                  uuid primary key default gen_random_uuid(),
   operator_id         uuid not null references public.profiles (id) on delete cascade,
-  name                text not null,
-  location_label      text not null,
-  location_lat        double precision not null,
-  location_lng        double precision not null,
+  name                text not null check (char_length(name) between 1 and 80),
+  location_label      text not null check (char_length(location_label) between 1 and 200),
+  location_lat        double precision not null check (location_lat between -90 and 90),
+  location_lng        double precision not null check (location_lng between -180 and 180),
   default_open_time   time not null,
   default_close_time  time not null,
   display_order       int not null default 0,
-  created_at          timestamptz not null default now()
+  created_at          timestamptz not null default now(),
+  -- Overnight hours not in scope for chip-grid MVP — operator with
+  -- truly variable hours uses the Schedule screen (TT-8) to override.
+  constraint operator_saved_locations_hours_ordered
+    check (default_open_time < default_close_time)
 );
 
 -- Per-operator chip-grid render order. Composite key keeps the index
