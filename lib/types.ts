@@ -68,6 +68,24 @@ export type Follow = {
   created_at: string;
 };
 
+// Operator's frequently-used spots. Each row carries default open/close
+// hours so the Today screen (TT-56) can publish today's truck_schedules
+// row in two taps without an inline hours picker.
+export type SavedLocation = {
+  id: string;
+  operator_id: string;
+  name: string;
+  location_label: string;
+  location_lat: number;
+  location_lng: number;
+  /** HH:mm:ss. */
+  default_open_time: string;
+  /** HH:mm:ss. */
+  default_close_time: string;
+  display_order: number;
+  created_at: string;
+};
+
 // Derived shape for the consumer map / list surfaces. The useTrucks
 // hook (TT-35) joins trucks with today's truck_schedules row (or null
 // if the truck has no schedule today). Open/closed is NOT cached here —
@@ -166,6 +184,23 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<Follow>;
+        Relationships: [];
+      };
+      operator_saved_locations: {
+        Row: SavedLocation;
+        Insert: {
+          id?: string;
+          operator_id: string;
+          name: string;
+          location_label: string;
+          location_lat: number;
+          location_lng: number;
+          default_open_time: string;
+          default_close_time: string;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: Partial<SavedLocation>;
         Relationships: [];
       };
     };
