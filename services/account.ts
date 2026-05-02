@@ -1,19 +1,17 @@
+import { AppError, NetworkError } from '@/lib/errors';
 import { supabase } from '@/services/supabase';
 
 // Typed errors mirroring the services/auth.ts pattern so callers can
 // branch on `instanceof InvalidPasswordError` rather than message text.
+// NetworkError is the shared cross-service class from lib/errors.
 
-export abstract class AccountError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = new.target.name;
-  }
-}
+export abstract class AccountError extends AppError {}
 
 export class InvalidPasswordError extends AccountError {}
-export class NetworkError extends AccountError {}
 export class RateLimitedError extends AccountError {}
 export class UnknownAccountError extends AccountError {}
+
+export { NetworkError };
 
 interface DeleteAccountResponse {
   ok?: boolean;
