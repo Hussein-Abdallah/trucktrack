@@ -14,6 +14,14 @@
       "stamps": "Fidélité",
       "alerts": "Alertes",
       "profile": "Profil",
+      "followingScreen": {
+        "subtitle": "VENDEURS ACTIFS PRÈS DE VOUS",
+        "emptyTitle": "Aucun camion suivi",
+        "emptyMessage": "Trouvez vos camions favoris sur la carte et appuyez sur Suivre.",
+        "emptyAction": "EXPLORER LA CARTE",
+        "errorTitle": "Impossible de charger vos camions",
+        "errorMessage": "Tirez pour rafraîchir."
+      },
       "profileScreen": {
         "displayNameFallback": "—",
         "accountHeading": "COMPTE",

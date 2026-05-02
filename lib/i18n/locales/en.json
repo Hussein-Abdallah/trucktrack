@@ -14,6 +14,14 @@
       "stamps": "Stamps",
       "alerts": "Alerts",
       "profile": "Profile",
+      "followingScreen": {
+        "subtitle": "ACTIVE VENDORS NEAR YOU",
+        "emptyTitle": "No followed trucks yet",
+        "emptyMessage": "Find trucks you love on the map and tap Follow.",
+        "emptyAction": "EXPLORE MAP",
+        "errorTitle": "Couldn't load your trucks",
+        "errorMessage": "Pull to refresh."
+      },
       "profileScreen": {
         "displayNameFallback": "—",
         "accountHeading": "ACCOUNT",

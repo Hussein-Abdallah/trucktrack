@@ -1,19 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
 
-import { todayIso } from '@/lib/schedule';
+import { pickSchedule, todayIso } from '@/lib/schedule';
 import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
 import { supabase } from '@/services/supabase';
-
-// Multiple schedule rows for one truck on the same day shouldn't happen
-// in normal use, but recurring schedules can overlap. Per TT-35 AC: pick
-// the live row first, otherwise the earliest open_time.
-function pickSchedule(rows: TruckSchedule[]): TruckSchedule | null {
-  if (rows.length === 0) return null;
-  const live = rows.find((r) => r.status === 'live');
-  if (live) return live;
-  return [...rows].sort((a, b) => a.open_time.localeCompare(b.open_time))[0];
-}
 
 // The `!inner` embedded select returns truck rows with their matching
 // schedules array attached. Database types in lib/types.ts don't model
