@@ -101,6 +101,24 @@
         "expiredMessage": "This reset link is no longer valid. Request a new one to continue.",
         "requestNew": "REQUEST NEW LINK"
       },
+      "deleteAccount": {
+        "warningHeading": "PERMANENT",
+        "warningBody": "This will permanently delete your account and all associated data. This action cannot be undone.",
+        "submitLabel": "DELETE ACCOUNT",
+        "submittingLabel": "DELETING…",
+        "confirmTitle": "Are you absolutely sure?",
+        "confirmMessage": "Your profile, followed trucks, and any trucks you operate will be permanently removed.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel",
+        "successTitle": "Account deleted",
+        "successMessage": "Signing you out…",
+        "lockedOutMessage": "Too many incorrect attempts. Reset your password to continue.",
+        "resetPasswordLink": "RESET PASSWORD",
+        "errors": {
+          "invalidPassword": "Password is incorrect",
+          "rateLimited": "Too many attempts. Try again in a few minutes or reset your password."
+        }
+      },
       "signOut": "Sign Out",
       "wrongApp": {
         "title": "Wrong App",

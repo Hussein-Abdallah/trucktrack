@@ -101,6 +101,24 @@
         "expiredMessage": "Ce lien de réinitialisation n'est plus valide. Demandez-en un nouveau pour continuer.",
         "requestNew": "DEMANDER UN NOUVEAU LIEN"
       },
+      "deleteAccount": {
+        "warningHeading": "PERMANENT",
+        "warningBody": "Cette action supprimera définitivement votre compte et toutes les données associées. Elle est irréversible.",
+        "submitLabel": "SUPPRIMER LE COMPTE",
+        "submittingLabel": "SUPPRESSION…",
+        "confirmTitle": "Êtes-vous absolument sûr ?",
+        "confirmMessage": "Votre profil, vos camions suivis et tout camion que vous exploitez seront supprimés définitivement.",
+        "confirmDelete": "Supprimer",
+        "cancel": "Annuler",
+        "successTitle": "Compte supprimé",
+        "successMessage": "Déconnexion en cours…",
+        "lockedOutMessage": "Trop de tentatives incorrectes. Réinitialisez votre mot de passe pour continuer.",
+        "resetPasswordLink": "RÉINITIALISER LE MOT DE PASSE",
+        "errors": {
+          "invalidPassword": "Mot de passe incorrect",
+          "rateLimited": "Trop de tentatives. Réessayez dans quelques minutes ou réinitialisez votre mot de passe."
+        }
+      },
       "signOut": "Déconnexion",
       "wrongApp": {
         "title": "Mauvaise application",
