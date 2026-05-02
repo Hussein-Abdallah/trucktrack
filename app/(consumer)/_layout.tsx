@@ -47,16 +47,15 @@ export default function ConsumerLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerTitle: '',
+        // Single source of truth for the consumer brand bar — wordmark
+        // left, avatar right, identical position on every tab.
+        headerTitle: () => <WordmarkTitle />,
+        headerTitleAlign: 'left',
         headerStyle: { backgroundColor: APP_BLACK },
         headerTintColor: WARM_CREAM,
         headerShadowVisible: false,
         headerRight: () => <AvatarHeaderButton />,
-        // Match the map overlay's 16px gutter so the avatar lands at
-        // the same visual offset on both surfaces.
         headerRightContainerStyle: { paddingRight: 16 },
-        headerLeftContainerStyle: { paddingLeft: 16 },
-        headerTitleContainerStyle: { paddingHorizontal: 16 },
         tabBarActiveTintColor: FIRE_ORANGE,
         tabBarInactiveTintColor: MUTED,
         tabBarStyle: {
@@ -81,10 +80,11 @@ export default function ConsumerLayout() {
           tabBarLabel: t('routes.consumer.map'),
           tabBarAccessibilityLabel: t('routes.consumer.map'),
           tabBarIcon: tabIcon('map'),
-          // Map renders its own top-bar overlay (wordmark + profile)
-          // because the design needs edge-to-edge map under the
-          // overlay. Other tabs keep the standard navigation header.
-          headerShown: false,
+          // Map shows through under the wordmark + avatar — same brand
+          // bar geometry as the other tabs, just rendered over the map
+          // instead of over a solid APP_BLACK fill.
+          headerTransparent: true,
+          headerStyle: { backgroundColor: 'transparent' },
         }}
       />
       <Tabs.Screen
@@ -93,11 +93,6 @@ export default function ConsumerLayout() {
           tabBarLabel: t('routes.consumer.following'),
           tabBarAccessibilityLabel: t('routes.consumer.following'),
           tabBarIcon: tabIcon('heart'),
-          // Brand wordmark left, profile button right — mirrors the
-          // map screen's custom overlay so navigating between tabs
-          // doesn't lose the brand bar.
-          headerTitle: () => <WordmarkTitle />,
-          headerTitleAlign: 'left',
         }}
       />
       <Tabs.Screen

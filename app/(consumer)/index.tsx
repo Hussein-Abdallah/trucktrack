@@ -1,11 +1,12 @@
 import type GorhomBottomSheet from '@gorhom/bottom-sheet';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { Camera } from '@rnmapbox/maps';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { LayoutChangeEvent } from 'react-native';
 import { AppState, Linking, RefreshControl, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   BottomSheet,
@@ -15,9 +16,7 @@ import {
 import { LocateButton } from '@/components/map/LocateButton';
 import { DEFAULT_ZOOM, MapView, OTTAWA_CENTER, USER_ZOOM } from '@/components/map/MapView';
 import { UserLocationDot } from '@/components/map/UserLocationDot';
-import { AvatarHeaderButton } from '@/components/shared/AvatarHeaderButton';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { WordmarkTitle } from '@/components/shared/WordmarkTitle';
 import { TruckCard } from '@/components/truck/TruckCard';
 import { TruckCardSkeleton } from '@/components/truck/TruckCardSkeleton';
 import { TruckPin } from '@/components/truck/TruckPin';
@@ -35,6 +34,12 @@ const CAMERA_FLY_MS = 600;
 const SNAP_PEEK = 0;
 const SNAP_HALF = 1;
 const SNAP_FULL = 2;
+// Bottom-sheet snap heights as a fraction of the screen — must stay in
+// sync with SNAP_HEIGHTS in components/map/BottomSheet.tsx. Used to pad
+// the Mapbox camera so a centered coordinate lands in the visible map
+// area above the sheet, not the geometric center of the full map view
+// (which is hidden behind the sheet at half/full snaps).
+const SNAP_FRACTIONS = [0.24, 0.5, 0.85];
 const SKELETON_COUNT = 3;
 const SKELETON_KEYS = Array.from({ length: SKELETON_COUNT }, (_, i) => `truck-skel-${i}`);
 
@@ -63,6 +68,35 @@ export default function ConsumerMapScreen() {
   const cameraRef = useRef<Camera>(null);
   const sheetRef = useRef<GorhomBottomSheet>(null);
   const sheetIndexRef = useRef(SNAP_HALF);
+  // Map container height — captured via onLayout so the bottom-sheet
+  // snap fractions resolve against the SAME height @gorhom/bottom-sheet
+  // uses internally. With headerTransparent, this container also
+  // includes the area BEHIND the navbar (the map renders edge-to-edge
+  // under it).
+  const [mapHeight, setMapHeight] = useState(0);
+  const handleContainerLayout = (e: LayoutChangeEvent) => {
+    setMapHeight(e.nativeEvent.layout.height);
+  };
+  // Navbar height (incl. safe-area top). With headerTransparent the
+  // map extends behind the navbar, so we need to pad the camera top
+  // by this much so the centered point clears it visually.
+  const headerHeight = useHeaderHeight();
+
+  // Compute Mapbox camera padding so a centered coordinate lands at
+  // the visual midpoint of the area between the navbar bottom and the
+  // bottom-sheet top edge — not the geometric center of the full map.
+  //
+  // Pass `snapIdx` when an action also snaps the sheet — the camera
+  // animation needs to land using the FUTURE sheet height, not the
+  // current one. e.g. handlePinPress snaps to half; passing SNAP_HALF
+  // keeps the chosen pin centered above the sheet's final position.
+  const getCameraPadding = (snapIdx?: number) => ({
+    paddingTop: headerHeight,
+    paddingLeft: 0,
+    paddingRight: 0,
+    paddingBottom:
+      mapHeight > 0 ? Math.round(mapHeight * SNAP_FRACTIONS[snapIdx ?? sheetIndexRef.current]) : 0,
+  });
   // Snap the user was on right before entering selection mode.
   // Captured on the first pin tap and restored on close X so dismissing
   // the summary returns the sheet to where it was, instead of always
@@ -72,9 +106,6 @@ export default function ConsumerMapScreen() {
   // X. Drives both the sheet body (single focused card vs. full list)
   // and the selected-card highlight.
   const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
-  // insets.top combined with a visual margin so overlays clear the
-  // notch / Dynamic Island on every device.
-  const insets = useSafeAreaInsets();
 
   // Permission lifecycle: prompt on first mount, re-sync on app resume
   // (handles user toggling location in Settings while backgrounded),
@@ -165,6 +196,9 @@ export default function ConsumerMapScreen() {
       zoomLevel: USER_ZOOM,
       animationDuration: CAMERA_FLY_MS,
       animationMode: 'flyTo',
+      // Pad against the half-snap height — handlePinPress always lands
+      // the sheet at SNAP_HALF below.
+      padding: getCameraPadding(SNAP_HALF),
     });
     // Snap to half: the rich TruckSummary (hero image + status +
     // info card + actions) doesn't fit cleanly in peek (24% screen).
@@ -178,20 +212,22 @@ export default function ConsumerMapScreen() {
 
   const handleCloseSelection = () => {
     setSelectedTruckId(null);
-    // Zoom out at the current center so the user gets the wider city
-    // context back without being yanked to a different location. No
-    // re-center — they keep their bearings on where the dismissed
-    // truck was.
-    cameraRef.current?.setCamera({
-      zoomLevel: DEFAULT_ZOOM,
-      animationDuration: CAMERA_FLY_MS,
-      animationMode: 'flyTo',
-    });
     // Restore the pre-selection snap (captured on the first pin tap),
     // so closing returns the sheet to where the user was. Falls back
     // to half if nothing was captured (defensive — shouldn't fire).
     const targetSnap = preSelectionSnapRef.current ?? SNAP_HALF;
     preSelectionSnapRef.current = null;
+    // Zoom out at the current center so the user gets the wider city
+    // context back without being yanked to a different location. No
+    // re-center — they keep their bearings on where the dismissed
+    // truck was. Pad against the target snap so the after-zoom view is
+    // centered against the sheet's final position.
+    cameraRef.current?.setCamera({
+      zoomLevel: DEFAULT_ZOOM,
+      animationDuration: CAMERA_FLY_MS,
+      animationMode: 'flyTo',
+      padding: getCameraPadding(targetSnap),
+    });
     if (sheetIndexRef.current !== targetSnap) {
       sheetRef.current?.snapToIndex(targetSnap);
     }
@@ -212,6 +248,8 @@ export default function ConsumerMapScreen() {
       zoomLevel: USER_ZOOM,
       animationDuration: CAMERA_FLY_MS,
       animationMode: 'flyTo',
+      // Pad against current snap — locate doesn't change the sheet.
+      padding: getCameraPadding(),
     });
   };
 
@@ -319,7 +357,7 @@ export default function ConsumerMapScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={handleContainerLayout}>
       <MapView>
         <Camera
           ref={cameraRef}
@@ -336,32 +374,10 @@ export default function ConsumerMapScreen() {
         {coords ? <UserLocationDot coords={coords} /> : null}
       </MapView>
 
-      {/* Top-bar overlay: wordmark left, profile button right. Mirrors
-          the navbar styling from the Following / Stamps / Alerts tab
-          headers (same WordmarkTitle + AvatarHeaderButton components)
-          so the brand bar reads identically across consumer surfaces.
-          Lives in its own absolute-positioned bar with
-          pointerEvents="box-none" so the map underneath stays
-          interactive. */}
-      <View
-        style={[styles.topBar, { paddingTop: insets.top + TOP_BAR_MARGIN }]}
-        pointerEvents="box-none"
-      >
-        {/* Non-interactive label — explicit pointerEvents="none" so it
-            doesn't intercept map pans (the parent's box-none only
-            passes through empty areas; children stay hit-testable by
-            default). */}
-        <View pointerEvents="none" style={styles.wordmarkSlot}>
-          <WordmarkTitle />
-        </View>
-        <AvatarHeaderButton />
-      </View>
-
-      {/* Locate-button overlay sits below the top bar (right side). */}
-      <View
-        style={[styles.locateOverlay, { paddingTop: insets.top + LOCATE_TOP_OFFSET }]}
-        pointerEvents="box-none"
-      >
+      {/* Locate button — top-right of the map area, below the navbar.
+          With headerTransparent, the map starts at y=0; offset by
+          headerHeight so the button doesn't sit under the wordmark. */}
+      <View style={[styles.locateOverlay, { top: headerHeight + 16 }]} pointerEvents="box-none">
         <LocateButton
           permissionDenied={permissionDenied}
           isLocating={isLocating}
@@ -387,29 +403,12 @@ function ItemSeparator() {
   return <View style={styles.separator} />;
 }
 
-const TOP_BAR_MARGIN = 12;
-const LOCATE_TOP_OFFSET = 72;
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: APP_BLACK },
-  topBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    zIndex: 20,
-  },
-  wordmarkSlot: {
-    flexShrink: 1,
-  },
   locateOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'flex-end',
-    paddingRight: 20,
+    position: 'absolute',
+    right: 16,
+    zIndex: 20,
   },
   sheetHeader: {
     paddingHorizontal: 16,
