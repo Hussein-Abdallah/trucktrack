@@ -1,40 +1,12 @@
 import { Feather } from '@expo/vector-icons';
-import { Redirect, Tabs, router } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AvatarHeaderButton } from '@/components/shared/AvatarHeaderButton';
+import { WordmarkTitle } from '@/components/shared/WordmarkTitle';
 import { useAuthStore } from '@/stores/authStore';
 import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
-
-function WordmarkTitle() {
-  const { t } = useTranslation();
-  return <Text style={wordmarkStyles.label}>{t('routes.consumer.mapScreen.wordmark')}</Text>;
-}
-
-const wordmarkStyles = StyleSheet.create({
-  label: {
-    fontFamily: 'BebasNeue',
-    fontSize: 24,
-    letterSpacing: 2,
-    color: FIRE_ORANGE,
-  },
-});
-
-function AvatarHeaderButton() {
-  const { t } = useTranslation();
-  return (
-    <Pressable
-      onPress={() => router.push('/profile')}
-      accessibilityRole="button"
-      accessibilityLabel={t('routes.consumer.profile')}
-      className="mr-4 h-9 w-9 items-center justify-center rounded-full border active:opacity-60"
-      style={{ borderColor: MID }}
-    >
-      <Feather name="user" size={18} color={WARM_CREAM} />
-    </Pressable>
-  );
-}
 
 type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
 
@@ -80,6 +52,11 @@ export default function ConsumerLayout() {
         headerTintColor: WARM_CREAM,
         headerShadowVisible: false,
         headerRight: () => <AvatarHeaderButton />,
+        // Match the map overlay's 16px gutter so the avatar lands at
+        // the same visual offset on both surfaces.
+        headerRightContainerStyle: { paddingRight: 16 },
+        headerLeftContainerStyle: { paddingLeft: 16 },
+        headerTitleContainerStyle: { paddingHorizontal: 16 },
         tabBarActiveTintColor: FIRE_ORANGE,
         tabBarInactiveTintColor: MUTED,
         tabBarStyle: {

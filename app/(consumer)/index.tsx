@@ -1,11 +1,10 @@
-import { Feather } from '@expo/vector-icons';
 import type GorhomBottomSheet from '@gorhom/bottom-sheet';
 import { Camera } from '@rnmapbox/maps';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, Linking, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { AppState, Linking, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -16,7 +15,9 @@ import {
 import { LocateButton } from '@/components/map/LocateButton';
 import { DEFAULT_ZOOM, MapView, OTTAWA_CENTER, USER_ZOOM } from '@/components/map/MapView';
 import { UserLocationDot } from '@/components/map/UserLocationDot';
+import { AvatarHeaderButton } from '@/components/shared/AvatarHeaderButton';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { WordmarkTitle } from '@/components/shared/WordmarkTitle';
 import { TruckCard } from '@/components/truck/TruckCard';
 import { TruckCardSkeleton } from '@/components/truck/TruckCardSkeleton';
 import { TruckPin } from '@/components/truck/TruckPin';
@@ -27,7 +28,7 @@ import { deriveIsOpen } from '@/lib/schedule';
 import type { TruckWithSchedule } from '@/lib/types';
 import { haversineKm, openMapsDirections } from '@/lib/utils';
 import { useLocationStore } from '@/stores/locationStore';
-import { APP_BLACK, FIRE_ORANGE, MID, WARM_CREAM } from '@/theme/colors';
+import { APP_BLACK, WARM_CREAM } from '@/theme/colors';
 
 const CAMERA_FLY_MS = 600;
 // BottomSheet snap-point indices in the default ['peek','half','full'] order.
@@ -200,10 +201,6 @@ export default function ConsumerMapScreen() {
     router.push(`/truck/${id}`);
   };
 
-  const handleProfilePress = () => {
-    router.push('/profile');
-  };
-
   const handleLocate = () => {
     if (permissionDenied) {
       void Linking.openSettings();
@@ -339,9 +336,13 @@ export default function ConsumerMapScreen() {
         {coords ? <UserLocationDot coords={coords} /> : null}
       </MapView>
 
-      {/* Top-bar overlay: wordmark left, profile button right. Lives in
-          its own absolute-positioned bar with pointerEvents="box-none"
-          so the map underneath stays interactive. */}
+      {/* Top-bar overlay: wordmark left, profile button right. Mirrors
+          the navbar styling from the Following / Stamps / Alerts tab
+          headers (same WordmarkTitle + AvatarHeaderButton components)
+          so the brand bar reads identically across consumer surfaces.
+          Lives in its own absolute-positioned bar with
+          pointerEvents="box-none" so the map underneath stays
+          interactive. */}
       <View
         style={[styles.topBar, { paddingTop: insets.top + TOP_BAR_MARGIN }]}
         pointerEvents="box-none"
@@ -350,17 +351,10 @@ export default function ConsumerMapScreen() {
             doesn't intercept map pans (the parent's box-none only
             passes through empty areas; children stay hit-testable by
             default). */}
-        <View pointerEvents="none">
-          <Text style={styles.wordmark}>{t('routes.consumer.mapScreen.wordmark')}</Text>
+        <View pointerEvents="none" style={styles.wordmarkSlot}>
+          <WordmarkTitle />
         </View>
-        <Pressable
-          onPress={handleProfilePress}
-          accessibilityRole="button"
-          accessibilityLabel={t('routes.consumer.profile')}
-          style={styles.profileButton}
-        >
-          <Feather name="user" size={20} color={WARM_CREAM} />
-        </Pressable>
+        <AvatarHeaderButton />
       </View>
 
       {/* Locate-button overlay sits below the top bar (right side). */}
@@ -409,21 +403,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     zIndex: 20,
   },
-  wordmark: {
-    fontFamily: 'BebasNeue',
-    fontSize: 24,
-    letterSpacing: 2,
-    color: FIRE_ORANGE,
-  },
-  profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: MID,
-    backgroundColor: APP_BLACK,
-    alignItems: 'center',
-    justifyContent: 'center',
+  wordmarkSlot: {
+    flexShrink: 1,
   },
   locateOverlay: {
     ...StyleSheet.absoluteFillObject,
