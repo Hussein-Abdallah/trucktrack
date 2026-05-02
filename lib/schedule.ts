@@ -48,3 +48,15 @@ export function deriveIsOpen(schedule: TruckSchedule | null): boolean {
   const now = nowSecondsLocal();
   return now >= timeStrToSeconds(schedule.open_time) && now < timeStrToSeconds(schedule.close_time);
 }
+
+// Multiple schedule rows for one truck on the same day shouldn't happen
+// in normal use, but recurring schedules can overlap. Per TT-35 AC: pick
+// the live row first, otherwise the earliest open_time. Shared between
+// useTrucks (map) and useFollowedTrucks (follow feed) so both surfaces
+// resolve the same row for any given (truck, date) pair.
+export function pickSchedule(rows: TruckSchedule[]): TruckSchedule | null {
+  if (rows.length === 0) return null;
+  const live = rows.find((r) => r.status === 'live');
+  if (live) return live;
+  return [...rows].sort((a, b) => a.open_time.localeCompare(b.open_time))[0];
+}

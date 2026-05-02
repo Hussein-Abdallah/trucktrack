@@ -1,26 +1,12 @@
 import { Feather } from '@expo/vector-icons';
-import { Redirect, Tabs, router } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AvatarHeaderButton } from '@/components/shared/AvatarHeaderButton';
+import { WordmarkTitle } from '@/components/shared/WordmarkTitle';
 import { useAuthStore } from '@/stores/authStore';
 import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
-
-function AvatarHeaderButton() {
-  const { t } = useTranslation();
-  return (
-    <Pressable
-      onPress={() => router.push('/profile')}
-      accessibilityRole="button"
-      accessibilityLabel={t('routes.consumer.profile')}
-      className="mr-4 h-9 w-9 items-center justify-center rounded-full border active:opacity-60"
-      style={{ borderColor: MID }}
-    >
-      <Feather name="user" size={18} color={WARM_CREAM} />
-    </Pressable>
-  );
-}
 
 type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
 
@@ -61,11 +47,15 @@ export default function ConsumerLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerTitle: '',
+        // Single source of truth for the consumer brand bar — wordmark
+        // left, avatar right, identical position on every tab.
+        headerTitle: () => <WordmarkTitle />,
+        headerTitleAlign: 'left',
         headerStyle: { backgroundColor: APP_BLACK },
         headerTintColor: WARM_CREAM,
         headerShadowVisible: false,
         headerRight: () => <AvatarHeaderButton />,
+        headerRightContainerStyle: { paddingRight: 16 },
         tabBarActiveTintColor: FIRE_ORANGE,
         tabBarInactiveTintColor: MUTED,
         tabBarStyle: {
@@ -90,10 +80,11 @@ export default function ConsumerLayout() {
           tabBarLabel: t('routes.consumer.map'),
           tabBarAccessibilityLabel: t('routes.consumer.map'),
           tabBarIcon: tabIcon('map'),
-          // Map renders its own top-bar overlay (wordmark + profile)
-          // because the design needs edge-to-edge map under the
-          // overlay. Other tabs keep the standard navigation header.
-          headerShown: false,
+          // Map shows through under the wordmark + avatar — same brand
+          // bar geometry as the other tabs, just rendered over the map
+          // instead of over a solid APP_BLACK fill.
+          headerTransparent: true,
+          headerStyle: { backgroundColor: 'transparent' },
         }}
       />
       <Tabs.Screen
