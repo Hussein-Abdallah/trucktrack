@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
 
 import { pickSchedule, todayIso } from '@/lib/schedule';
-import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
+import type { TruckWithSchedule, TruckWithSchedulesRow } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -14,9 +14,14 @@ import { useAuthStore } from '@/stores/authStore';
 // `schedule: null` (rendered as "no shifts today"). The schedule filter
 // goes on the embedded resource, not the parent — PostgREST supports
 // that via `.eq('trucks.truck_schedules.date', ...)`.
+//
+// FollowRow is a query-response wrapper — the inner trucks shape is the
+// shared TruckWithSchedulesRow from lib/types.ts; the outer { truck_id,
+// trucks: ... } is the join-projection specific to this select() and
+// kept inline.
 type FollowRow = {
   truck_id: string;
-  trucks: Truck & { truck_schedules: TruckSchedule[] };
+  trucks: TruckWithSchedulesRow;
 };
 
 async function fetchFollowedTrucks(userId: string, today: string): Promise<TruckWithSchedule[]> {

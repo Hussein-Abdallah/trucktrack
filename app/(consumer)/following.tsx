@@ -84,6 +84,8 @@ export default function FollowingScreen() {
           icon="alert-triangle"
           title={t('routes.consumer.followingScreen.errorTitle')}
           message={t('routes.consumer.followingScreen.errorMessage')}
+          actionLabel={t('truck.profile.error.retry')}
+          onAction={() => void refetch()}
         />
       );
     }

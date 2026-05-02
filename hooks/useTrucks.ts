@@ -2,14 +2,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
 
 import { pickSchedule, todayIso } from '@/lib/schedule';
-import type { Truck, TruckSchedule, TruckWithSchedule } from '@/lib/types';
+import type { TruckWithSchedule, TruckWithSchedulesRow } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
 // The `!inner` embedded select returns truck rows with their matching
 // schedules array attached. Database types in lib/types.ts don't model
 // the relation (Relationships: []), so we assert the response shape via
-// .returns<>() rather than fight the inferred type.
-type TruckWithSchedulesRow = Truck & { truck_schedules: TruckSchedule[] };
+// .returns<TruckWithSchedulesRow[]>() rather than fight the inferred type.
 
 async function fetchTrucks(today: string): Promise<TruckWithSchedule[]> {
   const { data, error } = await supabase

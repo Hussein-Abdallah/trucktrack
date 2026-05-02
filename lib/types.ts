@@ -78,6 +78,14 @@ export type TruckWithSchedule = Truck & {
   schedule: TruckSchedule | null;
 };
 
+// Embedded-select row shape for `.from('trucks').select('*, truck_schedules(*)')`
+// and the equivalent `follows -> trucks(*, truck_schedules(*))` join. PostgREST
+// returns the schedules as an array (zero-or-more rows for a given date), and
+// callers fold it into a single TruckWithSchedule via pickSchedule. Shared
+// across useTrucks (map) and useFollowedTrucks (follow feed) so the response
+// shape stays in lockstep with the embed contract.
+export type TruckWithSchedulesRow = Truck & { truck_schedules: TruckSchedule[] };
+
 // Lat/lng pair used by distance helpers (lib/utils.ts) and the
 // locationStore (TT-36). Matches the Mapbox/Geo convention of lat
 // before lng in object form.
