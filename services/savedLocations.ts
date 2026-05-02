@@ -97,6 +97,16 @@ export async function updateSavedLocation(
 }
 
 export async function deleteSavedLocation(id: string): Promise<void> {
-  const { error } = await supabase.from('operator_saved_locations').delete().eq('id', id);
+  // .select('id').single() forces PostgREST to surface the no-op
+  // delete case (id not found OR RLS filter excludes the row) as
+  // PGRST116 instead of returning success with zero rows. Matches the
+  // same defense applied to updateSavedLocation above and the
+  // services/profile.ts:updateProfileLanguage pattern.
+  const { error } = await supabase
+    .from('operator_saved_locations')
+    .delete()
+    .eq('id', id)
+    .select('id')
+    .single();
   if (error) throw mapError(error);
 }
