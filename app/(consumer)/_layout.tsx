@@ -1,11 +1,25 @@
 import { Feather } from '@expo/vector-icons';
 import { Redirect, Tabs, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
 import { APP_BLACK, CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
+
+function WordmarkTitle() {
+  const { t } = useTranslation();
+  return <Text style={wordmarkStyles.label}>{t('routes.consumer.mapScreen.wordmark')}</Text>;
+}
+
+const wordmarkStyles = StyleSheet.create({
+  label: {
+    fontFamily: 'BebasNeue',
+    fontSize: 24,
+    letterSpacing: 2,
+    color: FIRE_ORANGE,
+  },
+});
 
 function AvatarHeaderButton() {
   const { t } = useTranslation();
@@ -102,6 +116,11 @@ export default function ConsumerLayout() {
           tabBarLabel: t('routes.consumer.following'),
           tabBarAccessibilityLabel: t('routes.consumer.following'),
           tabBarIcon: tabIcon('heart'),
+          // Brand wordmark left, profile button right — mirrors the
+          // map screen's custom overlay so navigating between tabs
+          // doesn't lose the brand bar.
+          headerTitle: () => <WordmarkTitle />,
+          headerTitleAlign: 'left',
         }}
       />
       <Tabs.Screen
