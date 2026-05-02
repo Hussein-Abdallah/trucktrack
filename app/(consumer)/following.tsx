@@ -5,12 +5,12 @@ import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '@/components/shared/EmptyState';
-import { TruckCard } from '@/components/truck/TruckCard';
 import { TruckCardSkeleton } from '@/components/truck/TruckCardSkeleton';
+import { TruckFeedCard } from '@/components/truck/TruckFeedCard';
 import { useFollowedTrucks } from '@/hooks/useFollowedTrucks';
 import { deriveIsOpen } from '@/lib/schedule';
 import type { TruckWithSchedule } from '@/lib/types';
-import { haversineKm } from '@/lib/utils';
+import { haversineKm, openMapsDirections } from '@/lib/utils';
 import { useLocationStore } from '@/stores/locationStore';
 import { APP_BLACK, MUTED, WARM_CREAM } from '@/theme/colors';
 
@@ -118,13 +118,29 @@ export default function FollowingScreen() {
             tintColor={WARM_CREAM}
           />
         }
-        renderItem={({ item }) => (
-          <TruckCard
-            truck={item.truck}
-            distanceKm={item.distanceKm}
-            onPress={() => handleCardPress(item.truck.id)}
-          />
-        )}
+        renderItem={({ item }) => {
+          const sched = item.truck.schedule;
+          // Per-card CTA only when there's a place to direct to. For
+          // trucks with no schedule today, the card itself still
+          // navigates to the profile on tap.
+          const directionsHandler = sched
+            ? () =>
+                void openMapsDirections({
+                  lat: sched.location_lat,
+                  lng: sched.location_lng,
+                  label: item.truck.name,
+                })
+            : undefined;
+          return (
+            <TruckFeedCard
+              truck={item.truck}
+              distanceKm={item.distanceKm}
+              onPress={() => handleCardPress(item.truck.id)}
+              actionLabel={directionsHandler ? t('truckCard.getDirections') : undefined}
+              onAction={directionsHandler}
+            />
+          );
+        }}
         ItemSeparatorComponent={ItemSeparator}
         contentContainerStyle={styles.listContent}
       />
@@ -175,6 +191,6 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   separator: {
-    height: 8,
+    height: 16,
   },
 });

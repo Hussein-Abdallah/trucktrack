@@ -153,7 +153,10 @@
   "truckCard": {
     "openNow": "OUVERT",
     "closed": "FERMÉ",
-    "unknownLocation": "—"
+    "unknownLocation": "—",
+    "todaysLocation": "EMPLACEMENT AUJOURD'HUI",
+    "getDirections": "ITINÉRAIRE",
+    "viewDetails": "VOIR LES DÉTAILS"
   },
   "map": {
     "locateButton": {
