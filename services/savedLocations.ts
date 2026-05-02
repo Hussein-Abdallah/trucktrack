@@ -9,12 +9,18 @@ import { supabase } from '@/services/supabase';
 
 export abstract class SavedLocationError extends AppError {}
 
+// PGRST116 = "0 rows matched" — surfaced via .select().single() chained
+// on update / delete. Distinct from UnknownSavedLocationError so callers
+// can branch ("this location no longer exists, refresh the chip grid")
+// vs. a real server fault.
+export class SavedLocationNotFoundError extends SavedLocationError {}
 export class UnknownSavedLocationError extends SavedLocationError {}
 
 export { NetworkError };
 
 function mapError(err: PostgrestLikeError): AppError {
   if (isNetworkError(err)) return new NetworkError(err.message);
+  if (err.code === 'PGRST116') return new SavedLocationNotFoundError(err.message);
   return new UnknownSavedLocationError(err.message);
 }
 
@@ -68,26 +74,53 @@ export async function addSavedLocation(args: AddSavedLocationArgs): Promise<Save
   return data;
 }
 
+// camelCase to match AddSavedLocationArgs — callers don't need to flip
+// naming conventions between add and update. The implementation maps
+// to snake_case before passing to PostgREST.
 export type UpdateSavedLocationPatch = Partial<{
   name: string;
-  location_label: string;
-  location_lat: number;
-  location_lng: number;
-  default_open_time: string;
-  default_close_time: string;
-  display_order: number;
+  locationLabel: string;
+  lat: number;
+  lng: number;
+  /** HH:mm:ss or HH:mm. */
+  defaultOpenTime: string;
+  /** HH:mm:ss or HH:mm. */
+  defaultCloseTime: string;
+  displayOrder: number;
 }>;
+
+interface SavedLocationUpdateRow {
+  name?: string;
+  location_label?: string;
+  location_lat?: number;
+  location_lng?: number;
+  default_open_time?: string;
+  default_close_time?: string;
+  display_order?: number;
+}
 
 export async function updateSavedLocation(
   id: string,
   patch: UpdateSavedLocationPatch,
 ): Promise<SavedLocation> {
+  // Build the DB-shape object only including provided keys so PostgREST
+  // doesn't overwrite columns the caller didn't intend to touch.
+  const row: SavedLocationUpdateRow = {};
+  if (patch.name !== undefined) row.name = patch.name;
+  if (patch.locationLabel !== undefined) row.location_label = patch.locationLabel;
+  if (patch.lat !== undefined) row.location_lat = patch.lat;
+  if (patch.lng !== undefined) row.location_lng = patch.lng;
+  if (patch.defaultOpenTime !== undefined) row.default_open_time = patch.defaultOpenTime;
+  if (patch.defaultCloseTime !== undefined) row.default_close_time = patch.defaultCloseTime;
+  if (patch.displayOrder !== undefined) row.display_order = patch.displayOrder;
+
   // .select().single() forces PostgREST to surface a 0-rows-affected
   // RLS miss as PGRST116 instead of a silent success — matches the
-  // pattern in services/profile.ts.
+  // pattern in services/profile.ts. mapError converts that to
+  // SavedLocationNotFoundError for distinguishable handling.
   const { data, error } = await supabase
     .from('operator_saved_locations')
-    .update(patch)
+    .update(row)
     .eq('id', id)
     .select('*')
     .single();
