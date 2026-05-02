@@ -5,6 +5,7 @@ import type {
   User,
 } from '@supabase/supabase-js';
 
+import { AppError, NetworkError, isNetworkError } from '@/lib/errors';
 import type { AppLanguage, UserRole } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
@@ -14,19 +15,13 @@ import { supabase } from '@/services/supabase';
 // callers branch on `err instanceof EmailAlreadyRegisteredError`
 // rather than pattern-matching on messages.
 
-export abstract class AuthError extends Error {
-  constructor(message: string) {
-    super(message);
-    // Keep the class name stable across minification so callers can
-    // safely `err.name === 'EmailAlreadyRegisteredError'` in logs.
-    this.name = new.target.name;
-  }
-}
+export abstract class AuthError extends AppError {}
 
 export class EmailAlreadyRegisteredError extends AuthError {}
 export class InvalidRoleError extends AuthError {}
-export class NetworkError extends AuthError {}
 export class UnknownAuthError extends AuthError {}
+
+export { NetworkError };
 
 // -- Public API -------------------------------------------------------
 
@@ -124,18 +119,6 @@ export function onAuthStateChange(
 // surface Supabase gives us. When supabase-js ships typed error codes
 // we can replace these substring checks with code-based branches.
 
-interface PostgrestLikeError {
-  message: string;
-  code?: string;
-  details?: string;
-}
-
-function isNetworkError(message: string, name?: string): boolean {
-  if (name === 'AuthRetryableFetchError') return true;
-  const lower = message.toLowerCase();
-  return lower.includes('network request failed') || lower.includes('failed to fetch');
-}
-
 function violatesRolesCheck(message: string): boolean {
   // Either the CHECK constraint fires directly on INSERT / UPDATE, or
   // GoTrue wraps the trigger failure as "Database error saving new
@@ -143,9 +126,9 @@ function violatesRolesCheck(message: string): boolean {
   return message.includes('profiles_roles_valid');
 }
 
-function mapSupabaseAuthError(err: SupabaseAuthError): AuthError {
+function mapSupabaseAuthError(err: SupabaseAuthError): AuthError | NetworkError {
   const message = err.message;
-  if (isNetworkError(message, err.name)) return new NetworkError(message);
+  if (isNetworkError(err)) return new NetworkError(message);
   if (message.includes('User already registered')) {
     return new EmailAlreadyRegisteredError(message);
   }
@@ -153,9 +136,12 @@ function mapSupabaseAuthError(err: SupabaseAuthError): AuthError {
   return new UnknownAuthError(message);
 }
 
-function mapSupabasePostgrestError(err: PostgrestLikeError): AuthError {
+function mapSupabasePostgrestError(err: {
+  message: string;
+  code?: string;
+}): AuthError | NetworkError {
   const message = err.message;
-  if (isNetworkError(message)) return new NetworkError(message);
+  if (isNetworkError(err)) return new NetworkError(message);
   // SQLSTATE 22004 (null_value_not_allowed) — profiles_add_role raises
   // this when p_role is null or empty. Same user-facing meaning as a
   // profiles_roles_valid CHECK violation: the caller passed something

@@ -1,31 +1,20 @@
+import { AppError, NetworkError, isNetworkError, type PostgrestLikeError } from '@/lib/errors';
 import type { SavedLocation } from '@/lib/types';
 import { supabase } from '@/services/supabase';
 
-// Typed errors mirroring services/auth.ts and services/account.ts so
-// callers branch on `instanceof NetworkError` rather than message text.
+// Domain errors extend the shared AppError. NetworkError is the one
+// error every service can throw with identical semantics, so it lives
+// in lib/errors and is re-exported here for ergonomic imports
+// (`from '@/services/savedLocations'`) without forking class identity.
 
-export abstract class SavedLocationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = new.target.name;
-  }
-}
+export abstract class SavedLocationError extends AppError {}
 
-export class NetworkError extends SavedLocationError {}
 export class UnknownSavedLocationError extends SavedLocationError {}
 
-interface PostgrestLikeError {
-  message: string;
-  code?: string;
-}
+export { NetworkError };
 
-function isNetworkError(message: string): boolean {
-  const lower = message.toLowerCase();
-  return lower.includes('network request failed') || lower.includes('failed to fetch');
-}
-
-function mapError(err: PostgrestLikeError): SavedLocationError {
-  if (isNetworkError(err.message)) return new NetworkError(err.message);
+function mapError(err: PostgrestLikeError): AppError {
+  if (isNetworkError(err)) return new NetworkError(err.message);
   return new UnknownSavedLocationError(err.message);
 }
 
