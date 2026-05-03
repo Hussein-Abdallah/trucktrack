@@ -56,7 +56,51 @@
       "schedule": "Horaire",
       "analytics": "Statistiques",
       "catering": "Traiteur",
-      "settings": "Réglages"
+      "settings": "Réglages",
+      "todayScreen": {
+        "header": "AUJOURD'HUI",
+        "statusLabel": "STATUT",
+        "open": "OUVERT",
+        "closed": "FERMÉ",
+        "openForBusiness": "OUVRIR AU PUBLIC",
+        "closeForBusiness": "FERMER POUR LA JOURNÉE",
+        "currentLocationLabel": "EMPLACEMENT ACTUEL",
+        "noLocationPublished": "Aucun emplacement publié",
+        "publishLocation": "PUBLIER L'EMPLACEMENT",
+        "savedLocationsLabel": "EMPLACEMENTS",
+        "addLocation": "AJOUTER UN LIEU",
+        "loadErrorTitle": "Chargement impossible",
+        "loadErrorMessage": "Tirez pour rafraîchir.",
+        "noTruckTitle": "Configurez votre camion",
+        "noTruckMessage": "Terminez la configuration pour publier.",
+        "finishSetup": "TERMINER",
+        "noLocationsTitle": "Aucun emplacement",
+        "noLocationsMessage": "Ajoutez votre premier lieu pour publier en deux touches.",
+        "modal": {
+          "title": "AJOUTER UN LIEU",
+          "nameLabel": "NOM",
+          "labelLabel": "ADRESSE",
+          "latLabel": "LATITUDE",
+          "lngLabel": "LONGITUDE",
+          "openLabel": "OUVERTURE",
+          "closeLabel": "FERMETURE",
+          "submit": "ENREGISTRER",
+          "submitting": "ENREGISTREMENT…",
+          "cancel": "Annuler",
+          "hint": "Heures au format 24 h (ex. 11:30, 20:00).",
+          "errors": {
+            "required": "Requis",
+            "invalidLat": "La latitude doit être entre -90 et 90",
+            "invalidLng": "La longitude doit être entre -180 et 180",
+            "invalidTime": "Format HH:MM (24 h)",
+            "openAfterClose": "L'heure de fermeture doit suivre l'ouverture"
+          }
+        },
+        "errors": {
+          "publishFailed": "Échec de l'enregistrement. Vérifiez votre connexion et réessayez.",
+          "toggleFailed": "Mise à jour impossible. Réessayez."
+        }
+      }
     },
     "auth": {
       "login": {

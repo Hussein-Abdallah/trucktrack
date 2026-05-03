@@ -56,7 +56,51 @@
       "schedule": "Schedule",
       "analytics": "Analytics",
       "catering": "Catering",
-      "settings": "Settings"
+      "settings": "Settings",
+      "todayScreen": {
+        "header": "TODAY",
+        "statusLabel": "STATUS",
+        "open": "OPEN",
+        "closed": "CLOSED",
+        "openForBusiness": "OPEN FOR BUSINESS",
+        "closeForBusiness": "CLOSE FOR THE DAY",
+        "currentLocationLabel": "CURRENT LOCATION",
+        "noLocationPublished": "No location published",
+        "publishLocation": "PUBLISH LOCATION",
+        "savedLocationsLabel": "SAVED LOCATIONS",
+        "addLocation": "ADD A LOCATION",
+        "loadErrorTitle": "Couldn't load Today",
+        "loadErrorMessage": "Pull to refresh.",
+        "noTruckTitle": "Set up your truck",
+        "noTruckMessage": "Finish setup to publish a location.",
+        "finishSetup": "FINISH SETUP",
+        "noLocationsTitle": "No saved locations",
+        "noLocationsMessage": "Add your first spot to publish in two taps.",
+        "modal": {
+          "title": "ADD LOCATION",
+          "nameLabel": "NAME",
+          "labelLabel": "ADDRESS",
+          "latLabel": "LATITUDE",
+          "lngLabel": "LONGITUDE",
+          "openLabel": "OPENS",
+          "closeLabel": "CLOSES",
+          "submit": "SAVE LOCATION",
+          "submitting": "SAVING…",
+          "cancel": "Cancel",
+          "hint": "Times in 24-hour format (e.g. 11:30, 20:00).",
+          "errors": {
+            "required": "Required",
+            "invalidLat": "Latitude must be between -90 and 90",
+            "invalidLng": "Longitude must be between -180 and 180",
+            "invalidTime": "Use HH:MM (24-hour)",
+            "openAfterClose": "Closing time must be after opening time"
+          }
+        },
+        "errors": {
+          "publishFailed": "Couldn't save. Check your connection and try again.",
+          "toggleFailed": "Couldn't update status. Try again."
+        }
+      }
     },
     "auth": {
       "login": {

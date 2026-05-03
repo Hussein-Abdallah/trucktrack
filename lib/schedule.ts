@@ -27,6 +27,25 @@ export function nowSecondsLocal(): number {
   return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
 }
 
+// Validates HH:mm or HH:mm:ss with realistic bounds (0–23 hours,
+// 0–59 minutes, 0–59 seconds). Used by the AddSavedLocation modal so
+// the form can reject typos before round-tripping to Postgres's TIME
+// CHECK. Tighter than a free regex because it catches "24:00" and
+// "12:60" which `\d{2}:\d{2}` accepts.
+const TIME_OF_DAY_RE = /^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
+
+export function isValidTimeOfDay(s: string): boolean {
+  return TIME_OF_DAY_RE.test(s);
+}
+
+// HH:mm → HH:mm:00 so callers can hand the result straight to a
+// Postgres TIME column. HH:mm:ss is returned unchanged. Caller should
+// validate first via isValidTimeOfDay; this function does no defense
+// (intentional — a single source of truth for the format check).
+export function normalizeTimeOfDay(s: string): string {
+  return s.length === 5 ? `${s}:00` : s;
+}
+
 // Compares device-local clock seconds against schedule.open_time /
 // close_time as if both are in the same timezone. Per CLAUDE.md the
 // MVP is Ottawa-first, so device-local ≈ Ottawa-local ≈ what operators
