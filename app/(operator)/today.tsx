@@ -53,6 +53,13 @@ export default function TodayScreen() {
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  // Tracks user-initiated pull-to-refresh ONLY. Wiring RefreshControl
+  // directly to *Query.isRefetching would also flash the spinner on
+  // every background invalidate — and toggling OPEN/CLOSED triggers
+  // two invalidates in quick succession (mutation onSettled + realtime
+  // echo of the row we just wrote), producing a double layout-shift
+  // that reads as a bug.
+  const [isPulling, setIsPulling] = useState(false);
 
   // Auto-close the AddSavedLocation modal if the session disappears
   // while it's open (token refresh failure, sign-out from another tab).
@@ -83,10 +90,13 @@ export default function TodayScreen() {
   // "is it open right now per the schedule".
   const isOpen = todaySchedule?.status === 'live';
 
-  const onRefresh = () => {
-    void truckQuery.refetch();
-    void scheduleQuery.refetch();
-    void locationsQuery.refetch();
+  const onRefresh = async () => {
+    setIsPulling(true);
+    try {
+      await Promise.all([truckQuery.refetch(), scheduleQuery.refetch(), locationsQuery.refetch()]);
+    } finally {
+      setIsPulling(false);
+    }
   };
 
   const handlePublish = () => {
@@ -206,10 +216,8 @@ export default function TodayScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
-            refreshing={
-              scheduleQuery.isRefetching || locationsQuery.isRefetching || truckQuery.isRefetching
-            }
-            onRefresh={onRefresh}
+            refreshing={isPulling}
+            onRefresh={() => void onRefresh()}
             tintColor={WARM_CREAM}
           />
         }
