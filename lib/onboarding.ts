@@ -28,7 +28,19 @@ async function isFlagSet(key: string): Promise<boolean> {
 }
 
 async function setFlag(key: string): Promise<void> {
-  await AsyncStorage.setItem(key, '1');
+  // Mirror the read path's fail-soft philosophy. A failed write
+  // shouldn't block onboarding completion: the operator made it all
+  // the way through the wizard, the trucks row exists, and a
+  // permanent freeze on a transient AsyncStorage write is a worse
+  // outcome than running onboarding once more on next launch (where
+  // the auto-mark resilience effect catches the existing trucks row
+  // and re-marks complete).
+  try {
+    await AsyncStorage.setItem(key, '1');
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('[onboarding] AsyncStorage write failed:', err);
+  }
 }
 
 export async function isConsumerOnboardingComplete(): Promise<boolean> {

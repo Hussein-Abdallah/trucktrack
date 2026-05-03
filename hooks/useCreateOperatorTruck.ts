@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { SavedLocation, Truck } from '@/lib/types';
 import {
   createOperatorTruck,
+  DuplicateTruckError,
   fetchOperatorTruck,
   type CreateOperatorTruckArgs,
 } from '@/services/operatorTruck';
@@ -57,14 +58,12 @@ export function useCreateOperatorTruck() {
       try {
         truck = await createOperatorTruck(truckArgs);
       } catch (err) {
-        // Postgres 23505 (unique_violation) bubbles through PostgREST
-        // with err.code === '23505'. Both `createOperatorTruck`'s
-        // typed errors and supabase-js's `PostgrestError` carry the
-        // code under different keys, so pattern-match leniently.
-        const code = (err as { code?: string }).code;
-        const message = err instanceof Error ? err.message : String(err);
-        const looksUnique = code === '23505' || message.includes('trucks_operator_id_unique');
-        if (!looksUnique) throw err;
+        // services/operatorTruck.ts:mapError surfaces Postgres
+        // 23505 (unique_violation on trucks_operator_id_unique) as
+        // DuplicateTruckError. instanceof beats string-matching on
+        // the message — the constraint name could change without
+        // warning the client.
+        if (!(err instanceof DuplicateTruckError)) throw err;
 
         // Lost the race (or this is a retry after a partial success).
         // Fetch the winning row and continue — the truck the operator

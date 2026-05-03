@@ -1,10 +1,11 @@
 import { Feather } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { EmptyState } from '@/components/shared/EmptyState';
 import { ConfirmStep } from '@/components/operator/onboarding/Confirm';
 import { CoverAndDescriptionStep } from '@/components/operator/onboarding/CoverAndDescription';
 import { CuisineStep } from '@/components/operator/onboarding/Cuisine';
@@ -157,6 +158,17 @@ export default function OperatorOnboardingScreen() {
     );
   };
 
+  // Route guards. The root gate at app/index.tsx already routes
+  // unauthenticated / wrong-role users away, but /onboarding/operator
+  // is directly addressable (deep link, manual nav) so the screen
+  // re-validates here too. CLAUDE.md: defense-in-depth on auth checks.
+  if (!session) {
+    return <Redirect href="/auth/login" />;
+  }
+  if (!session.roles.includes('operator')) {
+    return <Redirect href="/" />;
+  }
+
   // Splash while the truck query resolves on first mount. If the
   // operator already has a truck, the effect above redirects before
   // we render the wizard. If the query is loading we don't want to
@@ -167,6 +179,24 @@ export default function OperatorOnboardingScreen() {
         <View style={styles.splash}>
           <ActivityIndicator color={FIRE_ORANGE} />
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Truck-query error: distinct from "no truck" — falling through to
+  // step 1 risks the operator filling out the wizard and hitting a
+  // duplicate-create on step 6 if they actually do have a truck row
+  // we just couldn't load. Offer retry instead.
+  if (truckQuery.isError) {
+    return (
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
+        <EmptyState
+          icon="alert-triangle"
+          title={t('routes.operator.todayScreen.loadErrorTitle')}
+          message={t('routes.operator.todayScreen.loadErrorMessage')}
+          actionLabel={t('truck.profile.error.retry')}
+          onAction={() => void truckQuery.refetch()}
+        />
       </SafeAreaView>
     );
   }

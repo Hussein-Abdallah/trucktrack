@@ -29,6 +29,15 @@ interface UploadTruckCoverArgs {
   contentType?: string;
 }
 
+export interface UploadedTruckCover {
+  /** Storage object key, e.g. `<operatorId>/cover-1234567890.jpg`.
+   *  Returned so the caller can clean up superseded uploads when
+   *  the operator replaces a cover (see `deleteTruckCover`). The
+   *  publicUrl is what lands in `trucks.cover_url`. */
+  path: string;
+  publicUrl: string;
+}
+
 /**
  * Uploads a cover photo to the truck-covers bucket and returns the
  * public URL ready to land in `trucks.cover_url`.
@@ -44,7 +53,7 @@ interface UploadTruckCoverArgs {
  * - `UnknownStorageError` — RLS denial, oversized file, content-type
  *   rejection, or any other storage-side error.
  */
-export async function uploadTruckCover(args: UploadTruckCoverArgs): Promise<string> {
+export async function uploadTruckCover(args: UploadTruckCoverArgs): Promise<UploadedTruckCover> {
   const { operatorId, fileUri, contentType } = args;
 
   // RN's fetch() resolves file:// and content:// URIs natively; the
@@ -85,5 +94,23 @@ export async function uploadTruckCover(args: UploadTruckCoverArgs): Promise<stri
   // store on trucks.cover_url and render unauthenticated on consumer
   // truck profiles.
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return data.publicUrl;
+  return { path, publicUrl: data.publicUrl };
+}
+
+/**
+ * Removes a cover from the bucket. Used by the onboarding wizard to
+ * clean up the previous upload when the operator picks a new cover —
+ * without this, every replacement leaks an orphan in `truck-covers`.
+ *
+ * Best-effort: a failure here is logged but doesn't block the new
+ * upload. The user-facing flow is still correct; only the orphan
+ * stays. Wholesale storage cleanup (e.g. operator skips after
+ * upload, account deletion) is filed under TT-43.
+ */
+export async function deleteTruckCover(path: string): Promise<void> {
+  const { error } = await supabase.storage.from(BUCKET).remove([path]);
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.warn('[storage] failed to delete previous truck cover:', path, error.message);
+  }
 }

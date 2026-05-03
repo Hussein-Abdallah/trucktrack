@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Button, ButtonText } from '@/components/ui/button';
-import { uploadTruckCover } from '@/services/storage';
+import { deleteTruckCover, uploadTruckCover } from '@/services/storage';
 import { CHARCOAL, FIRE_ORANGE, MID, MUTED, WARM_CREAM } from '@/theme/colors';
 
 const MAX_DESCRIPTION = 160;
@@ -33,37 +33,65 @@ export function CoverAndDescriptionStep({
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Storage path of the most recent successful upload — kept locally
+  // so we can delete the orphan when the operator replaces the cover.
+  // The parent wizard only knows the publicUrl (what lands in
+  // trucks.cover_url); the path is a CoverAndDescription concern.
+  const [previousPath, setPreviousPath] = useState<string | null>(null);
 
   const tooLongDesc = description.length > MAX_DESCRIPTION;
 
   const handlePickImage = async () => {
     setError(null);
-    // launchImageLibraryAsync requests permission lazily on iOS — if
-    // the user denies, it returns canceled=true with no error. We
-    // surface a friendly inline message in that case so the user
-    // knows SKIP is still available.
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    let permission: ImagePicker.MediaLibraryPermissionResponse;
+    try {
+      permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('[onboarding] requestMediaLibraryPermissionsAsync threw:', err);
+      setError(t('routes.onboarding.operatorScreen.coverAndDescription.uploadFailed'));
+      return;
+    }
+
     if (!permission.granted) {
       setError(t('routes.onboarding.operatorScreen.coverAndDescription.photoPermissionDenied'));
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.85,
-      allowsEditing: false,
-    });
+    let result: ImagePicker.ImagePickerResult;
+    try {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.85,
+        allowsEditing: false,
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('[onboarding] launchImageLibraryAsync threw:', err);
+      setError(t('routes.onboarding.operatorScreen.coverAndDescription.uploadFailed'));
+      return;
+    }
+
     if (result.canceled || !result.assets[0]) return;
 
     const asset = result.assets[0];
     setUploading(true);
     try {
-      const url = await uploadTruckCover({
+      const uploaded = await uploadTruckCover({
         operatorId,
         fileUri: asset.uri,
         contentType: asset.mimeType,
       });
-      onCoverChange(url);
+      // Delete the orphan from the previous pick AFTER the new upload
+      // succeeds — if the new upload failed, we keep the previous one
+      // so the operator doesn't lose their cover. Best-effort cleanup;
+      // a failure here is logged but doesn't block the flow.
+      if (previousPath) {
+        void deleteTruckCover(previousPath);
+      }
+      setPreviousPath(uploaded.path);
+      onCoverChange(uploaded.publicUrl);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.warn('[onboarding] uploadTruckCover failed:', err);
