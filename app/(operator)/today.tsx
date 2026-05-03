@@ -282,13 +282,17 @@ export default function TodayScreen() {
           </View>
         </View>
 
-        {/* Publish CTA — primary orange */}
+        {/* Publish CTA — primary orange. Feather pin icon inline as a
+            sibling of ButtonText (rather than via Gluestack ButtonIcon)
+            because the rest of the screen uses @expo/vector-icons; Button
+            base class has gap-2 so the layout works without overrides. */}
         <Button
           action="primary"
           size="lg"
           onPress={handlePublish}
           isDisabled={!selectedLocationId || publishMutation.isPending}
         >
+          <Feather name="map-pin" size={18} color={CTA_WHITE} />
           <ButtonText>{t('routes.operator.todayScreen.publishLocation')}</ButtonText>
         </Button>
 
