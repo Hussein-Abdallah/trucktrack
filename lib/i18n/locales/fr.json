@@ -187,12 +187,111 @@
     },
     "onboarding": {
       "consumer": "Intégration client",
-      "operator": "Intégration opérateur"
+      "operator": "Intégration opérateur",
+      "operatorScreen": {
+        "stepLabel": "ÉTAPE {{current}} SUR {{total}}",
+        "welcome": {
+          "title": "TRUCKTRACK OPS",
+          "subtitle": "Publiez l'emplacement du jour en 30 secondes.",
+          "languageHeading": "LANGUE",
+          "cta": "COMMENCER"
+        },
+        "truckName": {
+          "title": "Nommez votre camion",
+          "subtitle": "Ce nom apparaît sur la carte des clients.",
+          "label": "NOM DU CAMION",
+          "placeholder": "Pizza chez Jo",
+          "errors": {
+            "required": "Requis",
+            "tooLong": "Le nom doit contenir 80 caractères ou moins"
+          }
+        },
+        "cuisine": {
+          "title": "Choisissez vos cuisines",
+          "subtitle": "Aide les clients à filtrer. Appuyez sur celles qui s'appliquent.",
+          "skip": "PASSER"
+        },
+        "coverAndDescription": {
+          "title": "Ajoutez une photo et un slogan",
+          "subtitle": "Les deux sont facultatifs — vous pourrez les ajouter plus tard.",
+          "coverLabel": "PHOTO DE COUVERTURE",
+          "choosePhoto": "CHOISIR UNE PHOTO",
+          "replacePhoto": "REMPLACER LA PHOTO",
+          "photoPermissionDenied": "Accès aux photos refusé. Activez-le dans Réglages, ou passez pour l'instant.",
+          "uploading": "TÉLÉVERSEMENT…",
+          "uploadFailed": "Échec du téléversement. Réessayez ou passez.",
+          "descriptionLabel": "DESCRIPTION",
+          "descriptionPlaceholder": "Pâte étirée à la main, cuite au feu de bois en 90 secondes.",
+          "descriptionTooLong": "La description doit contenir 160 caractères ou moins",
+          "skip": "PASSER"
+        },
+        "firstLocation": {
+          "title": "Ajoutez votre premier emplacement",
+          "subtitle": "Où vous installez-vous habituellement ? Vous pourrez en ajouter d'autres plus tard.",
+          "skip": "PASSER"
+        },
+        "confirm": {
+          "title": "Presque terminé",
+          "subtitle": "Vérifiez et créez votre camion.",
+          "nameLabel": "NOM",
+          "cuisinesLabel": "CUISINES",
+          "descriptionLabel": "DESCRIPTION",
+          "coverLabel": "COUVERTURE",
+          "locationLabel": "PREMIER EMPLACEMENT",
+          "noneSelected": "—",
+          "cta": "CRÉER LE CAMION",
+          "creating": "CRÉATION…",
+          "errorTitle": "Échec de la création",
+          "errorMessage": "Vérifiez votre connexion et réessayez.",
+          "retry": "RÉESSAYER"
+        },
+        "nav": {
+          "back": "Retour",
+          "continue": "CONTINUER"
+        }
+      }
     },
     "truck": {
       "profile": "Profil du camion",
       "idLabel": "ID : {{id}}"
     }
+  },
+  "cuisines": {
+    "mexican": "Mexicaine",
+    "korean": "Coréenne",
+    "japanese": "Japonaise",
+    "vietnamese": "Vietnamienne",
+    "thai": "Thaïlandaise",
+    "chinese": "Chinoise",
+    "indian": "Indienne",
+    "italian": "Italienne",
+    "french": "Française",
+    "greek": "Grecque",
+    "middle-eastern": "Moyen-orientale",
+    "caribbean": "Caribéenne",
+    "latin": "Latine",
+    "african": "Africaine",
+    "american": "Américaine",
+    "canadian": "Canadienne",
+    "bbq": "BBQ",
+    "burgers": "Burgers",
+    "pizza": "Pizza",
+    "tacos": "Tacos",
+    "sushi": "Sushi",
+    "sandwiches": "Sandwichs",
+    "noodles": "Nouilles",
+    "soup": "Soupe",
+    "salad": "Salade",
+    "breakfast": "Déjeuner",
+    "brunch": "Brunch",
+    "desserts": "Desserts",
+    "ice-cream": "Crème glacée",
+    "coffee": "Café",
+    "vegan": "Végétalienne",
+    "vegetarian": "Végétarienne",
+    "gluten-free": "Sans gluten",
+    "fusion": "Fusion",
+    "street-food": "Cuisine de rue"
   },
   "truckCard": {
     "openNow": "OUVERT",

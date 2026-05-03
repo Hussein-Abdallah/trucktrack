@@ -13,9 +13,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  EMPTY_SAVED_LOCATION_FORM,
+  SavedLocationForm,
+  validateSavedLocationForm,
+  type SavedLocationFormErrors,
+  type SavedLocationFormValue,
+} from '@/components/operator/SavedLocationForm';
 import { Button, ButtonText } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { isValidTimeOfDay, normalizeTimeOfDay } from '@/lib/schedule';
 import { useAddSavedLocation } from '@/hooks/useAddSavedLocation';
 import { APP_BLACK, MUTED, WARM_CREAM } from '@/theme/colors';
 
@@ -29,32 +34,11 @@ interface AddSavedLocationModalProps {
   onAdded?: () => void;
 }
 
-interface FormErrors {
-  name?: string;
-  locationLabel?: string;
-  lat?: string;
-  lng?: string;
-  defaultOpenTime?: string;
-  defaultCloseTime?: string;
-  submit?: string;
-}
-
-const EMPTY_FORM = {
-  name: '',
-  locationLabel: '',
-  lat: '',
-  lng: '',
-  defaultOpenTime: '',
-  defaultCloseTime: '',
-};
-
 /**
- * Modal-with-form for creating a new saved location. Manual lat/lng
- * input — map-picker integration is intentionally out of scope for the
- * MVP. Validates against the same bounds the DB CHECK constraints
- * enforce (lat ∈ [-90,90], lng ∈ [-180,180], open < close, no overnight)
- * so the round-trip can't produce a server-side rejection except for
- * RLS or network failures.
+ * Modal-with-form for creating a new saved location from the Today
+ * screen (TT-56). Form body + validation lives in SavedLocationForm so
+ * the onboarding wizard's first-saved-location step (TT-9) can reuse
+ * it without duplicating the lat/lng/time logic.
  */
 export function AddSavedLocationModal({
   visible,
@@ -65,8 +49,9 @@ export function AddSavedLocationModal({
   const { t } = useTranslation();
   const mutation = useAddSavedLocation();
   const { reset: resetMutation } = mutation;
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [form, setForm] = useState<SavedLocationFormValue>(EMPTY_SAVED_LOCATION_FORM);
+  const [errors, setErrors] = useState<SavedLocationFormErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Reset form whenever the modal closes so reopening gives a fresh
   // sheet rather than the last-failed-submit state. resetMutation()
@@ -76,62 +61,19 @@ export function AddSavedLocationModal({
   // parent re-render while the modal is hidden.
   useEffect(() => {
     if (!visible) {
-      setForm(EMPTY_FORM);
+      setForm(EMPTY_SAVED_LOCATION_FORM);
       setErrors({});
+      setSubmitError(null);
       resetMutation();
     }
   }, [visible, resetMutation]);
 
-  const setField = <K extends keyof typeof EMPTY_FORM>(key: K, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-    setErrors((prev) => ({ ...prev, [key]: undefined, submit: undefined }));
-  };
-
-  const validate = (): { ok: true; values: { lat: number; lng: number } } | { ok: false } => {
-    const next: FormErrors = {};
-
-    const name = form.name.trim();
-    if (!name) next.name = t('routes.operator.todayScreen.modal.errors.required');
-
-    const label = form.locationLabel.trim();
-    if (!label) next.locationLabel = t('routes.operator.todayScreen.modal.errors.required');
-
-    // Number() returns NaN for non-numeric strings, but Number('') and
-    // Number('   ') both return 0 — which would silently pass the
-    // -90..90 / -180..180 range checks and publish a 0,0 location off
-    // the coast of Africa. Reject empty/whitespace input first, then
-    // check for finite + range.
-    const latRaw = form.lat.trim();
-    const latNum = Number(latRaw);
-    if (!latRaw || !Number.isFinite(latNum) || latNum < -90 || latNum > 90) {
-      next.lat = t('routes.operator.todayScreen.modal.errors.invalidLat');
-    }
-    const lngRaw = form.lng.trim();
-    const lngNum = Number(lngRaw);
-    if (!lngRaw || !Number.isFinite(lngNum) || lngNum < -180 || lngNum > 180) {
-      next.lng = t('routes.operator.todayScreen.modal.errors.invalidLng');
-    }
-
-    const openValid = isValidTimeOfDay(form.defaultOpenTime);
-    const closeValid = isValidTimeOfDay(form.defaultCloseTime);
-    if (!openValid)
-      next.defaultOpenTime = t('routes.operator.todayScreen.modal.errors.invalidTime');
-    if (!closeValid)
-      next.defaultCloseTime = t('routes.operator.todayScreen.modal.errors.invalidTime');
-
-    if (openValid && closeValid) {
-      const openNorm = normalizeTimeOfDay(form.defaultOpenTime);
-      const closeNorm = normalizeTimeOfDay(form.defaultCloseTime);
-      // String compare is correct for HH:mm:ss — lex order matches
-      // chronological order. The DB CHECK enforces the same rule.
-      if (openNorm >= closeNorm) {
-        next.defaultCloseTime = t('routes.operator.todayScreen.modal.errors.openAfterClose');
-      }
-    }
-
-    setErrors(next);
-    if (Object.values(next).some(Boolean)) return { ok: false };
-    return { ok: true, values: { lat: latNum, lng: lngNum } };
+  const handleFormChange = (next: SavedLocationFormValue) => {
+    setForm(next);
+    // Clear errors as the user edits — feels less hostile than holding
+    // the red state until next submit.
+    setErrors({});
+    setSubmitError(null);
   };
 
   const handleSubmit = () => {
@@ -144,18 +86,17 @@ export function AddSavedLocationModal({
       onClose();
       return;
     }
-    const result = validate();
-    if (!result.ok) return;
+
+    const result = validateSavedLocationForm(form, t);
+    if (!result.ok) {
+      setErrors(result.errors);
+      return;
+    }
 
     mutation.mutate(
       {
         operatorId,
-        name: form.name.trim(),
-        locationLabel: form.locationLabel.trim(),
-        lat: result.values.lat,
-        lng: result.values.lng,
-        defaultOpenTime: normalizeTimeOfDay(form.defaultOpenTime),
-        defaultCloseTime: normalizeTimeOfDay(form.defaultCloseTime),
+        ...result.values,
       },
       {
         onSuccess: () => {
@@ -163,10 +104,7 @@ export function AddSavedLocationModal({
           onClose();
         },
         onError: () => {
-          setErrors((prev) => ({
-            ...prev,
-            submit: t('routes.operator.todayScreen.errors.publishFailed'),
-          }));
+          setSubmitError(t('routes.operator.todayScreen.errors.publishFailed'));
         },
       },
     );
@@ -202,73 +140,11 @@ export function AddSavedLocationModal({
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
           >
-            <Input
-              label={t('routes.operator.todayScreen.modal.nameLabel')}
-              value={form.name}
-              onChangeText={(v) => setField('name', v)}
-              placeholder="ByWard Market"
-              autoCapitalize="words"
-              error={errors.name}
-            />
-            <Input
-              label={t('routes.operator.todayScreen.modal.labelLabel')}
-              value={form.locationLabel}
-              onChangeText={(v) => setField('locationLabel', v)}
-              placeholder="55 ByWard Market Square"
-              error={errors.locationLabel}
-            />
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <Input
-                  label={t('routes.operator.todayScreen.modal.latLabel')}
-                  value={form.lat}
-                  onChangeText={(v) => setField('lat', v)}
-                  placeholder="45.4275"
-                  keyboardType="numbers-and-punctuation"
-                  error={errors.lat}
-                />
-              </View>
-              <View className="flex-1">
-                <Input
-                  label={t('routes.operator.todayScreen.modal.lngLabel')}
-                  value={form.lng}
-                  onChangeText={(v) => setField('lng', v)}
-                  placeholder="-75.6919"
-                  keyboardType="numbers-and-punctuation"
-                  error={errors.lng}
-                />
-              </View>
-            </View>
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <Input
-                  label={t('routes.operator.todayScreen.modal.openLabel')}
-                  value={form.defaultOpenTime}
-                  onChangeText={(v) => setField('defaultOpenTime', v)}
-                  placeholder="11:30"
-                  keyboardType="numbers-and-punctuation"
-                  error={errors.defaultOpenTime}
-                />
-              </View>
-              <View className="flex-1">
-                <Input
-                  label={t('routes.operator.todayScreen.modal.closeLabel')}
-                  value={form.defaultCloseTime}
-                  onChangeText={(v) => setField('defaultCloseTime', v)}
-                  placeholder="20:00"
-                  keyboardType="numbers-and-punctuation"
-                  error={errors.defaultCloseTime}
-                />
-              </View>
-            </View>
+            <SavedLocationForm value={form} errors={errors} onChange={handleFormChange} />
 
-            {errors.submit ? (
-              <Text className="text-[12px] font-body text-error-400">{errors.submit}</Text>
+            {submitError ? (
+              <Text className="mt-3 text-[12px] font-body text-error-400">{submitError}</Text>
             ) : null}
-
-            <Text className="text-[12px] font-body text-typography-500">
-              {t('routes.operator.todayScreen.modal.hint')}
-            </Text>
           </ScrollView>
 
           <View className="border-t border-outline-200 px-4 py-3" style={{ borderTopColor: MUTED }}>

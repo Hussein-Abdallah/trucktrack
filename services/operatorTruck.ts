@@ -36,3 +36,38 @@ export async function fetchOperatorTruck(operatorId: string): Promise<Truck | nu
   if (error) throw mapError(error);
   return data;
 }
+
+export interface CreateOperatorTruckArgs {
+  operatorId: string;
+  name: string;
+  cuisineTags?: string[];
+  description?: string | null;
+  coverUrl?: string | null;
+}
+
+/**
+ * Inserts the operator's truck row at the end of the onboarding wizard
+ * (TT-9). Defaults `plan='free'` and `is_active=true` are applied by
+ * the trucks table — we don't pass them here so a future plan/default
+ * change at the schema layer doesn't require a parallel client update.
+ *
+ * Returns the inserted row so the caller can seed the
+ * `['operator-truck', userId]` query cache + navigate to Today
+ * without an extra refetch round-trip.
+ */
+export async function createOperatorTruck(args: CreateOperatorTruckArgs): Promise<Truck> {
+  const { data, error } = await supabase
+    .from('trucks')
+    .insert({
+      operator_id: args.operatorId,
+      name: args.name,
+      cuisine_tags: args.cuisineTags ?? [],
+      description: args.description ?? null,
+      cover_url: args.coverUrl ?? null,
+    })
+    .select('*')
+    .single();
+
+  if (error) throw mapError(error);
+  return data;
+}

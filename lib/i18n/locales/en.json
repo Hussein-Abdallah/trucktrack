@@ -187,12 +187,111 @@
     },
     "onboarding": {
       "consumer": "Consumer Onboarding",
-      "operator": "Operator Onboarding"
+      "operator": "Operator Onboarding",
+      "operatorScreen": {
+        "stepLabel": "STEP {{current}} OF {{total}}",
+        "welcome": {
+          "title": "TRUCKTRACK OPS",
+          "subtitle": "Publish today's location in 30 seconds.",
+          "languageHeading": "LANGUAGE",
+          "cta": "GET STARTED"
+        },
+        "truckName": {
+          "title": "Name your truck",
+          "subtitle": "This is what customers see on the map.",
+          "label": "TRUCK NAME",
+          "placeholder": "Joe's Pizza Truck",
+          "errors": {
+            "required": "Required",
+            "tooLong": "Name must be 80 characters or fewer"
+          }
+        },
+        "cuisine": {
+          "title": "Pick your cuisines",
+          "subtitle": "Helps customers filter the map. Tap any that fit.",
+          "skip": "SKIP"
+        },
+        "coverAndDescription": {
+          "title": "Add a cover and a tagline",
+          "subtitle": "Both are optional — you can add them later from settings.",
+          "coverLabel": "COVER PHOTO",
+          "choosePhoto": "CHOOSE PHOTO",
+          "replacePhoto": "REPLACE PHOTO",
+          "photoPermissionDenied": "Photo access denied. You can enable it in Settings, or skip for now.",
+          "uploading": "UPLOADING…",
+          "uploadFailed": "Couldn't upload. Try again or skip.",
+          "descriptionLabel": "DESCRIPTION",
+          "descriptionPlaceholder": "Hand-stretched dough, wood-fired in 90 seconds.",
+          "descriptionTooLong": "Description must be 160 characters or fewer",
+          "skip": "SKIP"
+        },
+        "firstLocation": {
+          "title": "Add your first spot",
+          "subtitle": "Where do you usually park? You can add more from the Today screen later.",
+          "skip": "SKIP"
+        },
+        "confirm": {
+          "title": "Almost there",
+          "subtitle": "Review and create your truck.",
+          "nameLabel": "NAME",
+          "cuisinesLabel": "CUISINES",
+          "descriptionLabel": "DESCRIPTION",
+          "coverLabel": "COVER",
+          "locationLabel": "FIRST LOCATION",
+          "noneSelected": "—",
+          "cta": "CREATE TRUCK",
+          "creating": "CREATING…",
+          "errorTitle": "Couldn't create your truck",
+          "errorMessage": "Check your connection and try again.",
+          "retry": "RETRY"
+        },
+        "nav": {
+          "back": "Back",
+          "continue": "CONTINUE"
+        }
+      }
     },
     "truck": {
       "profile": "Truck Profile",
       "idLabel": "ID: {{id}}"
     }
+  },
+  "cuisines": {
+    "mexican": "Mexican",
+    "korean": "Korean",
+    "japanese": "Japanese",
+    "vietnamese": "Vietnamese",
+    "thai": "Thai",
+    "chinese": "Chinese",
+    "indian": "Indian",
+    "italian": "Italian",
+    "french": "French",
+    "greek": "Greek",
+    "middle-eastern": "Middle Eastern",
+    "caribbean": "Caribbean",
+    "latin": "Latin",
+    "african": "African",
+    "american": "American",
+    "canadian": "Canadian",
+    "bbq": "BBQ",
+    "burgers": "Burgers",
+    "pizza": "Pizza",
+    "tacos": "Tacos",
+    "sushi": "Sushi",
+    "sandwiches": "Sandwiches",
+    "noodles": "Noodles",
+    "soup": "Soup",
+    "salad": "Salad",
+    "breakfast": "Breakfast",
+    "brunch": "Brunch",
+    "desserts": "Desserts",
+    "ice-cream": "Ice cream",
+    "coffee": "Coffee",
+    "vegan": "Vegan",
+    "vegetarian": "Vegetarian",
+    "gluten-free": "Gluten-free",
+    "fusion": "Fusion",
+    "street-food": "Street food"
   },
   "truckCard": {
     "openNow": "OPEN NOW",

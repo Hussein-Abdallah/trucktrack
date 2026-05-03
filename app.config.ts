@@ -134,15 +134,30 @@ export default (): ExpoConfig => {
           locationWhenInUsePermission: 'Find food trucks near you.',
         },
       ],
+      // expo-image-picker — operator onboarding (TT-9) uploads a cover
+      // photo via launchImageLibraryAsync. The plugin wires
+      // NSPhotoLibraryUsageDescription on iOS automatically; the EN
+      // string here is the base Info.plist value, FR comes through
+      // withLocalizedInfoPlist below. Android needs no permission for
+      // the system picker.
+      [
+        'expo-image-picker',
+        {
+          photosPermission: 'Pick a cover photo for your truck profile.',
+        },
+      ],
       [
         './plugins/withLocalizedInfoPlist',
         {
           locales: {
             en: {
               NSLocationWhenInUseUsageDescription: 'Find food trucks near you.',
+              NSPhotoLibraryUsageDescription: 'Pick a cover photo for your truck profile.',
             },
             fr: {
               NSLocationWhenInUseUsageDescription: 'Trouvez des camions-restaurants près de vous.',
+              NSPhotoLibraryUsageDescription:
+                'Choisissez une photo de couverture pour le profil de votre camion.',
             },
           },
         },
