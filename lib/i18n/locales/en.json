@@ -86,7 +86,7 @@
           "closeLabel": "CLOSES",
           "submit": "SAVE LOCATION",
           "submitting": "SAVING…",
-          "cancel": "Cancel",
+          "cancel": "CANCEL",
           "hint": "Times in 24-hour format (e.g. 11:30, 20:00).",
           "errors": {
             "required": "Required",

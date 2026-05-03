@@ -162,6 +162,40 @@ export default function TodayScreen() {
     );
   }
 
+  // Schedule + locations queries have their own loading/error states.
+  // Without these branches, an in-flight or failed fetch falls through
+  // to "no location published" / "no saved locations" empty UI — wrong
+  // signal to the operator. CLAUDE.md: every screen must handle
+  // loading, error, and empty states explicitly.
+  if (scheduleQuery.isLoading || locationsQuery.isLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+        <Header title={t('routes.operator.todayScreen.header')} />
+        <View style={styles.loading}>
+          <ActivityIndicator color={FIRE_ORANGE} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (scheduleQuery.isError || locationsQuery.isError) {
+    return (
+      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+        <Header title={t('routes.operator.todayScreen.header')} />
+        <EmptyState
+          icon="alert-triangle"
+          title={t('routes.operator.todayScreen.loadErrorTitle')}
+          message={t('routes.operator.todayScreen.loadErrorMessage')}
+          actionLabel={t('truck.profile.error.retry')}
+          onAction={() => {
+            void scheduleQuery.refetch();
+            void locationsQuery.refetch();
+          }}
+        />
+      </SafeAreaView>
+    );
+  }
+
   const locations = locationsQuery.data ?? [];
   const hasLocations = locations.length > 0;
 
@@ -230,9 +264,7 @@ export default function TodayScreen() {
             {todaySchedule ? (
               <View style={styles.currentLocationRow}>
                 <Feather name="map-pin" size={18} color={FIRE_ORANGE} />
-                <Text style={styles.currentLocationText} numberOfLines={1}>
-                  {todaySchedule.location_label}
-                </Text>
+                <Text style={styles.currentLocationText}>{todaySchedule.location_label}</Text>
               </View>
             ) : (
               <Text style={styles.muted}>

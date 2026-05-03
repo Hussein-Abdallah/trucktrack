@@ -21,7 +21,11 @@ export function SavedLocationChip({ location, isActive, onPress }: SavedLocation
   const nameCls = isActive
     ? 'mb-1 font-mono-medium text-[10px] uppercase tracking-[1.5px] text-typography-white'
     : 'mb-1 font-mono-medium text-[10px] uppercase tracking-[1.5px] text-typography-950';
-  const labelCls = isActive ? 'text-xs text-typography-white' : 'text-xs text-typography-500';
+  // The chip is a button, so its secondary line follows the DM Mono
+  // uppercase button-text convention from CLAUDE.md (not body copy).
+  const labelCls = isActive
+    ? 'font-mono-medium text-xs uppercase tracking-[1.5px] text-typography-white'
+    : 'font-mono-medium text-xs uppercase tracking-[1.5px] text-typography-500';
 
   return (
     <Pressable

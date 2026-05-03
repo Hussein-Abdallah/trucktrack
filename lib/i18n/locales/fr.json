@@ -86,7 +86,7 @@
           "closeLabel": "FERMETURE",
           "submit": "ENREGISTRER",
           "submitting": "ENREGISTREMENT…",
-          "cancel": "Annuler",
+          "cancel": "ANNULER",
           "hint": "Heures au format 24 h (ex. 11:30, 20:00).",
           "errors": {
             "required": "Requis",

@@ -96,14 +96,19 @@ export function AddSavedLocationModal({
     const label = form.locationLabel.trim();
     if (!label) next.locationLabel = t('routes.operator.todayScreen.modal.errors.required');
 
-    // Number() returns NaN for empty / non-numeric strings — guard with
-    // Number.isFinite so "" and "abc" don't slip through as 0.
-    const latNum = Number(form.lat);
-    if (!Number.isFinite(latNum) || latNum < -90 || latNum > 90) {
+    // Number() returns NaN for non-numeric strings, but Number('') and
+    // Number('   ') both return 0 — which would silently pass the
+    // -90..90 / -180..180 range checks and publish a 0,0 location off
+    // the coast of Africa. Reject empty/whitespace input first, then
+    // check for finite + range.
+    const latRaw = form.lat.trim();
+    const latNum = Number(latRaw);
+    if (!latRaw || !Number.isFinite(latNum) || latNum < -90 || latNum > 90) {
       next.lat = t('routes.operator.todayScreen.modal.errors.invalidLat');
     }
-    const lngNum = Number(form.lng);
-    if (!Number.isFinite(lngNum) || lngNum < -180 || lngNum > 180) {
+    const lngRaw = form.lng.trim();
+    const lngNum = Number(lngRaw);
+    if (!lngRaw || !Number.isFinite(lngNum) || lngNum < -180 || lngNum > 180) {
       next.lng = t('routes.operator.todayScreen.modal.errors.invalidLng');
     }
 
